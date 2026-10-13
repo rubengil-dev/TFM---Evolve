@@ -72,22 +72,34 @@ Por último, los datos son públicos, relacionales y se actualizan a diario, lo 
 
 El producto es altamente monetizable dado que se asocia a la inversión. Es decir, donde el dinero ya se está moviendo significa que hay demanda, por lo que el producto se podría monetizar de múltiples formas: asesoramiento a fondos, minoristas...
 
-## Idea 4 - Estimación de la Edad Biológica a partir de Analítica y Parámetros Funcionales, con Simulador Interactivo
+## Idea 4 - Calculadora de Edad Biológica a partir de Analítica
 
-Modelo de Machine Learning que estima la edad biológica de una persona a partir de los biomarcadores de una analítica de sangre rutinaria (glucosa, HbA1c, creatinina, albúmina, PCR, hemograma...) y de parámetros funcionales y de estilo de vida adicionales, como la capacidad aeróbica (VO2 máx, o su mejor aproximación disponible en los datos de entrenamiento), la presión arterial o la composición corporal. En la interfaz, el usuario introduce sus valores y obtiene su edad biológica estimada y la contribución de cada parámetro, y dispone de un simulador visual con controles deslizantes para modificar cualquier valor y ver en tiempo real cómo cambia la edad predicha. El modelo se entrena con datos públicos de NHANES (analíticas con mortalidad enlazada) almacenados en una base de datos PostgreSQL. De cara a un futuro, se contempla el seguimiento de la evolución a lo largo de varias analíticas. La herramienta es informativa y de bienestar, no diagnóstica ni sustituye el consejo médico.
+Aplicación que estima la edad biológica de una persona a partir de su analítica de sangre rutinaria. El usuario sube el PDF de su analítica y la aplicación extrae los valores automáticamente, le pide que los confirme y devuelve una edad biológica estimada, la diferencia con su edad cronológica y los marcadores que más influyen en el resultado, explicados en lenguaje llano. De forma opcional, el usuario puede añadir datos que normalmente no aparecen en una analítica (tensión arterial, composición corporal, capacidad aeróbica o su mejor aproximación), que el modelo utiliza para afinar la estimación.
+
+Cómo se calcula. No existe un conjunto de datos con la "edad biológica real" como etiqueta, por lo que no se puede predecir directamente. El enfoque habitual en la literatura es entrenar un modelo de supervivencia que estima el riesgo de mortalidad a partir de los biomarcadores y traducir ese riesgo a una "edad equivalente": la edad a la que la población media tiene ese mismo riesgo. El modelo se entrena con datos públicos de NHANES (analíticas con mortalidad enlazada) y se compara con un baseline publicado (PhenoAge, Levine et al., 2018).
 
 ### ¿Qué problema que resuelve?
 
-La edad cronológica no refleja el estado fisiológico real de una persona. Mucha gente se hace analíticas con regularidad, pero un "todo dentro de rango" no dice nada sobre cómo de rápido está envejeciendo su organismo. Las calculadoras existentes suelen dar un único número a partir de parámetros sanguíneos, sin permitir entender qué lo impulsa ni explorar cómo cambiaría.
+Mucha gente se hace analíticas con regularidad, pero un "todo dentro de rango" no dice nada sobre cómo de rápido está envejeciendo su organismo, e interpretar una docena de valores sueltos exige conocimientos que la mayoría no tiene.
 
-Este producto incorpora parámetros funcionales como la capacidad aeróbica, uno de los indicadores más ligados a la salud a largo plazo, y hace el modelo explorable: el usuario ve qué parámetros pesan más en su resultado y cómo se movería la edad estimada si cambiaran. El simulador muestra cómo responde el modelo, no un plan de tratamiento.
+En una revisión informal de calculadoras de edad biológica, la mayoría exige introducir los valores a mano uno a uno, y muchas ni siquiera parten de una analítica. La única que permitía subir una analítica entregaba el resultado por correo, como puerta de entrada a un producto de pago. Esta fricción impide que la herramienta llegue a quien más la necesita: una persona sin formación sanitaria que solo quiere saber qué significa su analítica.
 
 ### Motivación para desarrollar el proyecto
 
-Por un lado, mi formación en bioquímica me permite interpretar con criterio los biomarcadores, validar que el modelo tiene sentido biológico y no tratarlo como una caja negra. Además, soy un absoluto frikie del deporte, la salud y el biohacking, por lo que yo mismo usaría este producto.
+- Formación: mi formación en bioquímica me permite interpretar los biomarcadores, comprobar que el modelo tiene sentido biológico y no tratarlo como una caja negra.
 
-Por otro lado, a la gente le gusta jugar con estas cosas y compararse, lo que hace el producto atractivo y fácil de entender para un usuario sin conocimientos "bio".
+- Interés personal: soy muy frikie del deporte, la salud y el biohacking, y yo mismo usaría esta herramienta.
+
+- Extra: a la gente le gusta jugar con estas cosas y compararse, lo que hace el producto atractivo y fácil de entender para un usuario sin conocimientos "bio".
 
 ### ¿Qué problema que resuelve?
 
-Mi idea con el producto es ayudar a la población media sin conocimientos sobre el tema a entender mejor el estado de su cuerpo y en qué factores podría centrarse para "re-juvenecer". Por otro lado, si buscase remuneración económica podría venderse a gimnasios o entrenadores personales.
+La propuesta de valor diferencial reside en:
+
+- Sin introducir datos a mano: se sube el PDF y la aplicación lee los valores. 
+
+- Gratuitidad: Sin necesidad de usarlo como lead magnet o parte de un funnel.
+
+- Datos que no están en la analítica: el usuario puede completar su perfil con parámetros funcionales o de estilo de vida (sólo si es posible y da tiempo).
+
+- Resultado comprensible: una edad y una explicación en lenguaje llano en lugar de una tabla de valores.
