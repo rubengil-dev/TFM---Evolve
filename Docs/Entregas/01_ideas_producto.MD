@@ -38,11 +38,9 @@ Esto ralentiza el descubrimiento de nuevos compuestos bioactivos y el análisis 
 
 ### Motivación para desarrollar el proyecto
 
-Por un lado, mi formación es en bioquímica, por lo que entiendo tanto los datos como la utilidad del problema, y me permite retomar un área más cercana a mi background que siempre he tenido algo olvidada.
+Por un lado, mi formación es en bioquímica, por lo que entiendo tanto los datos como la utilidad del problema, y me permite retomar un área más cercana a mi background.
 
-Por otro lado, la utilidad del problema está validada externamente: una empresa del sector (Enveda) lo ha convertido en una competición con 50.000 $ en premios, lo que indica que hay organizaciones dispuestas a pagar por resolverlo. No es una necesidad inventada para justificar un proyecto.
-
-Por último, la competición ofrece una forma objetiva de evaluar el trabajo: una métrica definida y un ranking público con cientos de equipos con el que contrastar los resultados, algo que normalmente falta en un TFM.
+Por otro lado, la utilidad del problema está validada externamente: una empresa del sector (Enveda) lo ha convertido en una competición con 50.000 $ en premios, lo que indica que hay organizaciones dispuestas a pagar por resolverlo. 
 
 ### ¿Qué problema que resuelve?
 
@@ -50,11 +48,11 @@ El valor del producto se puede explicar mediante 2 vías:
 
 - B2B / Industria y laboratorios: Funciona como herramienta de apoyo para empresas de descubrimiento de fármacos a partir de productos naturales y para laboratorios de metabolómica, toxicología, alimentación o medio ambiente, acelerando la identificación de moléculas desconocidas y reduciendo el tiempo de análisis experto por muestra.
 
-- Herramienta abierta para investigación (B2C / académico): Funciona como aplicación web donde un grupo de investigación sube sus espectros y obtiene el ranking de candidatas con su visualización 3D, sin necesidad de programar. Podría monetizarse con un modelo freemium o con una API para uso intensivo. La hipótesis es: "Si el cuello de botella es la identificación manual, una herramienta que reduzca miles de candidatas a 25 ahorra horas de trabajo experto por molécula, lo que justifica su uso y su pago." Existen herramientas previas (como SIRIUS); el objetivo no es sustituirlas, sino ofrecer una alternativa abierta basada en Deep Learning con una interfaz visual pensada para usuarios que no son programadores.
+- Herramienta abierta para investigación (B2C / académico): Funciona como aplicación web donde un grupo de investigación sube sus espectros y obtiene el ranking de candidatas con su visualización 3D, sin necesidad de programar.
 
 ## Idea 3 - Radar de Catalizadores: Predicción de la Probabilidad de Éxito de Ensayos Clínicos para Inversores en Biotecnología
 
-Modelo de Machine Learning entrenado con el histórico público de ensayos clínicos de ClinicalTrials.gov (a través de AACT, su versión en base de datos PostgreSQL) que, a partir de las características de diseño de un ensayo (fase, enfermedad, tipo de intervención, tamaño muestral, aleatorización y enmascaramiento, patrocinador, criterios de inclusión...), estima la probabilidad de que tenga éxito, por ejemplo, de que avance a la siguiente fase. En la interfaz, el usuario elige una empresa biotecnológica cotizada y consulta las fichas de los ensayos activos de su pipeline, cada una con su probabilidad, los factores que la explican y ensayos históricos comparables. De cara a un futuro, se contempla ampliar el número de empresas y añadir alertas ante hitos próximos. La herramienta es informativa y no constituye asesoramiento financiero.
+Modelo de Machine Learning entrenado con el histórico público de ensayos clínicos de ClinicalTrials.gov (a través de AACT, su versión en base de datos PostgreSQL) que, a partir de las características de diseño de un ensayo, estima la probabilidad de que tenga éxito, por ejemplo, de que avance a la siguiente fase. En la interfaz, el usuario elige una empresa biotecnológica cotizada y consulta las fichas de los ensayos activos de su pipeline, cada una con su probabilidad, los factores que la explican y ensayos históricos comparables.
 
 ### ¿Qué problema que resuelve?
 
@@ -72,11 +70,7 @@ Por último, los datos son públicos, relacionales y se actualizan a diario, lo 
 
 ### ¿Qué problema que resuelve?
 
-El valor del producto se puede explicar mediante 2 vías:
-
-- B2B / Fondos y equipos de desarrollo de negocio: Pequeños fondos, comunidades y newsletters de inversión en biotecnología, y equipos de desarrollo de negocio de farmacéuticas pueden usarlo para cribar rápidamente programas competidores o candidatos de licencia antes de dedicarles análisis experto.
-
-- Producto independiente (B2C): Plataforma web para inversores minoristas con un modelo freemium: consulta básica gratuita y suscripción para alertas, listas de seguimiento y comparables. La hipótesis es: "Aunque la precisión absoluta sea limitada, sobre todo en fases tempranas, una probabilidad calibrada y explicable ya aporta valor como herramienta de triaje frente a decidir sin ningún dato."
+El producto es altamente monetizable dado que se asocia a la inversión. Es decir, donde el dinero ya se está moviendo significa que hay demanda, por lo que el producto se podría monetizar de múltiples formas: asesoramiento a fondos, minoristas...
 
 ## Idea 4 - Estimación de la Edad Biológica a partir de Analítica y Parámetros Funcionales, con Simulador Interactivo
 
@@ -90,16 +84,10 @@ Este producto incorpora parámetros funcionales como la capacidad aeróbica, uno
 
 ### Motivación para desarrollar el proyecto
 
-Por un lado, mi formación en bioquímica me permite interpretar con criterio los biomarcadores, validar que el modelo tiene sentido biológico y no tratarlo como una caja negra.
+Por un lado, mi formación en bioquímica me permite interpretar con criterio los biomarcadores, validar que el modelo tiene sentido biológico y no tratarlo como una caja negra. Además, soy un absoluto frikie del deporte, la salud y el biohacking, por lo que yo mismo usaría este producto.
 
-Por otro lado, a la gente le gusta jugar con estas cosas y compararse, lo que hace el producto atractivo y fácil de entender para un usuario sin conocimientos técnicos. Además, la parte de interpretabilidad y de simulación visual es lo que más me motiva desde el punto de vista del diseño del producto.
-
-Por último, los datos son públicos, abundantes y están bien documentados, lo que permite centrar el esfuerzo en un modelo sólido y en una experiencia de usuario cuidada, y no en conseguir datos.
+Por otro lado, a la gente le gusta jugar con estas cosas y compararse, lo que hace el producto atractivo y fácil de entender para un usuario sin conocimientos "bio".
 
 ### ¿Qué problema que resuelve?
 
-El valor del producto se puede explicar mediante 2 vías:
-
-- B2B / Salud y bienestar: Gimnasios y centros de entrenamiento, nutricionistas, clínicas de longevidad, programas de bienestar corporativo y laboratorios de análisis clínicos pueden integrarlo como un valor añadido al informe que ya entregan a sus clientes, o como herramienta de seguimiento.
-
-- Producto independiente (B2C): Aplicación web para personas interesadas en su salud, el deporte o la longevidad, con un modelo freemium: cálculo y simulador básicos gratuitos y plan de pago con histórico de analíticas y comparación entre fechas. La hipótesis es: "Si la gente ya se hace analíticas y le interesa conocer su edad biológica, una herramienta que además le deje explorar qué la mueve tendrá más uso y más retención que una calculadora de un solo resultado."
+Mi idea con el producto es ayudar a la población media sin conocimientos sobre el tema a entender mejor el estado de su cuerpo y en qué factores podría centrarse para "re-juvenecer". Por otro lado, si buscase remuneración económica podría venderse a gimnasios o entrenadores personales.
