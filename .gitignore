@@ -1,0 +1,21 @@
+# Datos de NHANES (se descargan con script)
+data/
+
+# Analíticas reales y cualquier dato personal: nunca al repo
+private/
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Secretos y configuración local
+.env
+.claude/settings.local.json
+
+# Sistema
+Thumbs.db
+desktop.ini
+.DS_Store

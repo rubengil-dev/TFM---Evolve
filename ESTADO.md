@@ -1,7 +1,9 @@
 # Estado
 
 ## PRÓXIMA SESIÓN
-Explorar NHANES (incluida la mortalidad enlazada) para fijar variables:
+**Primero, entrevista.** CONTEXTO se escribió a partir de un prompt y de la entrega de ideas, y puede no coincidir con lo que tengo en la cabeza. Hazme preguntas (por bloques, sin agobiar) sobre todo lo que quede ambiguo o sin detallar: producto, usuario, resultado que se muestra, modelo, alcance, plazos y entregas del máster, criterios de evaluación… Con las respuestas, propón los cambios a `CONTEXTO.md` (y a ESTADO si aplica) y espera mi OK antes de aplicarlos.
+
+Después, explorar NHANES (incluida la mortalidad enlazada) para fijar variables:
 1. Ver qué ciclos de NHANES tienen mortalidad enlazada y qué biomarcadores hay en cada uno (algunos cambian de nombre o método entre ciclos, p. ej. la PCR frente a la PCR ultrasensible).
 2. Cruzar esa lista con los parámetros habituales de una analítica española, para ver qué variables son realistas.
 3. Comprobar qué variables de PhenoAge salen normalmente en una analítica española y cuáles no.
@@ -10,6 +12,7 @@ Explorar NHANES (incluida la mortalidad enlazada) para fijar variables:
 ## Hecho
 - Entrega 1: documento con las 4 ideas de TFM (`Docs/Entregas/01_ideas_producto.md`). Elegida la Idea 4.
 - Setup del proyecto para trabajar con Claude: `CLAUDE.md`, `CONTEXTO.md`, `ESTADO.md`.
+- `.gitignore` (excluye `data/` para NHANES, `private/` para analíticas reales, entornos de Python, checkpoints de notebooks y `.env`) y `.gitattributes` (saltos de línea LF en el repo).
 
 ## En curso
 Nada.
@@ -26,9 +29,8 @@ Nada.
 - Entorno de Python para el análisis (gestor de entornos, notebooks).
 
 ## Pendiente
-- Estructura de carpetas del repo y `.gitignore` (datos de NHANES y analíticas reales fuera del repo).
+- Estructura de carpetas del repo (se decide junto con el stack).
 - Conseguir analíticas de ejemplo (sintéticas o anonimizadas) de distintos laboratorios españoles para probar el parser.
 
 ## Problemas conocidos
-- En git el archivo de la entrega figura como `01_ideas_producto.MD` (mayúsculas) y en disco como `.md`. En Windows no da problemas, pero conviene unificarlo.
-- La rama local `main` va 1 commit por delante de `origin/main` ("Idea 4 Selected", sin push).
+Ninguno.

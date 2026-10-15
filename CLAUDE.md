@@ -21,8 +21,8 @@ Al empezar cada sesión, lee enteros `CONTEXTO.md` y `ESTADO.md`. Si ESTADO tien
 - Prioridad: MVP end-to-end funcional y desplegado antes de pulir cada pieza.
 
 ## Datos y privacidad
-- Los datos de NHANES se descargan con script y no se suben al repo (van a una carpeta ignorada por `.gitignore`). Lo que sí se sube es el código que los descarga y procesa.
-- Analíticas reales (mías o de otras personas) nunca se suben al repo ni se pegan en ESTADO/CONTEXTO. Para tests y ejemplos, usa analíticas sintéticas o anonimizadas.
+- Los datos de NHANES se descargan con script a `data/` (ignorada por `.gitignore`). Lo que sí se sube es el código que los descarga y procesa.
+- Analíticas reales (mías o de otras personas) van solo a `private/` (ignorada): nunca se suben al repo ni se pegan en ESTADO/CONTEXTO. Para tests y ejemplos, usa analíticas sintéticas o anonimizadas.
 - La app no guarda datos de usuarios: todo se procesa en memoria y se descarta.
 
 ## Forma de trabajo
