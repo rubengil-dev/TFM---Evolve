@@ -1,0 +1,20 @@
+# Histórico
+
+Una entrada por sesión, la más reciente arriba. Qué se hizo, decisiones con su motivo, incidencias y commits. El detalle de cada cambio está en git (`git show <hash>`).
+
+## 2026-10-17: Bronze y estructura del código
+- Decidido NHANES continuo 1999-2018 sin NHANES III: métodos de laboratorio y formato distintos, y 20 años de seguimiento bastan. El seguimiento corto de los últimos ciclos se trata como censura.
+- Script de descarga a Bronze. Primero se intentó descargar todo NHANES (scraping del catálogo): se paró porque el producto solo usa analítica y pocos datos más. Se pasó a una lista cerrada de ficheros.
+- Nombres de ficheros verificados contra el catálogo oficial de la CDC, huecos incluidos. Añadidos tras revisar el catálogo: vitamina D, albúmina/creatinina en orina, ayuno, tabaco, alcohol, actividad, dieta (comida rápida) y sueño. Descartados: ferritina, PSA, TSH, B12/folato, salud autovalorada, entre otros.
+- Incidencia: el servidor de mortalidad (ftp.cdc.gov) estuvo caído un rato; los reintentos del script lo resolvieron.
+- Código reorganizado tras revisarlo juntos: `config/` (rutas y fuentes), `utils/` (por tema), `pipeline/` (un archivo por paso con `run()`), `main.py` como único punto de entrada. Quitados hash y argumentos de línea de comandos por innecesarios.
+- Datos: capas numeradas (`01_bronze`…) y una carpeta por ciclo con la mortalidad dentro. Ficheros movidos sin volver a descargar.
+- Reorganizados los archivos de Claude: CONTEXTO solo con decisiones de fondo, ESTADO en tres secciones, este HISTORICO y ESTILO (estilo de código portable).
+- Silver raw: unir ficheros por ciclo → filtrar 18-79 elegibles → renombrar alias de laboratorio → apilar. 54.809 personas, 6.271 defunciones, 993 columnas. Se decidió renombrar antes de apilar (no apilar columnas medio vacías) y no renombrar cuestionarios a ciegas.
+- Incidencias: la flecha `→` en un `print` rompe la consola de Windows (cp1252); el peso de ayunas de 2003-2004 salía duplicado por redondeo distinto entre ficheros (corregido comparando con tolerancia).
+- Commits: `2f7a0f3` (Bronze + estructura `src/`), merge a `main` y push.
+
+## Antes del 2026-10-17 (reconstruido de git)
+- 2026-08-17 a 2026-10-13: setup del repo y Entrega 01 (4 ideas; elegida la 4). Commits `11999eb` … `23326d5`.
+- 2026-10-15: setup para trabajar con Claude (CLAUDE, CONTEXTO, ESTADO), `.gitignore` y `.gitattributes` (`d5eb017`, `3cf246e`).
+- 2026-10-17: entrevista de producto en CONTEXTO (`3c4a9e7`); entorno Python 3.11 y carpetas (`706a5ba`).

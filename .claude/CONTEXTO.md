@@ -25,6 +25,8 @@ Edad y sexo: se extraen del PDF si vienen; si no, se piden al usuario. Solo adul
 
 Datos opcionales que el usuario puede añadir para afinar (nunca obligatorios): tensión arterial, composición corporal, capacidad aeróbica (VO2 max o su mejor aproximación). Solo entran si existen en NHANES.
 
+Posible ampliación: hábitos de vida (tabaco, alcohol, actividad, sedentarismo, comida rápida, sueño) con preguntas de botones, sin escribir. Solo datos objetivos; nada de autovaloraciones ("¿cómo de sana es tu dieta?", "¿cómo es tu salud?").
+
 Debe estar desplegada con URL pública para que el profesor la pruebe sin instalar nada, dentro de los límites de los planes gratuitos de hosting.
 
 ### Propuesta de valor (frente a lo que existe)
@@ -35,7 +37,7 @@ Debe estar desplegada con URL pública para que el profesor la pruebe sin instal
 
 ## 3. El modelo
 - No existe una etiqueta de "edad biológica real", así que no se predice directamente. Se entrena un **modelo de supervivencia** que estima riesgo de mortalidad a partir de los biomarcadores, y ese riesgo se traduce a una **edad equivalente** (la edad a la que la población media tiene ese mismo riesgo), al estilo PhenoAge. El usuario solo ve su edad biológica.
-- Datos: **NHANES con mortalidad enlazada** (Linked Mortality Files del NCHS). Se acepta la población de EE. UU. como referencia: lo que es saludable allí se asume saludable aquí.
+- Datos: **NHANES con mortalidad enlazada** (Linked Mortality Files del NCHS). Se acepta la población de EE. UU. como referencia: lo que es saludable allí se asume saludable aquí. Se usa el **NHANES continuo 1999-2018** (mortalidad pública hasta 2019); NHANES III se descarta por métodos de laboratorio y formato distintos.
 - Baseline publicado de referencia: **PhenoAge** (Levine et al., 2018).
 - Features: intersección entre lo que hay en NHANES y lo que aparece en analíticas habituales españolas, más datos fáciles de aportar (edad, sexo, peso, altura).
 - **Requisito clave**: las analíticas no traen siempre los mismos parámetros. Si falta algún dato, se calcula igualmente con menos fiabilidad; si faltan demasiados, se avisa de que no se puede calcular. El umbral (mínimo viable de variables) se fija con los datos del modelo.
@@ -66,6 +68,8 @@ Son datos de salud (categoría especial en el RGPD):
 
 ## 8. Entorno y organización del repo
 - Python 3.11 en un entorno `.venv` con `requirements.txt` generado con `pip freeze`. Motivo: es lo estándar, lo reproduce cualquiera (profesor incluido) y las plataformas de hosting leen `requirements.txt` directamente. La 3.11 tiene soporte hasta 2027 y todas las librerías la soportan; la 3.14 es demasiado nueva.
-- Carpetas: `notebooks/` (exploración y entregas parciales; son pruebas y puede que no lleguen al repo final), `src/` (código `.py` del producto), `data/` con capas `bronze/` (dato tal como llega de la fuente, nunca se modifica), `silver/` (limpio, unido y armonizado) y `gold/` (tabla final que consume el modelo).
+- Código modular: configuración (rutas internas y fuentes externas) separada de la lógica; funciones compartidas en utilidades agrupadas por tema; un archivo por paso del pipeline; un único punto de entrada para el pipeline y otro para la app. Cada archivo gestiona sus propios imports.
+- Notebooks para explorar e iterar, independientes del código; los `.py` son el código definitivo.
+- Datos en capas: Bronze (tal como llega de la fuente, nunca se modifica), Silver (limpio, unido y armonizado) y Gold (tabla final que consume el modelo).
 
-Todo lo de este archivo está decidido; lo abierto está en `ESTADO.md`.
+Todo lo de este archivo está decidido. Los nombres concretos (carpetas, archivos, variables) y lo abierto están en `ESTADO.md`.
