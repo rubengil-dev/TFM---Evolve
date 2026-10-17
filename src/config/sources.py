@@ -7,10 +7,20 @@ CYCLES = [1999, 2001, 2003, 2005, 2007, 2009, 2011, 2013, 2015, 2017]
 
 # URLs
 NHANES_URL = "https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/{year}/DataFiles/{name}.{ext}"
-MORTALITY_URL = (
-    "https://ftp.cdc.gov/pub/Health_Statistics/NCHS/datalinkage/linked_mortality/"
-    "NHANES_{cycle}_MORT_2019_PUBLIC.dat"
-)
+MORTALITY_FILE = "NHANES_{cycle}_MORT_2019_PUBLIC.dat"
+MORTALITY_URL = "https://ftp.cdc.gov/pub/Health_Statistics/NCHS/datalinkage/linked_mortality/" + MORTALITY_FILE
+
+# Mortality file layout (fixed width, character positions from NCHS read-in program)
+MORTALITY_COLUMNS = {
+    "SEQN":         (1, 6),
+    "ELIGSTAT":     (15, 15),  # 1 eligible, 2 under 18, 3 ineligible
+    "MORTSTAT":     (16, 16),  # 0 alive, 1 deceased
+    "UCOD_LEADING": (17, 19),  # underlying cause of death
+    "DIABETES":     (20, 20),
+    "HYPERTEN":     (21, 21),
+    "PERMTH_INT":   (43, 45),  # months of follow-up from interview
+    "PERMTH_EXM":   (46, 48),  # months of follow-up from exam
+}
 
 # NHANES file names per cycle (none means not measured)
 DATASETS = {

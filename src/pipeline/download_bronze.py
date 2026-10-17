@@ -11,7 +11,7 @@ import csv
 from datetime import datetime
 
 from src.config.paths import BRONZE, BRONZE_MANIFEST
-from src.config.sources import CYCLES, DATASETS, PDF_DOCS, NHANES_URL, MORTALITY_URL
+from src.config.sources import CYCLES, DATASETS, PDF_DOCS, NHANES_URL, MORTALITY_FILE, MORTALITY_URL
 from src.utils.data_download import download
 from src.utils.nhanes import cycle_label
 
@@ -45,12 +45,11 @@ def build_jobs():
 
     # Mortality
     for year in CYCLES:
-        url = MORTALITY_URL.format(cycle=cycle_label(year))
         jobs.append({
             "dataset": "MORT",
             "cycle": cycle_label(year),
-            "url": url,
-            "dest": BRONZE / cycle_label(year) / url.split("/")[-1],
+            "url": MORTALITY_URL.format(cycle=cycle_label(year)),
+            "dest": BRONZE / cycle_label(year) / MORTALITY_FILE.format(cycle=cycle_label(year)),
         })
 
     return jobs
