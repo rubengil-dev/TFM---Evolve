@@ -28,7 +28,7 @@ Al empezar cada sesión, lee enteros `CONTEXTO.md` y `ESTADO.md`. Si ESTADO tien
 ## Forma de trabajo
 - Primero hablamos el tema hasta estar de acuerdo. Después lo implementas entero del tirón y al final resumes en pocas líneas qué has hecho, como un dev junior a su jefe de proyecto.
 - Análisis exploratorio y modelado: en notebooks, pero la lógica reutilizable (carga de datos, features, modelo, parser) va a módulos de código, no se queda solo en el notebook.
-- Resultados del modelo (C-index, calibración, comparativas por subconjuntos de variables) siempre con la semilla y la partición indicadas, para que sean reproducibles en la memoria del TFM.
+- Resultados del modelo (C-index, calibración, comparativas por subconjuntos de variables) siempre con la semilla y la partición indicadas, para que sean reproducibles en la demo y en el repositorio.
 - Pruebas: las ejecutas tú (tests, scripts, servidor local + peticiones). Lo visual (pantallas, sensación de uso en móvil) no lo puedes juzgar bien: déjame en ESTADO una lista corta "Pendiente de probar yo" y lo pruebo.
 - Cierre de sesión: cuando diga "cerramos", "actualiza", "hemos terminado por hoy" o algo similar:
   1. Haz un test rápido solo de lo nuevo, no de todo el proyecto, siguiendo el punto anterior.

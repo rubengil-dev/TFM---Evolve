@@ -3,21 +3,25 @@
 ## 1. Qué es
 TFM del máster de Data Science e IA de EVOLVE. La idea elegida (de las 4 de `Docs/Entregas/01_ideas_producto.md`) es la **Idea 4: calculadora de edad biológica a partir de una analítica**.
 
-Se evalúa el producto completo, no solo el modelo: tiene que demostrar que ML/DL permite crear un producto usable por usuarios finales no técnicos.
-Nota = modelo sólido + UX/front cuidado + producto desplegado.
+Evaluación: no hay memoria escrita. Se evalúa el repo completo, igual que un usuario evalúa una app: por su funcionalidad y su precisión.
 
 ## 2. El producto
 Calculadora web gratuita, sin registro ni captura de email, que estima la edad biológica a partir de una analítica de sangre real.
 
+Usuario objetivo: personas sin formación médica que la usan desde casa. Se accede con un enlace a una web pública, sin instalar nada. Interfaz en español.
+
 Flujo: **subir PDF → revisar/corregir los datos extraídos → ver resultado**.
 
 El resultado muestra:
-- Edad biológica estimada y diferencia con la edad cronológica.
-- Los marcadores que más influyen en el resultado, explicados en lenguaje llano.
-- Nivel de fiabilidad según los datos aportados.
-- Aviso de que no es consejo médico ni diagnóstico.
+- Edad biológica estimada ± X años, con X según la precisión de cada caso (menor si faltan datos), y la diferencia con la edad cronológica.
+- Los mejores y los peores parámetros del usuario, en tablas y explicados en lenguaje llano.
+- Si la edad biológica supera la cronológica por encima de un umbral: recomendación de revisar la analítica con su médico.
+- Aviso asimétrico: salir por encima es señal para consultar, pero salir bien no significa estar sano.
+- Aviso de que no es consejo médico ni diagnóstico. No se dan recomendaciones (suplementos, tratamientos…), solo observaciones de los datos.
 
-Datos opcionales que el usuario puede añadir para afinar (nunca obligatorios): tensión arterial, composición corporal, capacidad aeróbica (VO2 max o su mejor aproximación).
+Edad y sexo: se extraen del PDF si vienen; si no, se piden al usuario. Solo adultos, dentro del rango de edad de los datos de entrenamiento.
+
+Datos opcionales que el usuario puede añadir para afinar (nunca obligatorios): tensión arterial, composición corporal, capacidad aeróbica (VO2 max o su mejor aproximación). Solo entran si existen en NHANES.
 
 Debe estar desplegada con URL pública para que el profesor la pruebe sin instalar nada, dentro de los límites de los planes gratuitos de hosting.
 
@@ -29,22 +33,23 @@ Debe estar desplegada con URL pública para que el profesor la pruebe sin instal
 
 ## 3. El modelo
 - No existe una etiqueta de "edad biológica real", así que no se predice directamente. Se entrena un **modelo de supervivencia** que estima riesgo de mortalidad a partir de los biomarcadores, y ese riesgo se traduce a una **edad equivalente** (la edad a la que la población media tiene ese mismo riesgo), al estilo PhenoAge. El usuario solo ve su edad biológica.
-- Datos: **NHANES con mortalidad enlazada** (Linked Mortality Files del NCHS).
+- Datos: **NHANES con mortalidad enlazada** (Linked Mortality Files del NCHS). Se acepta la población de EE. UU. como referencia: lo que es saludable allí se asume saludable aquí.
 - Baseline publicado de referencia: **PhenoAge** (Levine et al., 2018).
 - Features: intersección entre lo que hay en NHANES y lo que aparece en analíticas habituales españolas, más datos fáciles de aportar (edad, sexo, peso, altura).
-- **Requisito clave**: las analíticas no traen siempre los mismos parámetros. El modelo debe funcionar con conjuntos variables de datos, con un **mínimo viable de variables** definido, y debe mostrar al usuario cuánta fiabilidad tiene su resultado según lo que ha aportado.
+- **Requisito clave**: las analíticas no traen siempre los mismos parámetros. Si falta algún dato, se calcula igualmente con menos fiabilidad; si faltan demasiados, se avisa de que no se puede calcular. El umbral (mínimo viable de variables) se fija con los datos del modelo.
 - **Baseline clásico primero**; deep learning solo si mejora de forma justificable.
 - Evaluación con métricas de supervivencia (C-index, calibración) y también con distintos subconjuntos de variables, para saber cuánto se pierde según lo que falte.
 
 ## 4. Pipeline de la app
-1. Extracción de texto del PDF (valorar OCR para PDFs escaneados).
+1. Extracción de texto del PDF digital. OCR y fotos quedan fuera del MVP.
 2. Normalización de nombres de parámetros (glucosa / gluc / GLU…) y de unidades.
 3. Pantalla de revisión donde el usuario corrige valores o los introduce a mano.
 4. Modelo → riesgo de mortalidad → edad biológica.
 
-Formato: solo PDF por ahora; Word se valorará si resulta común.
+Formato: PDF. Word solo si se comprueba que algún laboratorio entrega analíticas en Word.
 
 ## 5. Front y UX (parte evaluada)
+- Prioridad de la UX sobre afinar el modelo: el modelo es fácil de iterar, una UX mal planteada obliga a rehacerla.
 - Usable por cualquier persona: flujo corto, lenguaje claro sin jerga, responsive y pensado para móvil.
 - Estados de carga y errores de parseo comprensibles y accionables (qué ha fallado y qué puede hacer el usuario).
 - Resultado explicado de forma sencilla y honesta.
@@ -61,9 +66,11 @@ Son datos de salud (categoría especial en el RGPD):
 ## 8. Decisiones tomadas
 - Idea 4 elegida como TFM.
 - Enfoque: supervivencia → edad equivalente, no regresión directa de edad.
-- Datos de entrenamiento: NHANES con mortalidad enlazada; baseline PhenoAge.
-- Producto gratuito, sin registro, sin almacenar datos.
-- Entrada: PDF de analítica, con pantalla de revisión obligatoria antes del cálculo.
+- Datos de entrenamiento: NHANES con mortalidad enlazada; baseline PhenoAge. Población de EE. UU. aceptada como referencia.
+- Producto gratuito, sin registro, sin almacenar datos, web pública en español para usuarios sin formación médica.
+- Entrada: PDF digital (sin OCR en el MVP), con pantalla de revisión obligatoria antes del cálculo.
+- Resultado: edad ± margen según precisión, mejores/peores parámetros, remisión al médico por encima de un umbral, sin recomendaciones.
 - Clásico antes que deep learning.
+- Sin recorte de alcance de momento.
 
 Las decisiones aún abiertas están en `ESTADO.md`.
