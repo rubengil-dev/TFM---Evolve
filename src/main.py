@@ -4,12 +4,13 @@ Data pipeline:
 """
 
 # Imports
-from src.pipeline import download_bronze, build_raw_silver
+from src.pipeline import download_bronze, build_raw_silver, build_clean_silver
 
 
 def main():
     download_bronze.run()
     build_raw_silver.run()
+    build_clean_silver.run()
 
 
 if __name__ == "__main__":

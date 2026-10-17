@@ -28,7 +28,7 @@ def read_xpt(path):
     numeric = table.select_dtypes("number").columns
     table[numeric] = table[numeric].mask(table[numeric].abs() < 1e-70, 0)
     table["SEQN"] = table["SEQN"].astype(int)
-    return table
+    return table.copy()  # defragment
 
 
 def read_mortality(path):

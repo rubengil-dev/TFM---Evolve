@@ -1,10 +1,10 @@
 """
-NHANES variable aliases:
-    - Same measure and unit, different name depending on the cycle
-    - Old name → name used in most cycles
-    - Questionnaires not included: a new code usually means a new question
+Variable names:
+    - RENAMES: NHANES aliases between cycles (Bronze → Silver raw)
+    - CLEAN_NAMES: NHANES names → readable names (Silver raw → Silver clean)
 """
 
+# Aliases Renaming For Cycle Variation
 RENAMES = {
     # Biochemistry (2001-2002)
     "LBDSAPSI": "LBXSAPSI",  # alkaline phosphatase (U/L)
@@ -31,4 +31,72 @@ RENAMES = {
 
     # Bone alkaline phosphatase (2001-2002)
     "LBDBAP":   "LBXBAP",    # ug/L
+}
+
+# Variable Renaming For Understanding
+CLEAN_NAMES = {
+    # Identification and outcome
+    "SEQN":         "seqn",
+    "MORTSTAT":     "death",              # 0 alive, 1 deceased
+    "PERMTH_EXM":   "follow_up_months",   # from exam
+    "UCOD_LEADING": "death_cause",        # NCHS leading cause recode
+
+    # Survey design
+    "SDMVPSU":      "psu",
+    "SDMVSTRA":     "strata",
+
+    # Demographics
+    "RIDAGEYR":     "age",                # years
+
+    # Blood count
+    "LBXWBCSI":     "leukocytes",         # 10^3/uL
+    "LBXRBCSI":     "erythrocytes",       # 10^6/uL
+    "LBXHGB":       "hemoglobin",         # g/dL
+    "LBXHCT":       "hematocrit",         # %
+    "LBXMCVSI":     "mcv",                # fL
+    "LBXMCHSI":     "mch",                # pg
+    "LBXMC":        "mchc",               # g/dL
+    "LBXRDW":       "rdw",                # %
+    "LBXPLTSI":     "platelets",          # 10^3/uL
+    "LBXMPSI":      "mpv",                # fL
+    "LBXNEPCT":     "neutrophils_pct",    # %
+    "LBXLYPCT":     "lymphocytes_pct",    # %
+    "LBXMOPCT":     "monocytes_pct",      # %
+    "LBXEOPCT":     "eosinophils_pct",    # %
+    "LBXBAPCT":     "basophils_pct",      # %
+    "LBDNENO":      "neutrophils",        # 10^3/uL
+    "LBDLYMNO":     "lymphocytes",        # 10^3/uL
+    "LBDMONO":      "monocytes",          # 10^3/uL
+    "LBDEONO":      "eosinophils",        # 10^3/uL
+    "LBDBANO":      "basophils",          # 10^3/uL
+
+    # Biochemistry
+    "LBXSGL":       "glucose",            # mg/dL
+    "LBXSCR":       "creatinine",         # mg/dL
+    "LBXSUA":       "uric_acid",          # mg/dL
+    "LBDHDD":       "hdl",                # mg/dL
+    "LBXSASSI":     "ast",                # U/L
+    "LBXSATSI":     "alt",                # U/L
+    "LBXSGTSI":     "ggt",                # U/L
+    "LBXSAPSI":     "alkaline_phosphatase",  # U/L
+    "LBXSTB":       "bilirubin",          # mg/dL
+    "LBXSNASI":     "sodium",             # mmol/L
+    "LBXSKSI":      "potassium",          # mmol/L
+    "LBXSCLSI":     "chloride",           # mmol/L
+    "LBXSCA":       "calcium",            # mg/dL
+    "LBXSPH":       "phosphorus",         # mg/dL
+    "LBXSTP":       "total_protein",      # g/dL
+    "LBXSAL":       "albumin",            # g/dL
+    "LBXSIR":       "iron",               # ug/dL
+    "LBXSLDSI":     "ldh",                # U/L
+    "LBXSCK":       "cpk",                # U/L
+    "LBXGH":        "hba1c",              # %
+    "LBXVIDMS":     "vitamin_d",          # nmol/L
+    "LBXIN":        "insulin",            # uU/mL, fasting subsample
+
+    # Measures
+    "BMXWT":        "weight",             # kg
+    "BMXHT":        "height",             # cm
+    "BMXBMI":       "bmi",                # kg/m2
+    "BMXWAIST":     "waist",              # cm
 }

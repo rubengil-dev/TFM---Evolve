@@ -63,3 +63,27 @@ PDF_DOCS = {"DXX", "DXX_B", "DXX_C"}
 # Download settings
 RETRIES = 4
 TIMEOUT = 120  # seconds
+
+# Questionnaire codes
+ALCOHOL_UNIT_DAYS = {1: 52, 2: 12, 3: 1}    # ALQ120U (until 2016): Week, Month, Year
+ALCOHOL_DAYS_2017 = {                       # ALQ121 (2017) Drinking days per year
+    0: 0,     # never in the last year
+    1: 365,   # every day
+    2: 260,   # nearly every day
+    3: 182,   # 3-4 times a week
+    4: 104,   # 2 times a week
+    5: 52,    # once a week
+    6: 30,    # 2-3 times a month
+    7: 12,    # once a month
+    8: 9,     # 7-11 times in the last year
+    9: 4.5,   # 3-6 times in the last year
+    10: 1.5,  # 1-2 times in the last year
+}
+MISSING_CODES = {  # refused / don't know in numeric answers (yes/no answers only use codes 1 and 2)
+    "ALQ120Q": [777, 999],
+    "ALQ130":  [77, 99, 777, 999],
+    "PAD680":  [7777, 9999],
+    "DBD900":  [7777, 9999],
+    "SLD010H": [77, 99],
+}
+MORE_THAN_21_MEALS = 5555  # DBD900 code, taken as 22

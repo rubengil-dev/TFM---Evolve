@@ -1,15 +1,15 @@
 # Estado
 
 ## PRÓXIMA SESIÓN
-1. Entrega 02. Hecho Silver raw. Siguiente: notebook de exploración sobre `raw.parquet` → elegir variables juntos (criterio por hablar antes de proponer lista) → Silver `clean` → Gold → muestra pequeña → documento `02_datos_y_preparacion.md` (lo que pide el enunciado, en Pendiente).
+1. Entrega 02. Hechos Silver raw, exploración y Silver clean. Siguiente: plantear Gold juntos (qué hace antes de escribirlo) → muestra pequeña → documento `02_datos_y_preparacion.md` (lo que pide el enunciado, en Pendiente).
 
 ## CONSTRUIDO
 
 ### Estructura del repo
 - `Docs/Entregas/`: entregas. Hecha la 01 (`01_ideas_producto.md`, 4 ideas; elegida la 4).
 - `.claude/`: `CLAUDE.md` (cómo trabajar), `CONTEXTO.md` (decisiones de fondo), `ESTADO.md` (este), `HISTORICO.md` (registro por sesión), `ESTILO.md` (mi estilo de código, portable a otros proyectos).
-- Entorno `.venv` (Python 3.11.9) con pandas, numpy, pyarrow, requests, matplotlib e ipykernel; `requirements.txt` generado con `pip freeze`.
-- `notebooks/`: vacía.
+- Entorno `.venv` (Python 3.11.9) con pandas, numpy, pyarrow, requests, matplotlib, ipykernel, lifelines (modelos de supervivencia) y nbformat/nbclient (ejecutar notebooks); `requirements.txt` generado con `pip freeze`.
+- `notebooks/01_exploration_raw.ipynb`: exploración de Silver raw (ejecutado, con resultados guardados). No importa nada de `src/`.
 - `data/` (ignorada en git): `01_bronze/`, `02_silver/`, `03_gold/`. Numeradas para que el orden alfabético sea el del proceso.
 - `src/`:
   - `main.py`: punto de entrada del pipeline, llama a cada `run()` en orden. Desde la raíz: `.venv/Scripts/python -m src.main`. Es el único con el bloque `if __name__ == "__main__"`.
@@ -19,8 +19,11 @@
   - `utils/nhanes.py`: `cycle_label` (1999 → `1999_2000`).
   - `pipeline/download_bronze.py`: `run()` = lista de ficheros → descarga lo que falta → manifiesto → resumen.
   - `pipeline/build_raw_silver.py`: `run()` = por ciclo, unir ficheros → filtrar población → renombrar alias; después apilar → guardar → resumen.
-  - `config/study.py`: parámetros del estudio (edad 18-79).
-  - `config/renames.py`: alias de variables de laboratorio entre ciclos (misma medida y unidad, otro nombre). Los cuestionarios no se renombran aquí.
+  - `pipeline/build_clean_silver.py`: `run()` = población → correcciones CDC → códigos "no sabe/no contesta" → variables (renombradas, derivadas, tensión, cuestionarios, pesos) → guardar → resumen.
+  - `config/study.py`: parámetros del estudio (edad 18-79, ayuno mínimo 8 h, respuestas de frecuencia de alcohol).
+  - `config/renames.py`: `RENAMES` (alias de laboratorio entre ciclos; los cuestionarios no se renombran) y `CLEAN_NAMES` (nombre NHANES → nombre legible, con unidades: sirve de diccionario de datos).
+  - `config/corrections.py`: ecuaciones de corrección de la CDC (creatinina 1999-2000 y 2005-2006; 13 analitos de 2017-2018 por cambio de analizador).
+  - `config/sources.py`: además, códigos de los cuestionarios (días de alcohol por respuesta, códigos de "no sabe/no contesta" por variable).
   - `utils/nhanes.py`: además de `cycle_label`, `read_xpt` (SEQN entero, ceros falsos de SAS → 0), `read_mortality` (ancho fijo, posiciones en `sources.py`) y `dxa_average_imputations`.
 
 Reglas de código: cada archivo gestiona sus imports; una función va a `utils` (un archivo por tema) cuando no es específica del paso; las específicas se quedan en el paso, con nombres claros para que `run()` se lea como un índice. Las iteraciones se hacen en notebooks; los `.py` son el código definitivo.
@@ -47,12 +50,33 @@ Reglas de código: cada archivo gestiona sus imports; una función va a `utils` 
 - Unión: base = participantes de DEMO. Columnas repetidas entre ficheros: si coinciden (admitiendo redondeo), se rellena y no se repite; si no, `NOMBRE_FICHERO`. Ahora mismo no queda ninguna repetida (el peso de ayunas de 2003-2004 venía redondeado distinto en dos ficheros). DXA 1999-2006: media de las 5 imputaciones.
 - Comprobado: SEQN único, edad 18-79, renombres funcionando (HDL, creatinina, vitamina D y orina con datos en todos sus ciclos).
 
-### Para Silver clean / Gold
-- 2.253 personas (~4%) solo hicieron la entrevista en casa (cuestionarios) y no fueron al examen: sin analítica ni medidas. Decidido: fuera en la limpieza.
-- DXA 2011-2018 solo en ~50% (en esos ciclos se hizo a 8-59 años). VO2 max solo ~28% (1999-2004, 12-49 años).
-- Glucosa, insulina, TG y LDL solo en el subgrupo de ayunas, con su propio peso muestral.
-- Cuestionarios con códigos que cambian entre ciclos: armonizar revisando cada codebook.
-- En el modelo: el seguimiento corto de los últimos ciclos se trata como censura, sin repesar. Hay que usar los pesos muestrales de NHANES.
+### Exploración de raw (notebook 01)
+- Criterio de variables acordado: todo lo de una analítica de rutina española, lo que se pide a menudo (p. ej. vitamina D), lo que el usuario sabe sin pensar (edad, sexo, peso, talla) y un cuestionario de ~10 preguntas de botones (tabaco, alcohol x2, actividad, sedentarismo, sueño, comida rápida). Sin etnia. VO2 max y DXA, probablemente fuera (el usuario no los sabe). Entre variables con correlación > 0,8-0,85, solo una.
+- 76 candidatas mirando cobertura, distribuciones, saltos entre ciclos, correlaciones y Cox por variable ajustado por edad y sexo.
+- Población: 50.969 personas y 5.808 defunciones tras quitar 2.253 sin examen y 1.587 embarazadas (exclusión decidida: analítica alterada).
+- Cobertura: analítica general ~93-95% en todos los ciclos; subgrupo en ayunas (glucosa plasmática, LDL, TG, insulina) ~45%; CPK solo 2011-2018.
+- Parejas con r ≥ 0,8: colesterol total de los dos ficheros (0,98), TG con y sin ayuno (0,98), hemoglobina-hematocrito (0,96), glucosa con y sin ayuno (0,93), neutrófilos-linfocitos % (−0,93), leucocitos-neutrófilos (0,91), colesterol total-LDL (0,91), IMC-cintura (0,91), VCM-HCM (0,90), peso-IMC/cintura, eosinófilos %-absolutos, hematíes-hematocrito.
+- Saltos entre ciclos (>15% en la mediana): fosfatasa alcalina y LDH más altas en 1999-2000 y 2017-2018, urea en 2017-2018 (posible cambio de analizador); bilirrubina y basófilos son artefacto de valores muy redondeados.
+- Asociación con mortalidad (orientativa) coherente: PCR, albúmina (protectora), albúmina en orina, RDW, vitamina D (protectora), fosfatasa alcalina, GGT, glucosa, HbA1c, creatinina. VO2 max y % grasa DXA no significativos (pocas defunciones). LDL sale protector (causalidad inversa conocida).
+
+### Silver clean
+- `data/02_silver/clean.parquet`: 50.969 personas, 5.808 defunciones, 72 columnas. Sin examen y embarazadas fuera.
+- Decisiones aplicadas:
+  - Colesterol total: una sola columna (fichero de lípidos, rellenado con bioquímica). LDL fuera (calculado con Friedewald, solo en ayunas, causalidad inversa).
+  - Glucosa: suero, todas las personas (el ayuno apenas cambia la mediana). Triglicéridos: solo con ayuno ≥ 8 h (51%).
+  - PCR en mg/L en una columna (estándar hasta 2010 + ultrasensible desde 2015). Urea = BUN × 2,14. Cociente albúmina/creatinina en orina en mg/g (coincide con el de NHANES).
+  - Correcciones CDC aplicadas y comprobadas (creatinina 1999-2000 de 0,70 a 0,86; fosfatasa alcalina y LDH de 2017-2018 alineadas con el resto).
+  - Tensión: media de hasta 4 lecturas; diastólica 0 → vacío.
+  - Cuestionarios con respuestas de botón: tabaco (never/former/current), alcohol (never/less_than_weekly/weekly/daily + bebidas por día, 0 si never), actividad (sedentary/moderate/intense), horas sentado, comidas de comida rápida/semana, horas de sueño. Preguntas saltadas → "never"/0.
+  - Pesos combinados para 10 ciclos (`weight_exam`, `weight_fasting`), suman ~212 millones.
+  - VO2 max y DXA fuera. No se recortan extremos ni se rellenan huecos (eso es Gold).
+- Se mantienen las dos variables de cada pareja correlacionada (para las ecuaciones de relleno de la app); Gold elige cuál entra al modelo.
+- Limitaciones vistas: fosfatasa alcalina y LDH más altas en 1999-2000 (sin ecuación CDC); urea algo más alta en 2017-2018 incluso corregida; actividad física con salto en 2007 por el cambio de cuestionario (intensa 37% → 22%); alcohol sin dato para 18-19 años en 1999-2006 (cuestionario solo para mayores de 20).
+
+### Para Gold
+- Una variable por pareja: hemoglobina (no hematocrito), linfocitos % (no neutrófilos %), leucocitos (no neutrófilos absolutos), colesterol total + HDL (no LDL), IMC (no cintura ni peso), VCM (no HCM).
+- DXA y VO2 max ya fuera. Glucosa e insulina: mirar si insulina (solo ayunas) compensa.
+- En el modelo: el seguimiento corto de los últimos ciclos se trata como censura, sin repesar. Hay que usar los pesos muestrales.
 
 ## PENDIENTE
 
@@ -74,6 +98,11 @@ Ideas ya habladas para el documento: NHANES es de dominio público y viene desid
 - Conseguir analíticas de ejemplo de distintos laboratorios españoles para probar el parser (tengo PDFs propios para `private/`).
 - Preguntar al profesor si los notebooks deben quedarse en el repo final.
 - Ruta de entregas: el enunciado pide `docs/entregas/` y el repo usa `Docs/Entregas/` (en GitHub son rutas distintas).
+
+### Notas para la app
+- Relleno desde la pareja: si el usuario trae la variable "pareja" y no la que usa el modelo (p. ej. hematocrito sin hemoglobina), estimarla con una ecuación sacada de NHANES. Solo para parejas con correlación alta.
+- El filtrado glomerular (CKD-EPI) suele venir en las analíticas españolas: no es variable del modelo (redundante con creatinina, edad y sexo), pero el parser puede usarlo para recuperar la creatinina si falta.
+- Triglicéridos: el modelo se entrena con valores en ayunas; la analítica española es en ayunas. Mejora futura: usar también los valores sin ayuno corrigiéndolos.
 
 ### Decisiones abiertas
 - Variables concretas del modelo y mínimo viable de variables (con qué datos faltantes se deja de calcular).

@@ -12,6 +12,10 @@ Una entrada por sesión, la más reciente arriba. Qué se hizo, decisiones con s
 - Reorganizados los archivos de Claude: CONTEXTO solo con decisiones de fondo, ESTADO en tres secciones, este HISTORICO y ESTILO (estilo de código portable).
 - Silver raw: unir ficheros por ciclo → filtrar 18-79 elegibles → renombrar alias de laboratorio → apilar. 54.809 personas, 6.271 defunciones, 993 columnas. Se decidió renombrar antes de apilar (no apilar columnas medio vacías) y no renombrar cuestionarios a ciegas.
 - Incidencias: la flecha `→` en un `print` rompe la consola de Windows (cp1252); el peso de ayunas de 2003-2004 salía duplicado por redondeo distinto entre ficheros (corregido comparando con tolerancia).
+- Commits: `78cf2f9` (archivos de Claude), `cee68d2` (Silver raw).
+- Exploración (notebook 01): criterio de variables = analítica de rutina española + lo que se pide a menudo + lo que el usuario sabe + ~10 preguntas de botones. Embarazadas fuera. Una variable por pareja correlacionada en el modelo; la otra servirá en la app para rellenar.
+- Silver clean: 50.969 personas, 5.808 defunciones, 72 columnas. Correcciones oficiales de la CDC (creatinina 1999-2000 y 2005-2006, cambio de analizador en 2017-2018), triglicéridos solo en ayunas, LDL fuera, cuestionarios a respuestas de botón (preguntas saltadas = "nunca"), pesos combinados. VO2 max y DXA fuera.
+- Incidencia evitada: una lista global de códigos "no sabe" (7, 9…) habría borrado respuestas numéricas reales; se cambió a códigos por variable.
 - Commits: `2f7a0f3` (Bronze + estructura `src/`), merge a `main` y push.
 
 ## Antes del 2026-10-17 (reconstruido de git)
