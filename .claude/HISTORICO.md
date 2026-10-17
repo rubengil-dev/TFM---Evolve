@@ -16,6 +16,8 @@ Una entrada por sesión, la más reciente arriba. Qué se hizo, decisiones con s
 - Exploración (notebook 01): criterio de variables = analítica de rutina española + lo que se pide a menudo + lo que el usuario sabe + ~10 preguntas de botones. Embarazadas fuera. Una variable por pareja correlacionada en el modelo; la otra servirá en la app para rellenar.
 - Silver clean: 50.969 personas, 5.808 defunciones, 72 columnas. Correcciones oficiales de la CDC (creatinina 1999-2000 y 2005-2006, cambio de analizador en 2017-2018), triglicéridos solo en ayunas, LDL fuera, cuestionarios a respuestas de botón (preguntas saltadas = "nunca"), pesos combinados. VO2 max y DXA fuera.
 - Incidencia evitada: una lista global de códigos "no sabe" (7, 9…) habría borrado respuestas numéricas reales; se cambió a códigos por variable.
+- Commit: `2f401d7` (Silver clean, notebook, correcciones CDC).
+- Cierre: borrador de la Entrega 02 con notas por apartado, para no perder el contexto. Queda Gold, la muestra y redactar.
 - Commits: `2f7a0f3` (Bronze + estructura `src/`), merge a `main` y push.
 
 ## Antes del 2026-10-17 (reconstruido de git)

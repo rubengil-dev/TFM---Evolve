@@ -1,12 +1,17 @@
 # Estado
 
 ## PRÓXIMA SESIÓN
-1. Entrega 02. Hechos Silver raw, exploración y Silver clean. Siguiente: plantear Gold juntos (qué hace antes de escribirlo) → muestra pequeña → documento `02_datos_y_preparacion.md` (lo que pide el enunciado, en Pendiente).
+Entrega 02 a medias. Hecho: Bronze, Silver raw, notebook de exploración, Silver clean y un borrador del documento con notas por apartado (`Docs/Entregas/02_datos_y_preparacion.md`, sin commitear). Orden:
+1. Decidir la ruta de entregas (`docs/entregas/` que pide el enunciado vs. `Docs/Entregas/` del repo) antes de terminar el documento.
+2. Plantear Gold juntos antes de escribirlo. Ideas ya en "Para Gold": una variable por pareja, recorte de extremos (si procede), qué hacer con seguimiento 0 meses, columnas de resultado (meses, fallecido) y pesos.
+3. Escribir y ejecutar `pipeline/build_gold.py`.
+4. Muestra pequeña: ~100 filas del Gold en CSV, fuera de `data/` (ignorada en git).
+5. Redactar el documento a partir del borrador, con las cifras de Gold.
 
 ## CONSTRUIDO
 
 ### Estructura del repo
-- `Docs/Entregas/`: entregas. Hecha la 01 (`01_ideas_producto.md`, 4 ideas; elegida la 4).
+- `Docs/Entregas/`: entregas. Hecha la 01 (`01_ideas_producto.md`, 4 ideas; elegida la 4). Borrador de la 02 (`02_datos_y_preparacion.md`).
 - `.claude/`: `CLAUDE.md` (cómo trabajar), `CONTEXTO.md` (decisiones de fondo), `ESTADO.md` (este), `HISTORICO.md` (registro por sesión), `ESTILO.md` (mi estilo de código, portable a otros proyectos).
 - Entorno `.venv` (Python 3.11.9) con pandas, numpy, pyarrow, requests, matplotlib, ipykernel, lifelines (modelos de supervivencia) y nbformat/nbclient (ejecutar notebooks); `requirements.txt` generado con `pip freeze`.
 - `notebooks/01_exploration_raw.ipynb`: exploración de Silver raw (ejecutado, con resultados guardados). No importa nada de `src/`.
