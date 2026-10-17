@@ -1,9 +1,11 @@
 # Contexto del TFM
 
 ## 1. Qué es
-TFM del máster de Data Science e IA de EVOLVE. La idea elegida (de las 4 de `Docs/Entregas/01_ideas_producto.md`) es la **Idea 4: calculadora de edad biológica a partir de una analítica**.
+TFM del máster de Data Science e IA de EVOLVE. La idea elegida (de las 4 de `Docs/Entregas/01_ideas_producto.md`) es la **Idea 4: calculadora de edad biológica a partir de una analítica**. Sin recorte de alcance de momento.
 
-Evaluación: no hay memoria escrita. Se evalúa el repo completo, igual que un usuario evalúa una app: por su funcionalidad y su precisión.
+Evaluación: no hay memoria escrita. Se evalúa el producto completo (modelo + UX/front + despliegue con URL pública), igual que un usuario evalúa una app: por su funcionalidad y su precisión.
+
+Repo: https://github.com/rubengil-dev/TFM---Evolve (rama `main`).
 
 ## 2. El producto
 Calculadora web gratuita, sin registro ni captura de email, que estima la edad biológica a partir de una analítica de sangre real.
@@ -27,9 +29,9 @@ Debe estar desplegada con URL pública para que el profesor la pruebe sin instal
 
 ### Propuesta de valor (frente a lo que existe)
 - Sin introducir datos a mano: se sube el PDF y la app lee los valores.
-- Gratis de verdad: no es lead magnet ni parte de un funnel (la única calculadora revisada que aceptaba analíticas mandaba el resultado por email como puerta a un producto de pago).
+- Gratis de verdad: no es lead magnet ni parte de un funnel.
 - Resultado comprensible: una edad y una explicación, no una tabla de valores.
-- Mercado objetivo: analíticas de laboratorios españoles.
+- Mercado objetivo: españoles sin conocimientos médicos.
 
 ## 3. El modelo
 - No existe una etiqueta de "edad biológica real", así que no se predice directamente. Se entrena un **modelo de supervivencia** que estima riesgo de mortalidad a partir de los biomarcadores, y ese riesgo se traduce a una **edad equivalente** (la edad a la que la población media tiene ese mismo riesgo), al estilo PhenoAge. El usuario solo ve su edad biológica.
@@ -56,21 +58,14 @@ Formato: PDF. Word solo si se comprueba que algún laboratorio entrega analític
 
 ## 6. Privacidad
 Son datos de salud (categoría especial en el RGPD):
-- Minimizar el tratamiento y no almacenar nada.
+- Minimizar el tratamiento y no almacenar nada: la app procesa todo en memoria y lo descarta.
 - Informar al usuario de forma clara de qué se hace con sus datos.
 
 ## 7. Restricciones
 - Hosting en planes gratuitos: condiciona el tamaño del modelo, el uso de OCR en servidor y los arranques en frío.
-- Perfil del autor: bioquímico sin formación en ingeniería; el código, la arquitectura, el front y el despliegue necesitan apoyo y explicaciones en lenguaje llano.
 
-## 8. Decisiones tomadas
-- Idea 4 elegida como TFM.
-- Enfoque: supervivencia → edad equivalente, no regresión directa de edad.
-- Datos de entrenamiento: NHANES con mortalidad enlazada; baseline PhenoAge. Población de EE. UU. aceptada como referencia.
-- Producto gratuito, sin registro, sin almacenar datos, web pública en español para usuarios sin formación médica.
-- Entrada: PDF digital (sin OCR en el MVP), con pantalla de revisión obligatoria antes del cálculo.
-- Resultado: edad ± margen según precisión, mejores/peores parámetros, remisión al médico por encima de un umbral, sin recomendaciones.
-- Clásico antes que deep learning.
-- Sin recorte de alcance de momento.
+## 8. Entorno y organización del repo
+- Python 3.11 en un entorno `.venv` con `requirements.txt` generado con `pip freeze`. Motivo: es lo estándar, lo reproduce cualquiera (profesor incluido) y las plataformas de hosting leen `requirements.txt` directamente. La 3.11 tiene soporte hasta 2027 y todas las librerías la soportan; la 3.14 es demasiado nueva.
+- Carpetas: `notebooks/` (exploración y entregas parciales; son pruebas y puede que no lleguen al repo final), `src/` (código `.py` del producto), `data/` con capas `bronze/` (dato tal como llega de la fuente, nunca se modifica), `silver/` (limpio, unido y armonizado) y `gold/` (tabla final que consume el modelo).
 
-Las decisiones aún abiertas están en `ESTADO.md`.
+Todo lo de este archivo está decidido; lo abierto está en `ESTADO.md`.
