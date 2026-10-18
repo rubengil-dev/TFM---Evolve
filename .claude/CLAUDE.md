@@ -1,12 +1,12 @@
 # TFM: calculadora web de edad biológica
 
-Al empezar cada sesión, lee enteros `.claude/CONTEXTO.md` (qué es el proyecto y lo ya decidido) y `.claude/ESTADO.md` (punto actual y lo abierto). 
-    - Si ESTADO tiene una sección "PRÓXIMA SESIÓN", se empieza por ahí.
+Al empezar cada sesión, lee enteros `.claude/CONTEXTO.md` (qué es el proyecto y lo ya decidido) y `.claude/ESTADO.md` (punto actual y lo abierto). Si ESTADO tiene una sección "PRÓXIMA SESIÓN", se empieza por ahí.
 
 ## Archivos
 - `CONTEXTO.md`: estable, no se toca salvo que yo lo pida. Solo el qué y el porqué (producto, decisiones de fondo, restricciones), sin nombres de carpetas, archivos ni variables.
-- `ESTADO.md`: foto del punto actual, no un historial: si algo se prueba, falla y se arregla, solo queda el resultado final. Tres secciones: PRÓXIMA SESIÓN (por dónde empezar), CONSTRUIDO (estructura, qué hace cada pieza, detalles de lo hecho) y PENDIENTE (plazos, tareas, decisiones abiertas, problemas conocidos).
-- `HISTORICO.md`: una entrada breve por sesión (fecha, qué se hizo, decisiones con su motivo, incidencias, hashes de commit). Se escribe al cerrar, pero **no se lee** salvo que yo lo pida o haya que averiguar cuándo se rompió algo.
+- `ESTADO.md`: dónde estamos y qué queda. No es un historial ni un mapa del repo: la estructura, las dependencias y los detalles se ven en el código, y las cifras y lo hecho en cada sesión van a HISTORICO. Tres secciones: PRÓXIMA SESIÓN (por dónde empezar), CONSTRUIDO (fases terminadas, en pocas líneas) y PENDIENTE (plazos, tareas, decisiones abiertas, notas para la app, problemas conocidos).
+- `HISTORICO.md`: una entrada breve por sesión (fecha, qué se hizo, decisiones con su motivo, cifras clave, incidencias, hashes de commit). Se escribe al cerrar, pero **no se lee** salvo que yo lo pida o haya que averiguar cuándo se rompió algo.
+- `ESTILO.md`: mi estilo de código, portable a otros proyectos (ver "Estilo de código").
 - `docs/entregas/`: las entregas hechas no se tocan salvo petición explícita. Las nuevas puedes escribirlas, pero no se commitean sin mi revisión.
 - `data/` (NHANES, se descarga con script) y `private/` (analíticas reales) están ignoradas. Las analíticas reales nunca se suben al repo ni se pegan en ESTADO/CONTEXTO.
 
@@ -28,13 +28,14 @@ Antes de escribir o modificar código por primera vez en una sesión, lee `.clau
 ## Entorno
 - Python 3.11 en `.venv`: `py -3.11 -m venv .venv` y `.venv/Scripts/python -m pip install -r requirements.txt`.
 - Al añadir una librería: instalarla en `.venv` y regenerar con `pip freeze > requirements.txt`.
+- Pipeline de datos completo, desde la raíz: `.venv/Scripts/python -m src.main`.
 
 ## Cierre de sesión
 Cuando diga "cerramos", "actualiza", "hemos terminado por hoy" o similar:
 1. Test rápido solo de lo nuevo.
 2. Actualiza `ESTADO.md` y dime resumidamente qué has cambiado para que dé el OK.
-3. Si todo va bien, propón añadir la entrada de la sesión a `HISTORICO.md` con los hashes y commitéala.
-4. Después propón commit, merge si aplica y push a GitHub. Con mi OK, ejecútalo.
+3. Propón commit del trabajo, merge si aplica y push a GitHub. Con mi OK, ejecútalo.
+4. Escribe la entrada de la sesión en `HISTORICO.md` con los hashes del paso 3, y commitéala y súbela con el mismo OK.
 
 ## Git
 - Cambios sencillos sin riesgo: en la rama actual. Features, bugs o cualquier cosa con riesgo: rama nueva, que se fusiona a `main` al cerrar la sesión si todo va bien.
