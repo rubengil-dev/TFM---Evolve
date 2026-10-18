@@ -2,6 +2,15 @@
 
 Una entrada por sesión, la más reciente arriba. Qué se hizo, decisiones con su motivo, incidencias y commits. El detalle de cada cambio está en git (`git show <hash>`).
 
+## 2026-10-18: Gold y redacción de la Entrega 02
+- Entregas renombradas a `docs/entregas/` (lo que pide el enunciado; en GitHub las mayúsculas cuentan).
+- Silver clean: fuera también las personas sin ningún valor de laboratorio (2.474, 383 defunciones), que ayer se creía que ya estaban filtradas. Quedan 48.495 personas y 5.425 defunciones. Ficheros renombrados a `silver_raw`/`silver_clean` para que se vea la capa.
+- Gold (48.495 × 68): recuentos absolutos del hemograma en lugar de % (los % dependen unos de otros); insulina, CPK y hábitos dentro; 12 features derivadas (NLR, PLR, SII, no-HDL, TG/HDL, AST/ALT, globulinas, albúmina/globulina, urea/creatinina, CKD-EPI 2021 sin raza, HOMA-IR, presión de pulso). Fuera `weight_fasting`, `psu`, `strata`.
+- Decidido: en Gold solo fórmulas fijas; rellenar, recortar extremos, escalar y codificar van al preprocesado ajustado con train (recortar percentiles con todo el dataset filtraría el test). Las combinaciones lineales (total/HDL/no-HDL…) se guardan todas para elegir el juego en la fase de modelo. Seguimiento 0 → 0,1 meses. Sin puntuación de hábitos (pesos arbitrarios; el modelo los aprende).
+- Fórmulas de las features en `utils/features.py` para que la app use las mismas. La muestra para la entrega sale de un notebook aparte (no del pipeline), semilla 5.
+- Documento 02 redactado; apartado 1 rehecho tras revisión (imprescindible/deseable = qué datos conseguir, no qué trae el usuario). Documento y CSV de muestra sin commitear, pendientes de revisión.
+- Commits: `c241c83` (Gold, filtro de laboratorio, renombres), merge a `main` y push.
+
 ## 2026-10-17: Bronze y estructura del código
 - Decidido NHANES continuo 1999-2018 sin NHANES III: métodos de laboratorio y formato distintos, y 20 años de seguimiento bastan. El seguimiento corto de los últimos ciclos se trata como censura.
 - Script de descarga a Bronze. Primero se intentó descargar todo NHANES (scraping del catálogo): se paró porque el producto solo usa analítica y pocos datos más. Se pasó a una lista cerrada de ficheros.
