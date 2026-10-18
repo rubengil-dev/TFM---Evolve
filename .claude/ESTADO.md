@@ -1,8 +1,8 @@
 # Estado
 
 ## PRÓXIMA SESIÓN
-Gold hecho y en `main`. Entrega 02 a falta de mi revisión del documento (`docs/entregas/02_datos_y_preparacion.md`, apartado 1 reescrito: imprescindible/deseable a nivel de qué datos conseguir) y de la muestra `docs/entregas/02_gold_sample.csv`: ambos sin commitear. Orden:
-1. Revisar el documento; con el OK, commitear documento y muestra.
+Gold hecho y Entrega 02 completa en `main` (documento `docs/entregas/02_datos_y_preparacion.md` y muestra `docs/entregas/02_gold_sample.csv`, revisados). Orden:
+1. Entregar en Classroom el enlace al repo con el mensaje de qué revisar.
 2. Empezar la fase de modelo: estrategia de huecos, arquitectura (Cox primero) y elección entre variables correlacionadas.
 
 ## CONSTRUIDO
@@ -98,7 +98,7 @@ Reglas de código: cada archivo gestiona sus imports; una función va a `utils` 
 - Entrega final: diciembre de 2026, día por confirmar.
 
 ### Entrega 02 "Datos y preparación"
-- Documento y muestra hechos según el enunciado (5 apartados, muestra pequeña, `src.main` reproduce hasta Gold). El notebook de muestra está commiteado; documento y CSV, pendientes de mi revisión.
+- Documento y muestra hechos según el enunciado (5 apartados, muestra pequeña, `src.main` reproduce hasta Gold). Revisado y commiteado.
 
 ### Tareas
 - Revisión por mi parte de lo descargado en `data/01_bronze/`. Lo que sobre se quita de `DATASETS` en `sources.py`, no se borra a mano.

@@ -8,7 +8,7 @@ Una entrada por sesión, la más reciente arriba. Qué se hizo, decisiones con s
 - Gold (48.495 × 68): recuentos absolutos del hemograma en lugar de % (los % dependen unos de otros); insulina, CPK y hábitos dentro; 12 features derivadas (NLR, PLR, SII, no-HDL, TG/HDL, AST/ALT, globulinas, albúmina/globulina, urea/creatinina, CKD-EPI 2021 sin raza, HOMA-IR, presión de pulso). Fuera `weight_fasting`, `psu`, `strata`.
 - Decidido: en Gold solo fórmulas fijas; rellenar, recortar extremos, escalar y codificar van al preprocesado ajustado con train (recortar percentiles con todo el dataset filtraría el test). Las combinaciones lineales (total/HDL/no-HDL…) se guardan todas para elegir el juego en la fase de modelo. Seguimiento 0 → 0,1 meses. Sin puntuación de hábitos (pesos arbitrarios; el modelo los aprende).
 - Fórmulas de las features en `utils/features.py` para que la app use las mismas. La muestra para la entrega sale de un notebook aparte (no del pipeline), semilla 5.
-- Documento 02 redactado; apartado 1 rehecho tras revisión (imprescindible/deseable = qué datos conseguir, no qué trae el usuario). Documento y CSV de muestra sin commitear, pendientes de revisión.
+- Documento 02 redactado; apartado 1 rehecho tras revisión (imprescindible/deseable = qué datos conseguir, no qué trae el usuario). Revisado por mí y commiteado con la muestra al final de la sesión.
 - Commits: `c241c83` (Gold, filtro de laboratorio, renombres), merge a `main` y push.
 
 ## 2026-10-17: Bronze y estructura del código
