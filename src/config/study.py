@@ -16,3 +16,6 @@ ALCOHOL_FREQUENCY = {      # answer → maximum drinking days per year
     "weekly":           259,
     "daily":            366,
 }
+
+# Follow-up: Survival models need time > 0
+FOLLOW_UP_MIN = 0.1  # months

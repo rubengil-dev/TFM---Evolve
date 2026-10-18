@@ -3,7 +3,7 @@ Merging individual files from Bronze to one single big dataframe (Silver raw) wi
     1. Merge all files within a cycle by SEQN (mortality included, DXA averaged)
     2. Filtering by age using AGE_MIN-AGE_MAX (those eligible for mortality follow-up)
     3. Rename variable aliases so each variable has the same name in every cycle
-    4. Stacking cycles into data/02_silver/raw.parquet
+    4. Stacking cycles into data/02_silver/silver_raw.parquet
 """
 
 # Imports

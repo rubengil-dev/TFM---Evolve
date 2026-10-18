@@ -15,5 +15,6 @@ GOLD = DATA / "03_gold"
 
 # Outputs
 BRONZE_MANIFEST = BRONZE / "manifest.csv"
-SILVER_RAW = SILVER / "raw.parquet"
-SILVER_CLEAN = SILVER / "clean.parquet"
+SILVER_RAW = SILVER / "silver_raw.parquet"
+SILVER_CLEAN = SILVER / "silver_clean.parquet"
+GOLD_TABLE = GOLD / "gold.parquet"

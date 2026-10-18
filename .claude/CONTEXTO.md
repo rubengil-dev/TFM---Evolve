@@ -1,7 +1,7 @@
 # Contexto del TFM
 
 ## 1. Qué es
-TFM del máster de Data Science e IA de EVOLVE. La idea elegida (de las 4 de `Docs/Entregas/01_ideas_producto.md`) es la **Idea 4: calculadora de edad biológica a partir de una analítica**. Sin recorte de alcance de momento.
+TFM del máster de Data Science e IA de EVOLVE. La idea elegida (de las 4 de `docs/entregas/01_ideas_producto.md`) es la **Idea 4: calculadora de edad biológica a partir de una analítica**. Sin recorte de alcance de momento.
 
 Evaluación: no hay memoria escrita. Se evalúa el producto completo (modelo + UX/front + despliegue con URL pública), igual que un usuario evalúa una app: por su funcionalidad y su precisión.
 

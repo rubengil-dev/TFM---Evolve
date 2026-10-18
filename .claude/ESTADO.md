@@ -1,17 +1,15 @@
 # Estado
 
 ## PRÓXIMA SESIÓN
-Entrega 02 a medias. Hecho: Bronze, Silver raw, notebook de exploración, Silver clean y un borrador del documento con notas por apartado (`Docs/Entregas/02_datos_y_preparacion.md`, sin commitear). Orden:
-1. Decidir la ruta de entregas (`docs/entregas/` que pide el enunciado vs. `Docs/Entregas/` del repo) antes de terminar el documento.
-2. Plantear Gold juntos antes de escribirlo. Ideas ya en "Para Gold": una variable por pareja, recorte de extremos (si procede), qué hacer con seguimiento 0 meses, columnas de resultado (meses, fallecido) y pesos.
-3. Escribir y ejecutar `pipeline/build_gold.py`.
-4. Muestra pequeña: ~100 filas del Gold en CSV, fuera de `data/` (ignorada en git).
-5. Redactar el documento a partir del borrador, con las cifras de Gold.
+Gold hecho y en `main`. Entrega 02 a falta de mi revisión del documento (`docs/entregas/02_datos_y_preparacion.md`, apartado 1 reescrito: imprescindible/deseable a nivel de qué datos conseguir) y de la muestra `docs/entregas/02_gold_sample.csv`: ambos sin commitear. Orden:
+1. Revisar el documento; con el OK, commitear documento y muestra.
+2. Empezar la fase de modelo: estrategia de huecos, arquitectura (Cox primero) y elección entre variables correlacionadas.
 
 ## CONSTRUIDO
 
 ### Estructura del repo
-- `Docs/Entregas/`: entregas. Hecha la 01 (`01_ideas_producto.md`, 4 ideas; elegida la 4). Borrador de la 02 (`02_datos_y_preparacion.md`).
+- `docs/entregas/`: entregas. Hecha la 01 (`01_ideas_producto.md`, 4 ideas; elegida la 4). La 02 (`02_datos_y_preparacion.md`) redactada, con su muestra `02_gold_sample.csv`.
+- `notebooks/02_gold_sample.ipynb`: saca 100 filas de Gold (semilla 5) a `docs/entregas/02_gold_sample.csv` para la entrega. No es parte del pipeline; no importa nada de `src/`.
 - `.claude/`: `CLAUDE.md` (cómo trabajar), `CONTEXTO.md` (decisiones de fondo), `ESTADO.md` (este), `HISTORICO.md` (registro por sesión), `ESTILO.md` (mi estilo de código, portable a otros proyectos).
 - Entorno `.venv` (Python 3.11.9) con pandas, numpy, pyarrow, requests, matplotlib, ipykernel, lifelines (modelos de supervivencia) y nbformat/nbclient (ejecutar notebooks); `requirements.txt` generado con `pip freeze`.
 - `notebooks/01_exploration_raw.ipynb`: exploración de Silver raw (ejecutado, con resultados guardados). No importa nada de `src/`.
@@ -29,6 +27,10 @@ Entrega 02 a medias. Hecho: Bronze, Silver raw, notebook de exploración, Silver
   - `config/renames.py`: `RENAMES` (alias de laboratorio entre ciclos; los cuestionarios no se renombran) y `CLEAN_NAMES` (nombre NHANES → nombre legible, con unidades: sirve de diccionario de datos).
   - `config/corrections.py`: ecuaciones de corrección de la CDC (creatinina 1999-2000 y 2005-2006; 13 analitos de 2017-2018 por cambio de analizador).
   - `config/sources.py`: además, códigos de los cuestionarios (días de alcohol por respuesta, códigos de "no sabe/no contesta" por variable).
+  - `pipeline/build_gold.py`: `run()` = Silver clean → columnas de Gold + features derivadas → seguimiento 0 → 0,1 meses → guardar → resumen.
+  - `config/column_roles.py`: papel de cada columna de Gold (identificación, desenlace, predictores de Silver clean).
+  - `utils/features.py`: fórmulas de las features derivadas (compartidas con la futura app) y CKD-EPI 2021.
+  - `config/study.py`: además, `FOLLOW_UP_MIN` (0,1 meses).
   - `utils/nhanes.py`: además de `cycle_label`, `read_xpt` (SEQN entero, ceros falsos de SAS → 0), `read_mortality` (ancho fijo, posiciones en `sources.py`) y `dxa_average_imputations`.
 
 Reglas de código: cada archivo gestiona sus imports; una función va a `utils` (un archivo por tema) cuando no es específica del paso; las específicas se quedan en el paso, con nombres claros para que `run()` se lea como un índice. Las iteraciones se hacen en notebooks; los `.py` son el código definitivo.
@@ -51,7 +53,7 @@ Reglas de código: cada archivo gestiona sus imports; una función va a `utils` 
 - Huecos de la tabla verificados contra el catálogo oficial de la CDC. Revisado también el catálogo completo en busca de ficheros útiles. Descartados: ferritina (solo mujeres 12-49 años y niños), PSA (varones ≥40, 5 ciclos), TSH (5 ciclos), B12/folato/homocisteína/ApoB (cobertura irregular), fuerza de prensión, bioimpedancia, acelerómetro (pocos ciclos o no medibles en casa) y salud general autovalorada (subjetiva).
 
 ### Silver raw
-- `data/02_silver/raw.parquet` (24,6 MB): 54.809 personas (18-79 años, elegibles para mortalidad), 6.271 defunciones, 993 columnas, una fila por persona. Defunciones por ciclo de 1.268 (1999-2000) a 86 (2017-2018), por el seguimiento más corto.
+- `data/02_silver/silver_raw.parquet` (24,6 MB): 54.809 personas (18-79 años, elegibles para mortalidad), 6.271 defunciones, 993 columnas, una fila por persona. Defunciones por ciclo de 1.268 (1999-2000) a 86 (2017-2018), por el seguimiento más corto.
 - Unión: base = participantes de DEMO. Columnas repetidas entre ficheros: si coinciden (admitiendo redondeo), se rellena y no se repite; si no, `NOMBRE_FICHERO`. Ahora mismo no queda ninguna repetida (el peso de ayunas de 2003-2004 venía redondeado distinto en dos ficheros). DXA 1999-2006: media de las 5 imputaciones.
 - Comprobado: SEQN único, edad 18-79, renombres funcionando (HDL, creatinina, vitamina D y orina con datos en todos sus ciclos).
 
@@ -65,7 +67,7 @@ Reglas de código: cada archivo gestiona sus imports; una función va a `utils` 
 - Asociación con mortalidad (orientativa) coherente: PCR, albúmina (protectora), albúmina en orina, RDW, vitamina D (protectora), fosfatasa alcalina, GGT, glucosa, HbA1c, creatinina. VO2 max y % grasa DXA no significativos (pocas defunciones). LDL sale protector (causalidad inversa conocida).
 
 ### Silver clean
-- `data/02_silver/clean.parquet`: 50.969 personas, 5.808 defunciones, 72 columnas. Sin examen y embarazadas fuera.
+- `data/02_silver/silver_clean.parquet`: 48.495 personas, 5.425 defunciones, 72 columnas. Fuera: sin examen, embarazadas y sin ningún valor de laboratorio (2.474 personas, 383 defunciones).
 - Decisiones aplicadas:
   - Colesterol total: una sola columna (fichero de lípidos, rellenado con bioquímica). LDL fuera (calculado con Friedewald, solo en ayunas, causalidad inversa).
   - Glucosa: suero, todas las personas (el ayuno apenas cambia la mediana). Triglicéridos: solo con ayuno ≥ 8 h (51%).
@@ -78,10 +80,16 @@ Reglas de código: cada archivo gestiona sus imports; una función va a `utils` 
 - Se mantienen las dos variables de cada pareja correlacionada (para las ecuaciones de relleno de la app); Gold elige cuál entra al modelo.
 - Limitaciones vistas: fosfatasa alcalina y LDH más altas en 1999-2000 (sin ecuación CDC); urea algo más alta en 2017-2018 incluso corregida; actividad física con salto en 2007 por el cambio de cuestionario (intensa 37% → 22%); alcohol sin dato para 18-19 años en 1999-2006 (cuestionario solo para mayores de 20).
 
-### Para Gold
-- Una variable por pareja: hemoglobina (no hematocrito), linfocitos % (no neutrófilos %), leucocitos (no neutrófilos absolutos), colesterol total + HDL (no LDL), IMC (no cintura ni peso), VCM (no HCM).
-- DXA y VO2 max ya fuera. Glucosa e insulina: mirar si insulina (solo ayunas) compensa.
-- En el modelo: el seguimiento corto de los últimos ciclos se trata como censura, sin repesar. Hay que usar los pesos muestrales.
+### Gold
+- `data/03_gold/gold.parquet` (4,6 MB): 48.495 personas, 5.425 defunciones, 68 columnas. Una fila = una persona.
+- Columnas: identificación (`seqn`, `cycle`, `weight_exam`), desenlace (`follow_up_months`, `death`), edad y sexo, hemograma (12, recuentos absolutos, no %), bioquímica (27, insulina y CPK incluidas), IMC y tensión, hábitos (7) y 12 derivadas: `nlr`, `plr`, `sii`, `non_hdl`, `tg_hdl`, `ast_alt`, `globulin`, `albumin_globulin`, `urea_creatinine`, `egfr` (CKD-EPI 2021 sin raza), `homa_ir`, `pulse_pressure`.
+- Fuera de Gold: hematocrito, HCM, neutrófilos (% y absolutos; entran vía NLR/SII), resto de %, peso, talla, cintura, `weight_fasting`, `psu`, `strata`, `death_cause`, `fasting_hours`. Siguen en Silver clean para las ecuaciones de relleno de la app.
+- Seguimiento 0 meses (5 defunciones) → 0,1 meses.
+- Sin rellenar huecos, sin recortar extremos, sin escalar ni codificar (sexo y hábitos como texto): todo eso aprende de los datos y va al preprocesado, ajustado solo con train.
+- Se guardan a propósito variables que son combinación lineal de otras (colesterol total/HDL/no-HDL; proteínas/albúmina/globulinas; sistólica/diastólica/presión de pulso) para elegir el juego en la fase de modelo: en Cox no pueden entrar las tres.
+- Correlaciones de Spearman ≥ 0,8 de las derivadas: HOMA-IR-insulina 0,96, TG/HDL-triglicéridos 0,94, no-HDL-colesterol total 0,92, globulinas-albúmina/globulina −0,91, NLR-SII 0,85.
+- Cobertura < 90%: CPK 41%, insulina y HOMA-IR 47%, comida rápida 50%, triglicéridos y TG/HDL 54%, horas sentado 64%, sueño 73%, PCR 78%, alcohol 87%, vitamina D 89%.
+- Pipeline completo (sin descarga): ~45 s.
 
 ## PENDIENTE
 
@@ -90,19 +98,12 @@ Reglas de código: cada archivo gestiona sus imports; una función va a `utils` 
 - Entrega final: diciembre de 2026, día por confirmar.
 
 ### Entrega 02 "Datos y preparación"
-Lo que pide el enunciado:
-- Documento `docs/entregas/02_datos_y_preparacion.md` con 5 apartados: (1) qué datos necesita el producto (qué es una observación, imprescindibles vs. deseables, granularidad); (2) fuentes, acceso, cobertura, actualización, estabilidad y alternativa si la fuente falla; (3) licencia, privacidad y minimización; (4) flujo Bronze → Silver → Gold, dejando claro qué es cada fila del Gold y sus columnas principales; (5) riesgos y limitaciones en 3-5 líneas.
-- Muestra pequeña de los datos o instrucciones de acceso (nada de datasets grandes).
-- Script o notebook ordenado que reproduzca las transformaciones hasta el Gold (basta con `.py`, sin notebook espejo).
-- No hay que entrenar ningún modelo. Pensado para dos semanas: mejor pequeño y bien explicado que sobredimensionado.
-
-Ideas ya habladas para el documento: NHANES es de dominio público y viene desidentificado (la mortalidad pública está perturbada por el NCHS), así que no hay que anonimizar, solo minimizar variables. Alternativa si NHANES no estuviera disponible: UK Biobank (requiere solicitud y es de pago). En NHANES cada ciclo es una muestra independiente: una fila del Gold = una persona.
+- Documento y muestra hechos según el enunciado (5 apartados, muestra pequeña, `src.main` reproduce hasta Gold). El notebook de muestra está commiteado; documento y CSV, pendientes de mi revisión.
 
 ### Tareas
 - Revisión por mi parte de lo descargado en `data/01_bronze/`. Lo que sobre se quita de `DATASETS` en `sources.py`, no se borra a mano.
 - Conseguir analíticas de ejemplo de distintos laboratorios españoles para probar el parser (tengo PDFs propios para `private/`).
 - Preguntar al profesor si los notebooks deben quedarse en el repo final.
-- Ruta de entregas: el enunciado pide `docs/entregas/` y el repo usa `Docs/Entregas/` (en GitHub son rutas distintas).
 
 ### Notas para la app
 - Relleno desde la pareja: si el usuario trae la variable "pareja" y no la que usa el modelo (p. ej. hematocrito sin hemoglobina), estimarla con una ecuación sacada de NHANES. Solo para parejas con correlación alta.
@@ -110,7 +111,7 @@ Ideas ya habladas para el documento: NHANES es de dominio público y viene desid
 - Triglicéridos: el modelo se entrena con valores en ayunas; la analítica española es en ayunas. Mejora futura: usar también los valores sin ayuno corrigiéndolos.
 
 ### Decisiones abiertas
-- Variables concretas del modelo y mínimo viable de variables (con qué datos faltantes se deja de calcular).
+- Variables concretas del modelo (las candidatas están en Gold) y mínimo viable de variables (con qué datos faltantes se deja de calcular).
 - Arquitectura del modelo (Cox, modelos de árboles para supervivencia, DL…).
 - Estrategia para analíticas incompletas: imputación, un modelo por subconjunto de variables, modelos que toleren valores ausentes… Ojo: en NHANES los huecos van por ciclo (CRP, sueño, dieta), mientras que en la app dependen de cada usuario; un modelo que aprenda de los nulos podría confundir "falta el dato" con "es de tal época".
 - Modo avanzado con hábitos. Idea mía (no cerrada): dos pestañas arriba, con "simple" (solo subir analítica) por defecto y "avanzada" (cuestionario de botones + analítica). Así se calcula una sola vez y cada uno elige. Descartado de momento "primero simple y luego afinar": son dos procesos y da pereza.

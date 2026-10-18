@@ -1,6 +1,6 @@
 """
 Cleaning silver raw to silver clean: Filtering population and variables, cleaning process and readable names.
-    1. Population: allowing only population with exam done and not pregnant
+    1. Population: allowing only population with exam done, not pregnant and with lab results
     2. CDC corrections for laboratory method changes
     3. Variables:
         - Kept as they are, renamed (CLEAN_NAMES)
@@ -10,7 +10,7 @@ Cleaning silver raw to silver clean: Filtering population and variables, cleanin
         - Blood pressure: mean of readings
         - Questionnaires → form answers (skipped questions: never drinkers, never smokers)
         - Survey weights for the 10 cycles combined
-    4. Save into data/02_silver/clean.parquet
+    4. Save into data/02_silver/silver_clean.parquet
 """
 
 # Imports
@@ -49,9 +49,11 @@ def run():
 
 def filter_population(raw):
     """
-    Exam done (RIDSTATR = 2) and not pregnant (RIDEXPRG = 1).
+    Exam done (RIDSTATR = 2), not pregnant (RIDEXPRG = 1) and at least one lab value (CLEAN_NAMES starting with LB).
     """
-    return raw[(raw["RIDSTATR"] == 2) & (raw["RIDEXPRG"] != 1)].copy()
+    lab_columns = [name for name in CLEAN_NAMES if name.startswith("LB")]
+    has_lab = raw[lab_columns].notna().any(axis=1)
+    return raw[(raw["RIDSTATR"] == 2) & (raw["RIDEXPRG"] != 1) & has_lab].copy()
 
 
 def apply_corrections(raw):

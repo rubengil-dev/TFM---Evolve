@@ -7,7 +7,7 @@ Al empezar cada sesión, lee enteros `.claude/CONTEXTO.md` (qué es el proyecto 
 - `CONTEXTO.md`: estable, no se toca salvo que yo lo pida. Solo el qué y el porqué (producto, decisiones de fondo, restricciones), sin nombres de carpetas, archivos ni variables.
 - `ESTADO.md`: foto del punto actual, no un historial: si algo se prueba, falla y se arregla, solo queda el resultado final. Tres secciones: PRÓXIMA SESIÓN (por dónde empezar), CONSTRUIDO (estructura, qué hace cada pieza, detalles de lo hecho) y PENDIENTE (plazos, tareas, decisiones abiertas, problemas conocidos).
 - `HISTORICO.md`: una entrada breve por sesión (fecha, qué se hizo, decisiones con su motivo, incidencias, hashes de commit). Se escribe al cerrar, pero **no se lee** salvo que yo lo pida o haya que averiguar cuándo se rompió algo.
-- `Docs/Entregas/`: las entregas hechas no se tocan salvo petición explícita. Las nuevas puedes escribirlas, pero no se commitean sin mi revisión.
+- `docs/entregas/`: las entregas hechas no se tocan salvo petición explícita. Las nuevas puedes escribirlas, pero no se commitean sin mi revisión.
 - `data/` (NHANES, se descarga con script) y `private/` (analíticas reales) están ignoradas. Las analíticas reales nunca se suben al repo ni se pegan en ESTADO/CONTEXTO.
 
 ## Cómo explicarme las cosas
