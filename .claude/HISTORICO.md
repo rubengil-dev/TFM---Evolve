@@ -2,6 +2,14 @@
 
 Una entrada por sesión, la más reciente arriba. Qué se hizo, decisiones con su motivo, cifras clave, incidencias y commits. El detalle de cada cambio está en git (`git show <hash>`).
 
+## 2026-10-18 (2): limpieza de los archivos de Claude
+- Entrega 02 entregada en Classroom.
+- ESTADO reducido a punto actual, pendientes y prioridades: fuera el mapa del repo, la lista de librerías y las cifras (se ven en el código, en la Entrega 02 y en el notebook 01). Decisiones abiertas agrupadas en modelo / resultado / app / preguntas al profesor; las limitaciones de los datos pasan a problemas conocidos.
+- CONTEXTO: datos opcionales reducidos a la tensión (DXA y VO2 max descartados), fuera los nombres de archivos y la parte de organización del código (ya está en ESTILO). Añadidas decisiones de fondo: población, criterio de variables sin etnia, una variable por pareja correlacionada y preprocesado ajustado solo con train.
+- CLAUDE: nueva definición de ESTADO; cierre reordenado para que HISTORICO se escriba después del commit y lleve sus hashes; añadido el comando del pipeline.
+- HISTORICO: entrada del 10-17 en orden cronológico y hashes que faltaban (`dd85326`, `298008b`).
+- Commit: `75d4a1b`, en `main` y push.
+
 ## 2026-10-18: Gold y redacción de la Entrega 02
 - Entregas renombradas a `docs/entregas/` (lo que pide el enunciado; en GitHub las mayúsculas cuentan).
 - Silver clean: fuera también las personas sin ningún valor de laboratorio (2.474, 383 defunciones), que el día anterior se creía que ya estaban filtradas. Quedan 48.495 personas y 5.425 defunciones. Ficheros renombrados a `silver_raw`/`silver_clean` para que se vea la capa.
