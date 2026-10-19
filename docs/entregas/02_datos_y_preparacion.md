@@ -66,7 +66,7 @@ Una medición por persona más su seguimiento de mortalidad. Son 10 ciclos biena
 
 - **Datos personales:** vienen desidentificados de origen. Además, el NCHS perturba la versión pública de la mortalidad para evitar reidentificaciones. No hace falta anonimizar.
 
-- **Minimización:** de 993 variables descargadas, solo 68 llegan a Gold. No se usan etnia, ingresos, educación ni geografía. La edad se limita a 79 años porque NHANES agrupa las edades superiores.
+- **Minimización:** de 993 variables descargadas, solo 74 llegan a Gold. No se usan etnia, ingresos, educación ni geografía. La edad se limita a 79 años porque NHANES agrupa las edades superiores.
 
 - **Producto final:** una analítica es un dato de salud (categoría especial del RGPD). Se procesa en memoria, no se almacena nada y no hay registro ni email. Se informa al usuario de forma clara.
 
@@ -77,7 +77,7 @@ Una medición por persona más su seguimiento de mortalidad. Son 10 ciclos biena
 | **Bronze** | Ficheros tal como los publica la CDC, una carpeta por ciclo, con su nombre original | 400 files, ~419 MB |
 | **Silver raw** | Un único fichero (raw) fruto de combinar los 10 ficheros resultantes de unir los ficheros de cada ciclo unidos por persona (SEQN) | 54.809 ppl, 993 cols |
 | **Silver clean** | Silver raw limpio: filtrado por población de estudio, variables limpias y renombradas y unidades estandarizadas al sistema español | 48.495 ppl, 72 cols |
-| **Gold** | Silver clean pero restringiendo a variables candidatas a predictor, features derivadas y desenlace | 48.495 ppl, 68 cols |
+| **Gold** | Silver clean pero restringiendo a variables candidatas a predictor, features derivadas y desenlace. Es la única capa de la que leen el modelo y la app | 48.495 ppl, 74 cols |
 
 **Bronze → Silver raw**
 - Unión de unos 25 ficheros por ciclo más la mortalidad, partiendo de los participantes de demografía. Las columnas repetidas entre ficheros se rellenan entre sí si coinciden.
@@ -95,8 +95,8 @@ Una medición por persona más su seguimiento de mortalidad. Son 10 ciclos biena
 - Pesos muestrales combinados para los 10 ciclos, según la regla de la CDC.
 
 **Silver clean → Gold**
-- **De las variables muy correlacionadas (r > 0,8) entra una:** hemoglobina (no hematocrito), VCM (no HCM), leucocitos (no neutrófilos absolutos) e IMC (no peso ni cintura). Del hemograma se usan recuentos absolutos, no porcentajes. 
-    *NOTA*: Para el producto final, si el usuario incluye la variable descartada en vez de la seleccionada, el programa calculará la seleccionada en base a la descartada.
+- **Variables muy correlacionadas (r > 0,8):** se guardan las dos de cada pareja (hemoglobina-hematocrito, VCM-HCM, leucocitos-neutrófilos absolutos, IMC-peso/cintura). En la fase de modelo entrará una de cada pareja. Del hemograma se usan recuentos absolutos, no porcentajes.
+    *NOTA*: Para el producto final, si el usuario trae la variable que no entra al modelo en vez de la que sí, la app estimará la segunda a partir de la primera con una ecuación ajustada sobre Gold.
 - **Features derivadas**: cociente neutrófilos/linfocitos (NLR), plaquetas/linfocitos (PLR), índice inmunoinflamatorio sistémico (SII), colesterol no-HDL, TG/HDL, AST/ALT, globulinas, cociente albúmina/globulina, urea/creatinina, filtrado glomerular CKD-EPI 2021 (sin raza), HOMA-IR y presión de pulso.
 - Las 5 defunciones con 0 meses de seguimiento pasan a 0,1 meses, porque los modelos de supervivencia necesitan tiempo > 0.
     *NOTA*: Las features derivadas que son combinaciones lineales de otras (no-HDL, globulinas, presión de pulso) se dejan para probar cuáles hacen que el modelo prediga mejor.
@@ -111,9 +111,9 @@ Cada fila es una persona adulta con su analítica en la visita de examen y su de
 | Identificación | `seqn`, `cycle`, `weight_exam` | Trazabilidad, partición por ciclo, peso muestral en el entrenamiento |
 | Desenlace | `follow_up_months`, `death` | Variable objetivo del modelo de supervivencia |
 | Demografía | `age`, `sex` | Predictores, y edad para traducir el riesgo a edad biológica |
-| Hemograma (12) | leucocitos, hematíes, hemoglobina, VCM, CHCM, RDW, plaquetas, VPM, linfocitos, monocitos, eosinófilos, basófilos | Predictores |
+| Hemograma (15) | leucocitos, hematíes, hemoglobina, hematocrito, VCM, HCM, CHCM, RDW, plaquetas, VPM, neutrófilos, linfocitos, monocitos, eosinófilos, basófilos | Predictores |
 | Bioquímica (27) | glucosa, urea, creatinina, ácido úrico, colesterol total, HDL, triglicéridos, AST, ALT, GGT, fosfatasa alcalina, bilirrubina, Na, K, Cl, Ca, P, proteínas, albúmina, hierro, LDH, CPK, HbA1c, PCR, vitamina D, insulina, albúmina/creatinina en orina | Predictores |
-| Medidas (3) | IMC, tensión sistólica y diastólica | Predictores opcionales |
+| Medidas (6) | peso, talla, IMC, cintura, tensión sistólica y diastólica | Predictores opcionales |
 | Hábitos (7) | tabaco, frecuencia de alcohol, bebidas por día, actividad física, horas sentado, comida rápida, horas de sueño | Predictores del modo avanzado |
 | Derivadas (12) | `nlr`, `plr`, `sii`, `non_hdl`, `tg_hdl`, `ast_alt`, `globulin`, `albumin_globulin`, `urea_creatinine`, `egfr`, `homa_ir`, `pulse_pressure` | Predictores candidatos |
 

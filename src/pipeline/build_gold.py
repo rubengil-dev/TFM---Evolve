@@ -1,5 +1,5 @@
 """
-Building Gold from Silver clean: creates the table the model consumes, one row per person.
+Building Gold from Silver clean: creates the only table the model and the app consume, one row per person.
     1. Derived features (utils/features.py)
     2. Columns: identification, outcome, candidate predictors (config/column_roles.py) and derived features
     3. Follow-up of 0 months → FOLLOW_UP_MIN
