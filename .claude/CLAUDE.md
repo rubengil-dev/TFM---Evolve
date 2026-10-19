@@ -1,42 +1,28 @@
-# TFM: calculadora web de edad biológica
+# Qué hay en este archivo y cómo usarlo
+- **Contiene:** qué hacer al abrir un chat, el índice de archivos de `.claude/` y las reglas para mantenerlos.
+- **No contiene:** nada del proyecto ni de cómo trabajar conmigo.
+- **Se actualiza:** cuando se añade, se quita o se redefine un archivo de `.claude/`.
 
-Al empezar cada sesión, lee enteros `.claude/CONTEXTO.md` (qué es el proyecto y lo ya decidido) y `.claude/ESTADO.md` (punto actual y lo abierto). Si ESTADO tiene una sección "PRÓXIMA SESIÓN", se empieza por ahí.
+## Al abrir un chat
+1. Lee enteros `PAUTAS.md`, `CONTEXTO.md` y `ESTADO.md`.
+2. Si el primer mensaje no pide nada concreto, empieza por la sección "Próxima sesión" de `ESTADO.md`.
+3. Si pide otra cosa, recuérdame en una línea qué tocaba según `ESTADO.md` y sigue con mi petición. Pregunta antes de seguir solo si choca con algo: depende de algo aún pendiente, contradice una decisión de `DECISIONES.md` o cambia el plan de la próxima sesión.
 
-## Archivos
-- `CONTEXTO.md`: estable, no se toca salvo que yo lo pida. Solo el qué y el porqué (producto, decisiones de fondo, restricciones), sin nombres de carpetas, archivos ni variables.
-- `ESTADO.md`: dónde estamos y qué queda. No es un historial ni un mapa del repo: la estructura, las dependencias y los detalles se ven en el código, y las cifras y lo hecho en cada sesión van a HISTORICO. Tres secciones: PRÓXIMA SESIÓN (por dónde empezar), CONSTRUIDO (fases terminadas, en pocas líneas) y PENDIENTE (plazos, tareas, decisiones abiertas, notas para la app, problemas conocidos).
-- `HISTORICO.md`: una entrada breve por sesión (fecha, qué se hizo, decisiones con su motivo, cifras clave, incidencias, hashes de commit). Se escribe al cerrar, pero **no se lee** salvo que yo lo pida o haya que averiguar cuándo se rompió algo.
-- `ESTILO.md`: mi estilo de código, portable a otros proyectos (ver "Estilo de código").
-- `docs/entregas/`: las entregas hechas no se tocan salvo petición explícita. Las nuevas puedes escribirlas, pero no se commitean sin mi revisión.
-- `data/` (NHANES, se descarga con script) y `private/` (analíticas reales) están ignoradas. Las analíticas reales nunca se suben al repo ni se pegan en ESTADO/CONTEXTO.
+## Archivos de `.claude/`
 
-## Cómo explicarme las cosas
-- Hablamos en español.
-- Soy bioquímico: lo biomédico no hace falta explicármelo. Lo técnico (arquitectura, librerías, front, backend, hosting) en lenguaje llano, con opciones y una recomendación; si hace falta, pregúntame antes.
-- Avísame cuando una decisión técnica perjudique la UX, el alcance del TFM o los límites de los planes gratuitos de hosting.
+| Archivo | Para qué | Cuándo leerlo |
+|---|---|---|
+| `CLAUDE.md` | Arranque, índice de archivos y reglas para mantenerlos | Siempre (se carga solo) |
+| `PAUTAS.md` | Cómo trabajar conmigo | Siempre, al abrir el chat |
+| `CONTEXTO.md` | Qué es el proyecto, por qué y para qué | Siempre, al abrir el chat |
+| `ESTADO.md` | Fases hechas y pendientes, próxima sesión y lo abierto | Siempre, al abrir el chat |
+| `ESTILO.md` | Cómo me gusta el código | Antes de escribir o modificar código por primera vez en la sesión |
+| `TECNICO.md` | Cómo está hecho: repo, entorno, comandos, estructura, datos | Antes de tocar código o datos |
+| `DECISIONES.md` | Decisiones técnicas y metodológicas tomadas, con su porqué | Antes de trabajar en una fase, y siempre antes de cambiar algo ya decidido |
+| `HISTORICO.md` | Qué se hizo en cada sesión, con sus commits | Solo si lo pido o hay que averiguar cuándo se rompió algo |
 
-## Forma de trabajo
-- Primero hablamos el tema hasta estar de acuerdo. Después lo implementas entero del tirón y resumes en pocas líneas qué has hecho, como un dev junior a su jefe de proyecto.
-- Prioridad: MVP end-to-end funcional y desplegado antes de pulir cada pieza.
-- Notebooks (`notebooks/`) independientes del código: no importan nada de `src/`. Las funciones reutilizables se escriben completas en el notebook y se duplican en `src/`; si cambian, se cambian en los dos sitios.
-- Resultados del modelo (C-index, calibración, subconjuntos de variables) siempre con la semilla y la partición indicadas.
-- Pruebas: las ejecutas tú (tests, scripts, servidor local + peticiones). Lo visual no lo puedes juzgar bien: déjamelo en ESTADO como "Pendiente de probar yo".
-
-## Estilo de código
-Antes de escribir o modificar código por primera vez en una sesión, lee `.claude/ESTILO.md` y síguelo. Solo una vez por sesión, y no lo leas si la sesión es solo de debate o decisiones.
-
-## Entorno
-- Python 3.11 en `.venv`: `py -3.11 -m venv .venv` y `.venv/Scripts/python -m pip install -r requirements.txt`.
-- Al añadir una librería: instalarla en `.venv` y regenerar con `pip freeze > requirements.txt`.
-- Pipeline de datos completo, desde la raíz: `.venv/Scripts/python -m src.main`.
-
-## Cierre de sesión
-Cuando diga "cerramos", "actualiza", "hemos terminado por hoy" o similar:
-1. Test rápido solo de lo nuevo.
-2. Actualiza `ESTADO.md` y dime resumidamente qué has cambiado para que dé el OK.
-3. Propón commit del trabajo, merge si aplica y push a GitHub. Con mi OK, ejecútalo.
-4. Escribe la entrada de la sesión en `HISTORICO.md` con los hashes del paso 3, y commitéala y súbela con el mismo OK.
-
-## Git
-- Cambios sencillos sin riesgo: en la rama actual. Features, bugs o cualquier cosa con riesgo: rama nueva, que se fusiona a `main` al cerrar la sesión si todo va bien.
-- Commits y merges solo con mi OK. Mensajes breves.
+## Reglas para mantener los archivos
+- Cada dato vive en un solo archivo. Si encaja en dos, va al más específico y el otro no lo repite.
+- Cada archivo empieza con su bloque "Qué hay en este archivo y cómo usarlo". Lo que no cuadra con ese bloque no va en ese archivo.
+- Fuera de `TECNICO.md`, no se guarda lo que se saca rápido del código o de git.
+- Una decisión abierta vive en `ESTADO.md`. Cuando se cierra, sale de ahí y pasa a `DECISIONES.md`, o a `CONTEXTO.md` si cambia el qué o el porqué del proyecto.
