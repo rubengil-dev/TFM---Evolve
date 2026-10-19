@@ -35,7 +35,8 @@
 ## Limitaciones conocidas de los datos
 - Fosfatasa alcalina y LDH más altas en 1999-2000, sin ecuación oficial de corrección. Urea algo más alta en 2017-2018 incluso corregida.
 - Actividad física con salto en 2007 por el cambio de cuestionario.
-- Tabaco y alcohol sin dato para 18-19 años: tabaco en 1999-2012 y alcohol en 1999-2010 (el cuestionario de adultos solo se pasó a mayores de 20).
+- Tabaco de 18-19 años hasta 2012 sacado de las preguntas juveniles: hasta 2010 no distingue exfumadores.
+- Alcohol sin dato para 18-19 años en 1999-2010: el cuestionario de adultos solo se pasó a mayores de 20, y el juvenil solo existe en 2009-2010.
 - Insulina: armonizada, pero a igual IMC queda un salto de ~15% entre 2007-2008 y 2009-2010 que ninguna ecuación de la CDC explica.
 - Variables solo en parte de la muestra: subgrupo en ayunas (triglicéridos, insulina), CPK solo en 2011-2018 y PCR sin 2011-2014.
 - Últimos ciclos con pocas defunciones por su seguimiento corto.

@@ -65,6 +65,14 @@
 - **Decisión:** se rellenan con la respuesta implícita: quien nunca ha fumado o nunca ha bebido no ve las preguntas siguientes y queda como "never" (y 0 bebidas por día).
 - **Por qué:** el hueco no es un dato que falta, es una respuesta que ya se conoce; dejarlo vacío haría perder a todos los no fumadores y no bebedores.
 
+### ¿Cómo se completa el tabaco de los de 18-19 años hasta 2012?
+- **Decisión:** con las preguntas juveniles de NHANES. En 2011-2012, con los cigarrillos fumados en la vida (100 o más: fumador actual si fumó en el último mes; si no, exfumador). Hasta 2010, que no tiene esa pregunta: nunca lo probó o nunca fumó un cigarrillo entero → nunca; fumó 10 días o más del último mes → fumador actual; menos → nunca.
+- **Por qué:** el cuestionario de adultos solo se pasó a mayores de 20. En 2011-2012, que tiene las dos preguntas, la regla de los 10 días coincide en el 97% con la definición de adultos (100 cigarrillos). No detecta exfumadores, que a esa edad son muy pocos.
+
+### ¿Se completa el alcohol de los de 18-19 años?
+- **Decisión:** no. Queda sin dato en 1999-2010.
+- **Por qué:** solo hay cuestionario juvenil en 2009-2010 (278 personas, 2 defunciones), así que 1999-2008 seguiría vacío; y no encaja con el de adultos: pregunta por los últimos 30 días en vez del último año y no recoge bebidas por día.
+
 ### ¿En qué unidades?
 - **Decisión:** las del laboratorio español: urea (BUN × 2,14), PCR en mg/L (los dos ensayos en una columna) y cociente albúmina/creatinina en orina en mg/g.
 - **Por qué:** el usuario trae una analítica española, y así no hay que convertir al recibirla.
