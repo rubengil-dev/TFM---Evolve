@@ -12,8 +12,8 @@ OUTCOME_COLUMNS = ["follow_up_months", "death"]
 DEMOGRAPHICS = ["age", "sex"]
 
 BLOOD_COUNT = [
-    "leukocytes", "erythrocytes", "hemoglobin", "mcv", "mchc", "rdw", "platelets", "mpv",
-    "lymphocytes", "monocytes", "eosinophils", "basophils",
+    "leukocytes", "erythrocytes", "hemoglobin", "hematocrit", "mcv", "mch", "mchc", "rdw",
+    "platelets", "mpv", "neutrophils", "lymphocytes", "monocytes", "eosinophils", "basophils",
 ]
 
 BIOCHEMISTRY = [
@@ -23,7 +23,7 @@ BIOCHEMISTRY = [
     "chloride", "crp", "vitamin_d", "urine_acr", "insulin",
 ]
 
-MEASURES = ["bmi", "systolic_bp", "diastolic_bp"]
+MEASURES = ["weight", "height", "bmi", "waist", "systolic_bp", "diastolic_bp"]
 
 QUESTIONNAIRE = [
     "smoking", "alcohol_frequency", "alcohol_drinks", "physical_activity",
