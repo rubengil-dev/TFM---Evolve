@@ -11,7 +11,11 @@
 - Archivos de Claude rehechos en 8, cada uno con una función y una cabecera común: CLAUDE (arranque e índice), PAUTAS (cómo trabajar conmigo, con lo que sé), CONTEXTO, ESTADO, ESTILO, TECNICO, DECISIONES e HISTORICO. Revisados uno a uno; los cambios de `.claude/` se revisan ahora en el editor y se commitean con cada OK.
 - ESTILO: docstrings de función en una línea cuando caben, con los de `src/` ajustados; ejemplo de función principal.
 - Gold: entran las parejas correlacionadas (hematocrito, HCM, neutrófilos), peso, talla y cintura, porque Gold es la única capa de la que leen el modelo y la app. Entrega 02 y su muestra actualizadas.
-- Terminada el 2026-10-19. Commits: `75d4a1b`, `4b54c86` (primera limpieza), `237ca17` (CLAUDE, PAUTAS, CONTEXTO), `1894b89` (ESTADO), `0608818` (ESTILO y docstrings), `14f3f6f` (TECNICO), `25c63f1` (Gold y DECISIONES, en la rama `gold-parejas`).
+- Commits: `75d4a1b`, `4b54c86` (primera limpieza), `237ca17` (CLAUDE, PAUTAS, CONTEXTO), `1894b89` (ESTADO), `0608818` (ESTILO y docstrings), `14f3f6f` (TECNICO), `25c63f1` (Gold y DECISIONES), `c249700` (histórico), `780733d` (merge de `gold-parejas`).
+- Revisión integral del código contra la documentación de la CDC: nuevas correcciones de insulina (llevada a la escala de 2013-2018), PCR ultrasensible de 2017-2018 y creatinina en orina antes de 2007; códigos de los cuestionarios en su propio archivo; resumen de cada capa compartido; DEMO como base explícita de Silver raw; eGFR vacío si falta el sexo; limpieza de estilo. Commits: `cf873e8`, `2cc9e89` (merge de `revision-codigo`).
+- Tabaco de los de 18-19 años hasta 2012 completado con las preguntas juveniles de NHANES; el alcohol juvenil se descarta. Espacios finales quitados de las entregas. Commits: `db61bc9`, `dd02e58` (merge de `tabaco-juvenil`).
+- Incidencia: un script de corrección reescribió los `.py` con saltos de línea de Windows; se devolvieron a LF antes de commitear.
+- Terminada el 2026-10-19.
 
 ## 2026-10-17: Bronze, Silver y estructura del código
 - Entrevista de producto en CONTEXTO (`3c4a9e7`); entorno Python 3.11 y carpetas (`706a5ba`).
