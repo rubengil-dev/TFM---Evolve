@@ -5,10 +5,9 @@
 
 ## Próxima sesión
 Empezar la fase de modelo, en este orden:
-1. Mirar si los cuestionarios juveniles de NHANES recogen tabaco y alcohol de los de 18-19 años, que en los primeros ciclos no tienen dato.
-2. Estrategia para analíticas incompletas: imputación, un modelo por subconjunto de variables o modelos que toleren ausentes. Ojo: en NHANES los huecos van por ciclo y en la app por usuario.
-3. Arquitectura: Cox como baseline; después, si compensa, árboles de supervivencia o deep learning.
-4. Variables: cuál entra de cada pareja muy correlacionada y qué juego de cada combinación lineal.
+1. Estrategia para analíticas incompletas: imputación, un modelo por subconjunto de variables o modelos que toleren ausentes. Ojo: en NHANES los huecos van por ciclo y en la app por usuario.
+2. Arquitectura: Cox como baseline; después, si compensa, árboles de supervivencia o deep learning.
+3. Variables: cuál entra de cada pareja muy correlacionada y qué juego de cada combinación lineal.
 
 ## Fases
 - [x] Datos

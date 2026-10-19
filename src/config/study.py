@@ -17,5 +17,8 @@ ALCOHOL_FREQUENCY = {      # answer → maximum drinking days per year
     "daily":            366,
 }
 
+# Youth smoking
+YOUTH_CURRENT_SMOKER_DAYS = 10  # days smoked of the past 30 to count an 18-19 year old as current smoker (until 2010)
+
 # Follow-up
 FOLLOW_UP_MIN = 0.1  # months; parametric survival models need time > 0

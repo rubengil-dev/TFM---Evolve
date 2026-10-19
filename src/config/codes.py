@@ -29,3 +29,7 @@ MISSING_CODES = {
 
 # Fast food
 MORE_THAN_21_MEALS = 5555  # DBD900 code, taken as 22
+
+# Youth smoking (12-19 until 2012)
+NEVER_WHOLE_CIGARETTE = 55  # SMD630 code
+LIFETIME_100_PLUS = 8       # SMQ621 (2011-2012) code: 100 or more cigarettes in life; 1-7 fewer

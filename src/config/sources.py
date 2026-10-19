@@ -53,7 +53,8 @@ DATASETS = {
     "FASTQX": ["PH",       "PH_B",     "PH_C",     "FASTQX_D", "FASTQX_E", "FASTQX_F", "FASTQX_G", "FASTQX_H", "FASTQX_I", "FASTQX_J"], # fasting hours before blood draw
 
     # Questionnaire
-    "SMQ":    ["SMQ",      "SMQ_B",    "SMQ_C",    "SMQ_D",    "SMQ_E",    "SMQ_F",    "SMQ_G",    "SMQ_H",    "SMQ_I",    "SMQ_J"],    # smoking
+    "SMQ":    ["SMQ",      "SMQ_B",    "SMQ_C",    "SMQ_D",    "SMQ_E",    "SMQ_F",    "SMQ_G",    "SMQ_H",    "SMQ_I",    "SMQ_J"],    # smoking (12-19 questions inside from 2005)
+    "SMQMEC": ["SMQMEC",   "SMQMEC_B", "SMQMEC_C", None,       None,       None,       None,       None,       None,       None],       # youth smoking 12-19 (until 2004)
     "ALQ":    ["ALQ",      "ALQ_B",    "ALQ_C",    "ALQ_D",    "ALQ_E",    "ALQ_F",    "ALQ_G",    "ALQ_H",    "ALQ_I",    "ALQ_J"],    # alcohol
     "PAQ":    ["PAQ",      "PAQ_B",    "PAQ_C",    "PAQ_D",    "PAQ_E",    "PAQ_F",    "PAQ_G",    "PAQ_H",    "PAQ_I",    "PAQ_J"],    # physical activity and sedentary time (new format from 2007)
     "DBQ":    ["DBQ",      "DBQ_B",    "DBQ_C",    "DBQ_D",    "DBQ_E",    "DBQ_F",    "DBQ_G",    "DBQ_H",    "DBQ_I",    "DBQ_J"],    # diet behavior: self-rated diet, fast food

@@ -17,12 +17,14 @@ Silver clean step, the study population with clean variables and readable names:
 import numpy as np
 import pandas as pd
 
-from src.config.codes import ALCOHOL_DAYS_2017, ALCOHOL_UNIT_DAYS, MISSING_CODES, MORE_THAN_21_MEALS
+from src.config.codes import (
+    ALCOHOL_DAYS_2017, ALCOHOL_UNIT_DAYS, LIFETIME_100_PLUS, MISSING_CODES, MORE_THAN_21_MEALS, NEVER_WHOLE_CIGARETTE,
+)
 from src.config.corrections import CORRECTIONS
 from src.config.paths import SILVER_CLEAN, SILVER_RAW
 from src.config.renames import CLEAN_NAMES
 from src.config.sources import CYCLES
-from src.config.study import ALCOHOL_FREQUENCY, FASTING_HOURS_MIN
+from src.config.study import ALCOHOL_FREQUENCY, FASTING_HOURS_MIN, YOUTH_CURRENT_SMOKER_DAYS
 from src.utils.nhanes import cycle_label
 from src.utils.summary import print_layer_summary
 
@@ -185,11 +187,42 @@ def questionnaire(raw):
 
 
 def smoking(raw):
-    """never (< 100 cigarettes in life) / former / current."""
+    """
+    never (< 100 cigarettes in life) / former / current:
+        - Adult questions (SMQ020, SMQ040)
+        - Youth questions for 18-19 year olds until 2012 (youth_smoking)
+    """
     ever = raw["SMQ020"]
     now = raw["SMQ040"]
     answer = np.select([ever == 2, now.isin([1, 2]), now == 3], ["never", "current", "former"], default=None)
-    return pd.Series(answer, index=raw.index)
+    return pd.Series(answer, index=raw.index).fillna(youth_smoking(raw))
+
+
+def youth_smoking(raw):
+    """
+    Youth questions → adult answers:
+        - 2011-2012: cigarettes in life (SMQ621); 100 or more → current if smoked in the past 30 days, else former
+        - Until 2010: never tried (SMQ620) or never a whole cigarette (SMD630) → never;
+          smoked on ≥ YOUTH_CURRENT_SMOKER_DAYS of the past 30 (SMQ640, SMD641) → current; fewer → never
+    """
+    lifetime = raw["SMQ621"]
+    days = raw["SMQ640"].fillna(raw["SMD641"])
+    days = days.where(days.between(0, 30))
+    youth = lifetime.notna() | raw["SMQ620"].notna()
+    answer = np.select(
+        [
+            lifetime.between(1, LIFETIME_100_PLUS - 1),
+            (lifetime == LIFETIME_100_PLUS) & (days >= 1),
+            (lifetime == LIFETIME_100_PLUS) & (days == 0),
+            raw["SMQ620"] == 2,
+            raw["SMD630"] == NEVER_WHOLE_CIGARETTE,
+            days >= YOUTH_CURRENT_SMOKER_DAYS,
+            days < YOUTH_CURRENT_SMOKER_DAYS,
+        ],
+        ["never", "current", "former", "never", "never", "current", "never"],
+        default=None,
+    )
+    return pd.Series(answer, index=raw.index).where(youth)
 
 
 def alcohol(raw):

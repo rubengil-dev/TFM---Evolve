@@ -4,7 +4,7 @@ La idea final elegida es la calculadora web de edad biológica a partir de una a
 
 ## 1. ¿Qué datos necesita el producto?
 
-**Observación** 
+**Observación**
 Cada una es un adulto de 18 a 79 años con analítica, medidas corporales y seguimiento de mortalidad. Una fila = una persona: cada ciclo de NHANES es una muestra independiente y nadie se repite. La restricción por edad se debe a que; menores de 18 tienen valores distintos a los adultos, y superiores a 79 NHANES los agrupa todos en 80 y no es interpretable.
 
 **Datos Imprescindibles**
@@ -31,15 +31,15 @@ Cada una es un adulto de 18 a 79 años con analítica, medidas corporales y segu
 
 - Otras estimaciones como DXA o VO2_Max habrían sido una gran incorporación, pero no son variables que el usuario conozca a la hora de la simulación.
 
-**Qué cubre NHANES** 
+**Qué cubre NHANES**
 
-- Todos los imprescindibles. 
+- Todos los imprescindibles.
 
 - De los deseables: medidas, hábitos y parte de la analítica ampliada (PCR, vitamina D e insulina, esta última solo en ayunas).
 
 No cubre ferritina y TSH en toda la muestra, ni mediciones repetidas. Además, tiene cambios de método entre ciclos.
 
-**Granularidad e histórico** 
+**Granularidad e histórico**
 
 Una medición por persona más su seguimiento de mortalidad. Son 10 ciclos bienales, de 1999 a 2018, con un seguimiento mediano de 9,6 años.
 
@@ -50,7 +50,7 @@ Una medición por persona más su seguimiento de mortalidad. Son 10 ciclos biena
 | **NHANES continuo 1999-2018** (CDC) | Open data: ficheros `.xpt` (SAS) por módulo y ciclo | Descarga directa por URL |
 | **Linked Mortality Files** (NCHS), versión pública | Open data: un `.dat` de ancho fijo por ciclo, seguimiento hasta el 31/12/2019 | Descarga directa por URL |
 
-- **Acceso reproducible:** `src/pipeline/download_bronze.py` descarga los 400 ficheros (~419 MB). Es reanudable, valida que lo recibido no sea una página de error y guarda un manifiesto con URL, tamaño y fecha.
+- **Acceso reproducible:** `src/pipeline/download_bronze.py` descarga los 406 ficheros (~426 MB). Es reanudable, valida que lo recibido no sea una página de error y guarda un manifiesto con URL, tamaño y fecha.
 
 - **Cobertura:** población no institucionalizada de EE. UU. Hay 54.809 adultos de 18 a 79 años elegibles para mortalidad y 48.495 entran en el estudio, con 5.425 defunciones. La analítica general está en el ~94% de las personas. El subgrupo en ayunas (triglicéridos, insulina) es ~50% y la CPK solo existe de 2011 a 2018.
 
@@ -66,7 +66,7 @@ Una medición por persona más su seguimiento de mortalidad. Son 10 ciclos biena
 
 - **Datos personales:** vienen desidentificados de origen. Además, el NCHS perturba la versión pública de la mortalidad para evitar reidentificaciones. No hace falta anonimizar.
 
-- **Minimización:** de 993 variables descargadas, solo 74 llegan a Gold. No se usan etnia, ingresos, educación ni geografía. La edad se limita a 79 años porque NHANES agrupa las edades superiores.
+- **Minimización:** de 1.033 variables descargadas, solo 74 llegan a Gold. No se usan etnia, ingresos, educación ni geografía. La edad se limita a 79 años porque NHANES agrupa las edades superiores.
 
 - **Producto final:** una analítica es un dato de salud (categoría especial del RGPD). Se procesa en memoria, no se almacena nada y no hay registro ni email. Se informa al usuario de forma clara.
 
@@ -74,8 +74,8 @@ Una medición por persona más su seguimiento de mortalidad. Son 10 ciclos biena
 
 | Capa | Qué es | Resultado |
 |---|---|---|
-| **Bronze** | Ficheros tal como los publica la CDC, una carpeta por ciclo, con su nombre original | 400 files, ~419 MB |
-| **Silver raw** | Un único fichero (raw) fruto de combinar los 10 ficheros resultantes de unir los ficheros de cada ciclo unidos por persona (SEQN) | 54.809 ppl, 993 cols |
+| **Bronze** | Ficheros tal como los publica la CDC, una carpeta por ciclo, con su nombre original | 406 files, ~426 MB |
+| **Silver raw** | Un único fichero (raw) fruto de combinar los 10 ficheros resultantes de unir los ficheros de cada ciclo unidos por persona (SEQN) | 54.809 ppl, 1.033 cols |
 | **Silver clean** | Silver raw limpio: filtrado por población de estudio, variables limpias y renombradas y unidades estandarizadas al sistema español | 48.495 ppl, 72 cols |
 | **Gold** | Silver clean pero restringiendo a variables candidatas a predictor, features derivadas y desenlace. Es la única capa de la que leen el modelo y la app | 48.495 ppl, 74 cols |
 
@@ -91,7 +91,7 @@ Una medición por persona más su seguimiento de mortalidad. Son 10 ciclos biena
 - Unidades de laboratorio español: urea (BUN × 2,14), PCR en mg/L (dos ensayos en una columna) y cociente albúmina/creatinina en orina en mg/g.
 - Triglicéridos solo con ayuno ≥ 8 h.
 - Tensión como media de hasta 4 lecturas.
-- Cuestionarios convertidos a categóricas (ej: {tabaco: nunca/exfumador/fumador}). Las preguntas saltadas cuentan como "nunca".
+- Cuestionarios convertidos a categóricas (ej: {tabaco: nunca/exfumador/fumador}). Las preguntas saltadas cuentan como "nunca". El tabaco de los de 18-19 años hasta 2012 sale de las preguntas juveniles, porque el cuestionario de adultos solo se pasó a mayores de 20.
 - Pesos muestrales combinados para los 10 ciclos, según la regla de la CDC.
 
 **Silver clean → Gold**
@@ -125,7 +125,7 @@ Hay variables que no se incluirán en el modelo pero se dejan en gold para permi
 
 1. La población de referencia es estadounidense, no española, por lo que se asume que la población es equivalente a la española.
 
-2. Hay cambios de método entre ciclos sin corrección oficial (fosfatasa alcalina y LDH en 1999-2000, cuestionario de actividad en 2007), y los últimos ciclos tienen pocas defunciones por su seguimiento corto (71 en 2017-2018). 
+2. Hay cambios de método entre ciclos sin corrección oficial (fosfatasa alcalina y LDH en 1999-2000, cuestionario de actividad en 2007), y los últimos ciclos tienen pocas defunciones por su seguimiento corto (71 en 2017-2018).
 
 3. Algunas variables solo existen en parte de la muestra (ayunas, CPK, PCR sin 2011-2014), y sus huecos dependen de la época. Si NHANES dejara de estar disponible, los datos descargados seguirían siendo válidos pero no podríamos actualizarlos sin cambiar la fuente.
 

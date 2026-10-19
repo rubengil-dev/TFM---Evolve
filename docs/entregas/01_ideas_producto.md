@@ -40,7 +40,7 @@ Esto ralentiza el descubrimiento de nuevos compuestos bioactivos y el análisis 
 
 Por un lado, mi formación es en bioquímica, por lo que entiendo tanto los datos como la utilidad del problema, y me permite retomar un área más cercana a mi background.
 
-Por otro lado, la utilidad del problema está validada externamente: una empresa del sector (Enveda) lo ha convertido en una competición con 50.000 $ en premios, lo que indica que hay organizaciones dispuestas a pagar por resolverlo. 
+Por otro lado, la utilidad del problema está validada externamente: una empresa del sector (Enveda) lo ha convertido en una competición con 50.000 $ en premios, lo que indica que hay organizaciones dispuestas a pagar por resolverlo.
 
 ### ¿Qué problema que resuelve?
 
@@ -96,7 +96,7 @@ En una revisión informal de calculadoras de edad biológica, la mayoría exige 
 
 La propuesta de valor diferencial reside en:
 
-- Sin introducir datos a mano: se sube el PDF y la aplicación lee los valores. 
+- Sin introducir datos a mano: se sube el PDF y la aplicación lee los valores.
 
 - Gratuitidad: Sin necesidad de usarlo como lead magnet o parte de un funnel.
 
