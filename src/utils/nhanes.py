@@ -12,9 +12,7 @@ from src.config.sources import MORTALITY_COLUMNS
 
 
 def cycle_label(year):
-    """
-    Cycle name creator: 1999 → '1999_2000'.
-    """
+    """Cycle name creator: 1999 → '1999_2000'."""
     return f"{year}_{year + 1}"
 
 
@@ -42,9 +40,7 @@ def read_mortality(path):
 
 
 def dxa_average_imputations(table):
-    """
-    DXA 1999-2006: 5 imputed rows per person → 1 row (mean).
-    """
+    """DXA 1999-2006: 5 imputed rows per person → 1 row (mean)."""
     if "_MULT_" not in table.columns:
         return table
     return table.drop(columns="_MULT_").groupby("SEQN", as_index=False).mean(numeric_only=True)

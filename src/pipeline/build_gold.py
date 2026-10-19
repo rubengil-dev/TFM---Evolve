@@ -16,9 +16,7 @@ from src.utils.features import derived_features
 
 
 def run():
-    """
-    Gold step, called from main.
-    """
+    """Gold step, called from main."""
     clean = pd.read_parquet(SILVER_CLEAN)
     gold = pd.concat([
         clean[ID_COLUMNS + OUTCOME_COLUMNS + SILVER_PREDICTORS],
@@ -31,25 +29,19 @@ def run():
 
 
 def fix_zero_follow_up(gold):
-    """
-    Follow-up of 0 months → FOLLOW_UP_MIN.
-    """
+    """Follow-up of 0 months → FOLLOW_UP_MIN."""
     gold["follow_up_months"] = gold["follow_up_months"].clip(lower=FOLLOW_UP_MIN)
     return gold
 
 
 def save(gold):
-    """
-    Gold → parquet.
-    """
+    """Gold → parquet."""
     GOLD.mkdir(parents=True, exist_ok=True)
     gold.to_parquet(GOLD_TABLE, index=False)
 
 
 def print_summary(gold):
-    """
-    Persons, deaths, columns and % with value per variable.
-    """
+    """Persons, deaths, columns and % with value per variable."""
     print(f"{len(gold)} persons, {int(gold['death'].sum())} deaths, {gold.shape[1]} columns, saved to {GOLD_TABLE.name}\n")
     coverage = (gold.notna().mean() * 100).round(0).astype(int)
     print(coverage.to_string())

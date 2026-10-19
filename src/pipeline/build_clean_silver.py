@@ -26,9 +26,7 @@ from src.utils.nhanes import cycle_label
 
 
 def run():
-    """
-    Silver clean step, called from main.
-    """
+    """Silver clean step, called from main."""
     raw = pd.read_parquet(SILVER_RAW)
     raw = filter_population(raw)
     raw = apply_corrections(raw)
@@ -48,18 +46,14 @@ def run():
 
 
 def filter_population(raw):
-    """
-    Exam done (RIDSTATR = 2), not pregnant (RIDEXPRG = 1) and at least one lab value (CLEAN_NAMES starting with LB).
-    """
+    """Exam done (RIDSTATR = 2), not pregnant (RIDEXPRG = 1) and at least one lab value (CLEAN_NAMES starting with LB)."""
     lab_columns = [name for name in CLEAN_NAMES if name.startswith("LB")]
     has_lab = raw[lab_columns].notna().any(axis=1)
     return raw[(raw["RIDSTATR"] == 2) & (raw["RIDEXPRG"] != 1) & has_lab].copy()
 
 
 def apply_corrections(raw):
-    """
-    CDC equations (CORRECTIONS) applied to their cycle.
-    """
+    """CDC equations (CORRECTIONS) applied to their cycle."""
     for variable, year, slope, intercept, scale in CORRECTIONS:
         rows = raw["cycle"] == cycle_label(year)
         value = raw.loc[rows, variable]
@@ -71,27 +65,21 @@ def apply_corrections(raw):
 
 
 def remove_missing_codes(raw):
-    """
-    Refused / don't know codes in numeric answers (MISSING_CODES) → missing.
-    """
+    """Refused / don't know codes in numeric answers (MISSING_CODES) → missing."""
     for variable, codes in MISSING_CODES.items():
         raw[variable] = raw[variable].mask(raw[variable].isin(codes))
     return raw
 
 
 def kept_variables(raw):
-    """
-    Variables kept as they are, with readable names. 'cycle' after seqn.
-    """
+    """Variables kept as they are, with readable names. 'cycle' after seqn."""
     kept = raw[list(CLEAN_NAMES)].rename(columns=CLEAN_NAMES)
     kept.insert(1, "cycle", raw["cycle"])
     return kept
 
 
 def sex(raw):
-    """
-    male / female.
-    """
+    """male / female."""
     return raw["RIAGENDR"].map({1: "male", 2: "female"}).rename("sex")
 
 
@@ -131,9 +119,7 @@ def lab_derived(raw):
 
 
 def blood_pressure(raw):
-    """
-    Mean of available readings (up to 4). Diastolic 0 (not measurable) → missing.
-    """
+    """Mean of available readings (up to 4). Diastolic 0 (not measurable) → missing."""
     systolic = raw[["BPXSY1", "BPXSY2", "BPXSY3", "BPXSY4"]]
     diastolic = raw[["BPXDI1", "BPXDI2", "BPXDI3", "BPXDI4"]].replace(0, np.nan)
     return pd.DataFrame({
@@ -143,9 +129,7 @@ def blood_pressure(raw):
 
 
 def questionnaire(raw):
-    """
-    Questionnaires → form answers.
-    """
+    """Questionnaires → form answers."""
     frequency, drinks = alcohol(raw)
     return pd.DataFrame({
         "smoking":           smoking(raw),
@@ -159,9 +143,7 @@ def questionnaire(raw):
 
 
 def smoking(raw):
-    """
-    never (< 100 cigarettes in life) / former / current.
-    """
+    """never (< 100 cigarettes in life) / former / current."""
     ever = raw["SMQ020"]
     now = raw["SMQ040"]
     answer = np.select([ever == 2, now.isin([1, 2]), now == 3], ["never", "current", "former"], default=None)
@@ -206,16 +188,12 @@ def physical_activity(raw):
 
 
 def save(clean):
-    """
-    Silver clean → parquet.
-    """
+    """Silver clean → parquet."""
     clean.to_parquet(SILVER_CLEAN, index=False)
 
 
 def print_summary(clean):
-    """
-    Persons, deaths, columns and % with value per variable.
-    """
+    """Persons, deaths, columns and % with value per variable."""
     print(f"{len(clean)} persons, {int(clean['death'].sum())} deaths, {clean.shape[1]} columns, saved to {SILVER_CLEAN.name}\n")
     coverage = (clean.notna().mean() * 100).round(0).astype(int)
     print(coverage.to_string())

@@ -18,9 +18,7 @@ from src.utils.nhanes import cycle_label, dxa_average_imputations, read_mortalit
 
 
 def run():
-    """
-    Silver raw step, called from main.
-    """
+    """Silver raw step, called from main."""
     cycles = []
     for year in CYCLES:
         table = merge_cycle_files(year)
@@ -84,27 +82,21 @@ def merge_table(merged, table, dataset):
 
 
 def same_values(a, b):
-    """
-    Equal values, allowing rounding differences in numbers (e.g. 14084.10 vs 14084.2).
-    """
+    """Equal values, allowing rounding differences in numbers (e.g. 14084.10 vs 14084.2)."""
     if pd.api.types.is_numeric_dtype(a) and pd.api.types.is_numeric_dtype(b):
         return np.allclose(a, b, rtol=1e-4)
     return a.equals(b)
 
 
 def filter_population(table):
-    """
-    Adults AGE_MIN-AGE_MAX eligible for mortality follow-up.
-    """
+    """Adults AGE_MIN-AGE_MAX eligible for mortality follow-up."""
     adults = table["RIDAGEYR"].between(AGE_MIN, AGE_MAX)
     eligible = table["ELIGSTAT"] == 1
     return table[adults & eligible]
 
 
 def rename_aliases(table):
-    """
-    Old names → common names (RENAMES). Fails if a rename collides with an existing column.
-    """
+    """Old names → common names (RENAMES). Fails if a rename collides with an existing column."""
     table = table.rename(columns=RENAMES)
     repeated = table.columns[table.columns.duplicated()]
     if len(repeated):
@@ -113,17 +105,13 @@ def rename_aliases(table):
 
 
 def save(raw):
-    """
-    Silver raw → parquet.
-    """
+    """Silver raw → parquet."""
     SILVER.mkdir(parents=True, exist_ok=True)
     raw.to_parquet(SILVER_RAW, index=False)
 
 
 def print_summary(raw):
-    """
-    Persons, deaths and columns per cycle.
-    """
+    """Persons, deaths and columns per cycle."""
     summary = raw.groupby("cycle").agg(persons=("SEQN", "size"), deaths=("MORTSTAT", "sum")).astype(int)
     print(summary.to_string())
     print(f"\n{len(raw)} persons, {int(raw['MORTSTAT'].sum())} deaths, {raw.shape[1]} columns, saved to {SILVER_RAW.name}")

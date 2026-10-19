@@ -8,6 +8,7 @@ from src.pipeline import download_bronze, build_raw_silver, build_clean_silver, 
 
 
 def main():
+    """Run every pipeline step in order."""
     download_bronze.run()
     build_raw_silver.run()
     build_clean_silver.run()

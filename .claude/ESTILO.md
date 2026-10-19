@@ -1,14 +1,18 @@
-# Estilo de código
+# Qué hay en este archivo y cómo usarlo
+- **Contiene:** cómo me gusta el código a nivel general
+- **No contiene:** cómo trabajamos ni la estructura concreta del proyecto.
+- **Se actualiza:** cuando cambio una preferencia de estilo.
 
 ## Idioma
 - Código, variables, docstrings y comentarios en inglés.
 
 ## Docstrings
 - Siempre al principio de cada archivo y de cada función.
-- Las comillas `"""` van en su propia línea.
+- Docstring del archivo: las comillas `"""` siempre en su propia línea.
+- Docstring de función: si cabe en una línea, comillas y texto en la misma línea; si necesita más, las comillas en su propia línea y el texto entre ellas.
 - Una frase corta de título; si hace falta detalle, termina en dos puntos y debajo van líneas sangradas, con guiones si hay varias cosas.
 - Nada de párrafos ni explicaciones largas: qué hace, no cómo ni por qué.
-- Para indicar transformaciones o flujos, flechas: `→`.
+- Para indicar transformaciones o flujos, flechas: `→`. Solo en docstrings y comentarios: en los `print`, la consola de Windows no la muestra.
 
 ```python
 """
@@ -22,6 +26,10 @@ def cycle_label(year):
     Cycle name creator:
         Example: 1999 → '1999_2000'
     """
+
+
+def run():
+    """Bronze step, called from main."""
 ```
 
 ## Comentarios
@@ -40,6 +48,34 @@ def cycle_label(year):
 - Las funciones de apoyo van debajo, en el orden en que se llaman. Se crean aunque se usen una sola vez, para darle nombre a cada paso.
 - Nombres descriptivos en `snake_case`.
 
+Ejemplo (paso de descarga de este proyecto; los cuerpos de las funciones de apoyo, docstrings incluidos, se omiten con `...`):
+
+```python
+def run():
+    """Bronze step, called from main."""
+    BRONZE.mkdir(parents=True, exist_ok=True)
+    jobs = build_jobs()
+    failed = download_all(jobs)
+    write_manifest(jobs)
+    print_summary(jobs, failed)
+
+
+def build_jobs():
+    ...
+
+
+def download_all(jobs):
+    ...
+
+
+def write_manifest(jobs):
+    ...
+
+
+def print_summary(jobs, failed):
+    ...
+```
+
 ## Organización
 - Configuración separada de la lógica: rutas internas en un archivo, fuentes externas (URLs, listas de ficheros, ajustes) en otro.
 - Funciones compartidas en una carpeta de utilidades, un archivo por tema. Una función sale ahí cuando no es específica del archivo que la usa.
@@ -49,4 +85,3 @@ def cycle_label(year):
 
 ## Simplicidad
 - Cada complicación tiene que responder a un problema real. Si no, fuera.
-- Se itera en notebooks; los `.py` son el código definitivo y limpio.
