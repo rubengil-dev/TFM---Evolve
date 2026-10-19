@@ -1,9 +1,9 @@
 """
-Download, unchanged, raw source files to "data/01_bronze/<cycle>/" if they are not already on disk.
-
-- NHANES 1999-2018: participants data (.xpt) + codebook (.htm/.pdf) per dataset and cycle
-- NCHS (follow-up to 2019): linked mortality, one .dat per cycle
-- manifest.csv: file, URL, size and download date
+Bronze step, source files downloaded unchanged (only those not on disk yet):
+    - NHANES 1999-2018: participant data (.xpt) and codebook (.htm/.pdf) per dataset and cycle
+    - NCHS linked mortality (follow-up to 2019): one .dat per cycle
+    - Saved to data/01_bronze/<cycle>/ with their original names
+    - manifest.csv: file, URL, size and download date
 """
 
 # Imports

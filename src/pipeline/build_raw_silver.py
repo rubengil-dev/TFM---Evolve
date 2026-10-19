@@ -1,9 +1,9 @@
 """
-Merging individual files from Bronze to one single big dataframe (Silver raw) with one row per person, every variables and no cleaning.
-    1. Merge all files within a cycle by SEQN (mortality included, DXA averaged)
-    2. Filtering by age using AGE_MIN-AGE_MAX (those eligible for mortality follow-up)
-    3. Rename variable aliases so each variable has the same name in every cycle
-    4. Stacking cycles into data/02_silver/silver_raw.parquet
+Silver raw step, every Bronze file in one table (one row per person, every variable, no cleaning):
+    - Files of each cycle joined by SEQN on DEMO participants (mortality included, DXA averaged)
+    - Adults AGE_MIN-AGE_MAX eligible for mortality follow-up
+    - Variable aliases renamed so each variable has the same name in every cycle
+    - Cycles stacked and saved to data/02_silver/silver_raw.parquet
 """
 
 # Imports
@@ -34,20 +34,17 @@ def run():
 def merge_cycle_files(year):
     """
     All files of a cycle → one table:
-        - Joined by SEQN on DEMO participants
+        - DEMO participants as base, every other file joined by SEQN
         - 'cycle' column added
     """
     print(f"{cycle_label(year)}...", flush=True)
     folder = BRONZE / cycle_label(year)
-    merged = None
 
     # NHANES files
+    merged = read_dataset(folder, "DEMO", year)
     for dataset, names in DATASETS.items():
-        name = names[CYCLES.index(year)]
-        if name is None:
-            continue
-        table = dxa_average_imputations(read_xpt(folder / f"{name}.xpt"))
-        merged = table if merged is None else merge_table(merged, table, dataset)
+        if dataset != "DEMO" and names[CYCLES.index(year)] is not None:
+            merged = merge_table(merged, read_dataset(folder, dataset, year), dataset)
 
     # Mortality
     mortality = read_mortality(folder / MORTALITY_FILE.format(cycle=cycle_label(year)))
@@ -56,6 +53,12 @@ def merge_cycle_files(year):
     merged = merged.copy()  # defragment after many column updates
     merged.insert(1, "cycle", cycle_label(year))
     return merged
+
+
+def read_dataset(folder, dataset, year):
+    """One NHANES file of the cycle, DXA imputations averaged."""
+    name = DATASETS[dataset][CYCLES.index(year)]
+    return dxa_average_imputations(read_xpt(folder / f"{name}.xpt"))
 
 
 def merge_table(merged, table, dataset):

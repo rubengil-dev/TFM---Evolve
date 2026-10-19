@@ -46,8 +46,16 @@
 - **Por qué:** apilar sin renombrar crea columnas medio vacías; en los cuestionarios, el mismo nombre puede ser una pregunta distinta según el ciclo.
 
 ### ¿Se corrigen los cambios de método de laboratorio?
-- **Decisión:** sí, con las ecuaciones oficiales de la CDC (creatinina 1999-2000 y 2005-2006; 13 analitos en 2017-2018 por cambio de analizador).
+- **Decisión:** sí, con las ecuaciones oficiales de la CDC: creatinina sérica en 1999-2000 y 2005-2006; 13 analitos de la bioquímica y la PCR ultrasensible en 2017-2018, llevados a la escala anterior; insulina, con cinco métodos encadenados; y creatinina en orina antes de 2007, llevada a la escala de 2007 en adelante.
 - **Por qué:** sin corregir, el modelo confundiría el cambio de analizador con un cambio real de la población.
+
+### ¿A qué escala se lleva la insulina?
+- **Decisión:** a la de 2013-2018 (Tosoh), encadenando las ecuaciones de cada cambio de método: Pharmacia → Tosoh → Mercodia → Roche → Tosoh.
+- **Por qué:** es el método más reciente y cubre tres ciclos.
+
+### ¿Qué pasa con los valores que la corrección deja por debajo del límite de detección?
+- **Decisión:** en la PCR ultrasensible de 2017-2018 no bajan de 0,08 mg/L, el valor que la escala de destino (2015-2016) pone por debajo de su límite de detección.
+- **Por qué:** la ecuación de la CDC da valores negativos por debajo de unos 0,3 mg/L.
 
 ### ¿Cómo se tratan los códigos "no sabe / no contesta"?
 - **Decisión:** con una lista de códigos por variable.
@@ -81,17 +89,13 @@
 - **Decisión:** en un único módulo compartido entre el pipeline y la futura app.
 - **Por qué:** el modelo y la app tienen que calcularlas exactamente igual.
 
-### ¿Se crea una puntuación de hábitos?
-- **Decisión:** no.
-- **Por qué:** los pesos serían arbitrarios; el modelo los aprende.
-
 ### ¿Seguimiento de 0 meses?
 - **Decisión:** se pasa a 0,1 meses.
 - **Por qué:** algunos modelos de supervivencia (los paramétricos) no aceptan tiempos de 0.
 
-### ¿VO2 max y DXA?
-- **Decisión:** fuera.
-- **Por qué:** el usuario no los conoce, y en NHANES hay pocos ciclos y pocas defunciones con ellos.
+### ¿Por qué se descartan DXA y VO2 max?
+- **Decisión:** no pasan a Silver clean, así que quedan fuera del modelo y de la app. Se siguen descargando y llegan a Silver raw.
+- **Por qué:** el usuario no los conoce.
 
 ## Modelo
 

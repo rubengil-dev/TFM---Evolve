@@ -15,8 +15,8 @@ import pandas as pd
 
 def derived_features(data):
     """
-    Build every derived feature from silver clean columns.
-    If any input is missing, output is missing.
+    Every derived feature from Silver clean columns:
+        - Any input missing → output missing
     """
     return pd.DataFrame({
         "nlr":               data["neutrophils"] / data["lymphocytes"],
@@ -36,14 +36,13 @@ def derived_features(data):
 
 def egfr_ckd_epi_2021(creatinine, age, sex):
     """
-    Calculates glomerular filtration (eGFR [mL/min/1.73 m2]) without race:
-    
-    Formula: CKD-EPI = 142 × min(Scr/κ, 1)^α × max(Scr/κ, 1)^-1.200 × 0.9938^age × 1.012 (female)
+    Glomerular filtration rate (mL/min/1.73 m2), CKD-EPI 2021 without race:
+        - 142 × min(Scr/κ, 1)^α × max(Scr/κ, 1)^-1.200 × 0.9938^age × 1.012 (female)
+        - Sex missing (not male or female) → missing
     """
-    
     female = sex == "female"
     kappa = np.where(female, 0.7, 0.9)
     alpha = np.where(female, -0.241, -0.302)
     ratio = creatinine / kappa
     egfr = 142 * np.minimum(ratio, 1) ** alpha * np.maximum(ratio, 1) ** -1.200 * 0.9938 ** age
-    return egfr * np.where(female, 1.012, 1)
+    return (egfr * np.where(female, 1.012, 1)).where(sex.isin(["male", "female"]))

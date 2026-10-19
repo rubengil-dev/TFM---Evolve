@@ -1,5 +1,5 @@
 """
-Helpers to download files: 
+Helpers to download files:
     - Retries
     - No half-written files
     - No error pages saved as data
