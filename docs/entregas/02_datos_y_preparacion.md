@@ -86,7 +86,7 @@ Una medición por persona más su seguimiento de mortalidad. Son 10 ciclos biena
 
 **Silver raw → Silver clean**
 - Exclusiones: sin examen físico, embarazadas (analítica alterada) y personas sin ningún valor de laboratorio (esencial para el producto final).
-- Correcciones oficiales de la CDC por cambios de método: creatinina en 1999-2000 y 2005-2006, y 13 analitos en 2017-2018 por cambio de analizador.
+- Correcciones oficiales de la CDC por cambios de método: creatinina en 1999-2000 y 2005-2006; 13 analitos y la PCR ultrasensible en 2017-2018 por cambio de analizador; insulina, medida con cinco métodos y llevada a la escala de 2013-2018; y creatinina en orina antes de 2007.
 - Códigos de "no sabe/no contesta" convertidos a nulos.
 - Unidades de laboratorio español: urea (BUN × 2,14), PCR en mg/L (dos ensayos en una columna) y cociente albúmina/creatinina en orina en mg/g.
 - Triglicéridos solo con ayuno ≥ 8 h.
@@ -98,7 +98,7 @@ Una medición por persona más su seguimiento de mortalidad. Son 10 ciclos biena
 - **Variables muy correlacionadas (r > 0,8):** se guardan las dos de cada pareja (hemoglobina-hematocrito, VCM-HCM, leucocitos-neutrófilos absolutos, IMC-peso/cintura). En la fase de modelo entrará una de cada pareja. Del hemograma se usan recuentos absolutos, no porcentajes.
     *NOTA*: Para el producto final, si el usuario trae la variable que no entra al modelo en vez de la que sí, la app estimará la segunda a partir de la primera con una ecuación ajustada sobre Gold.
 - **Features derivadas**: cociente neutrófilos/linfocitos (NLR), plaquetas/linfocitos (PLR), índice inmunoinflamatorio sistémico (SII), colesterol no-HDL, TG/HDL, AST/ALT, globulinas, cociente albúmina/globulina, urea/creatinina, filtrado glomerular CKD-EPI 2021 (sin raza), HOMA-IR y presión de pulso.
-- Las 5 defunciones con 0 meses de seguimiento pasan a 0,1 meses, porque los modelos de supervivencia necesitan tiempo > 0.
+- Las 5 defunciones con 0 meses de seguimiento pasan a 0,1 meses, porque algunos modelos de supervivencia (los paramétricos) necesitan tiempo > 0.
     *NOTA*: Las features derivadas que son combinaciones lineales de otras (no-HDL, globulinas, presión de pulso) se dejan para probar cuáles hacen que el modelo prediga mejor.
 - **No se hace en Gold:** rellenar huecos (el modelo debe ser robusto a nulos), recortar extremos (aprendería del dataset entero), escalar ni codificar categorías (pre-processing).
 

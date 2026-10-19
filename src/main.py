@@ -1,6 +1,6 @@
 """
 Data pipeline:
-    Bronze → Silver → Gold.
+    - Bronze → Silver raw → Silver clean → Gold
 """
 
 # Imports

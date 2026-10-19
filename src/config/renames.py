@@ -4,7 +4,7 @@ Variable names:
     - CLEAN_NAMES: NHANES names → readable names (Silver raw → Silver clean)
 """
 
-# Aliases Renaming For Cycle Variation
+# Aliases between cycles
 RENAMES = {
     # Biochemistry (2001-2002)
     "LBDSAPSI": "LBXSAPSI",  # alkaline phosphatase (U/L)
@@ -33,7 +33,7 @@ RENAMES = {
     "LBDBAP":   "LBXBAP",    # ug/L
 }
 
-# Variable Renaming For Understanding
+# Readable names
 CLEAN_NAMES = {
     # Identification and outcome
     "SEQN":         "seqn",

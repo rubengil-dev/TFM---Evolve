@@ -1,28 +1,30 @@
 """
-Cleaning silver raw to silver clean: Filtering population and variables, cleaning process and readable names.
-    1. Population: allowing only population with exam done, not pregnant and with lab results
-    2. CDC corrections for laboratory method changes
-    3. Variables:
+Silver clean step, the study population with clean variables and readable names:
+    - Population: exam done, not pregnant and at least one lab value
+    - CDC corrections for laboratory method changes (CORRECTIONS)
+    - Variables:
         - Kept as they are, renamed (CLEAN_NAMES)
-        - Same test from two files → one column (cholesterol, CRP)
+        - Same test from two files → one column (cholesterol, triglycerides, CRP)
         - Spanish lab units (urea, urine albumin/creatinine ratio)
         - Triglycerides only with fasting ≥ FASTING_HOURS_MIN
         - Blood pressure: mean of readings
         - Questionnaires → form answers (skipped questions: never drinkers, never smokers)
         - Survey weights for the 10 cycles combined
-    4. Save into data/02_silver/silver_clean.parquet
+    - Saved to data/02_silver/silver_clean.parquet
 """
 
 # Imports
 import numpy as np
 import pandas as pd
 
+from src.config.codes import ALCOHOL_DAYS_2017, ALCOHOL_UNIT_DAYS, MISSING_CODES, MORE_THAN_21_MEALS
 from src.config.corrections import CORRECTIONS
 from src.config.paths import SILVER_CLEAN, SILVER_RAW
 from src.config.renames import CLEAN_NAMES
-from src.config.sources import ALCOHOL_DAYS_2017, ALCOHOL_UNIT_DAYS, CYCLES, MISSING_CODES, MORE_THAN_21_MEALS
+from src.config.sources import CYCLES
 from src.config.study import ALCOHOL_FREQUENCY, FASTING_HOURS_MIN
 from src.utils.nhanes import cycle_label
+from src.utils.summary import print_layer_summary
 
 
 def run():
@@ -42,26 +44,66 @@ def run():
     ], axis=1)
 
     save(clean)
-    print_summary(clean)
+    print_layer_summary(clean, SILVER_CLEAN)
 
 
 def filter_population(raw):
-    """Exam done (RIDSTATR = 2), not pregnant (RIDEXPRG = 1) and at least one lab value (CLEAN_NAMES starting with LB)."""
+    """Exam done (RIDSTATR = 2), not pregnant (RIDEXPRG ≠ 1) and at least one lab value (CLEAN_NAMES starting with LB)."""
     lab_columns = [name for name in CLEAN_NAMES if name.startswith("LB")]
     has_lab = raw[lab_columns].notna().any(axis=1)
     return raw[(raw["RIDSTATR"] == 2) & (raw["RIDEXPRG"] != 1) & has_lab].copy()
 
 
 def apply_corrections(raw):
-    """CDC equations (CORRECTIONS) applied to their cycle."""
-    for variable, year, slope, intercept, scale in CORRECTIONS:
-        rows = raw["cycle"] == cycle_label(year)
-        value = raw.loc[rows, variable]
-        if scale == "log10":
-            raw.loc[rows, variable] = 10 ** (slope * np.log10(value) + intercept)
-        else:
-            raw.loc[rows, variable] = slope * value + intercept
+    """
+    CDC equations (CORRECTIONS) applied in order:
+        - Same variable and cycle: each equation takes the previous result
+        - Limits of each row checked on the original value
+    """
+    original = raw[list(dict.fromkeys(row[0] for row in CORRECTIONS))].copy()
+    for variable, cycles, scale, slope, intercept, square, limits, minimum in CORRECTIONS:
+        rows = in_cycles(raw["cycle"], cycles) & within(original[variable], limits)
+        raw.loc[rows, variable] = corrected(raw.loc[rows, variable], scale, slope, intercept, square, minimum)
     return raw
+
+
+def in_cycles(cycle, cycles):
+    """Rows whose cycle starts between the first and the last year of cycles."""
+    first, last = cycles
+    return cycle.isin([cycle_label(year) for year in CYCLES if first <= year <= last])
+
+
+def within(values, limits):
+    """Values between low and high, both included. No limits (None) → every row."""
+    if limits is None:
+        return pd.Series(True, index=values.index)
+    low, high = limits
+    return values.between(-np.inf if low is None else low, np.inf if high is None else high)
+
+
+def corrected(value, scale, slope, intercept, square, minimum):
+    """One CDC equation on its scale, back to the original units and not below minimum."""
+    x = to_scale(value, scale)
+    result = from_scale(slope * x + intercept + square * x ** 2, scale)
+    return result if minimum is None else result.clip(lower=minimum)
+
+
+def to_scale(value, scale):
+    """Original units → scale of the equation (linear, log10 or sqrt)."""
+    if scale == "log10":
+        return np.log10(value)
+    if scale == "sqrt":
+        return np.sqrt(value)
+    return value
+
+
+def from_scale(value, scale):
+    """Scale of the equation → original units."""
+    if scale == "log10":
+        return 10 ** value
+    if scale == "sqrt":
+        return value ** 2
+    return value
 
 
 def remove_missing_codes(raw):
@@ -190,10 +232,3 @@ def physical_activity(raw):
 def save(clean):
     """Silver clean → parquet."""
     clean.to_parquet(SILVER_CLEAN, index=False)
-
-
-def print_summary(clean):
-    """Persons, deaths, columns and % with value per variable."""
-    print(f"{len(clean)} persons, {int(clean['death'].sum())} deaths, {clean.shape[1]} columns, saved to {SILVER_CLEAN.name}\n")
-    coverage = (clean.notna().mean() * 100).round(0).astype(int)
-    print(coverage.to_string())
