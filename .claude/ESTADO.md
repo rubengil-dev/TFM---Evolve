@@ -51,6 +51,3 @@ Despliegue:
 
 ### Mejoras futuras
 - Triglicéridos sin ayuno: usarlos corrigiéndolos, además de los de ayunas.
-
-### Pendiente de probar yo
-Nada.

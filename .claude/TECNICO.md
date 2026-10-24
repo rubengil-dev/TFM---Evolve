@@ -5,8 +5,7 @@
 
 ## Repo
 - GitHub: https://github.com/rubengil-dev/TFM---Evolve. Rama principal: `main`.
-- Saltos de línea LF, fijados en `.gitattributes`. Al reescribir archivos con scripts en Windows, conservar LF.
-- Ignorados en git: `data/`, `private/`, `.venv/` y `.env`.
+- Ignorados en git: `data/`, `private/`, `.venv/` y `.env`. Windows, con Git Bash y PowerShell.
 
 ## Entorno
 - Python 3.11 en `.venv`: `py -3.11 -m venv .venv` y `.venv/Scripts/python -m pip install -r requirements.txt`.

@@ -4,29 +4,39 @@
 - **Se actualiza:** solo si yo lo pido, porque cambie la idea o el diseño del producto.
 
 ## Qué es
-TFM del máster de Data Science e IA de EVOLVE: la **Idea 4 de la Entrega 01, calculadora de edad biológica a partir de una analítica**.
+TFM del máster de Data Science e IA de EVOLVE: **Calculadora de edad biológica a partir de una analítica (y formulario)**.
 
 No hay memoria escrita. Se evalúa el producto completo (modelo + UX/front + despliegue), igual que un usuario evalúa una app: por su funcionalidad y su precisión.
 
 ## El producto
-Calculadora web gratuita, sin registro ni captura de email, que estima la edad biológica a partir de una analítica de sangre real. Se accede con un enlace a una web pública, sin instalar nada. Interfaz en español.
+Calculadora web gratuita que estima la edad biológica a partir de una analítica de sangre real. Se accede con un enlace a una web pública, sin instalar nada. Interfaz en español.
 
 Usuario objetivo: españoles sin formación médica que la usan desde casa.
 
 Flujo: **subir PDF → revisar/corregir los datos extraídos (y responder el cuestionario, si se elige ese modo) → ver resultado**.
 
-El resultado muestra:
+El resultado muestra SIEMPRE:
 - Edad biológica estimada ± X años, con X según la precisión de cada caso (menor si faltan datos), y la diferencia con la edad cronológica.
 - Los mejores y los peores parámetros del usuario, en tablas y explicados en lenguaje llano.
-- Si la edad biológica supera la cronológica por encima de un umbral: recomendación de revisar la analítica con su médico.
-- Aviso asimétrico: salir por encima es señal para consultar, pero salir bien no significa estar sano.
 - Aviso de que no es consejo médico ni diagnóstico. No se dan recomendaciones (suplementos, tratamientos…), solo observaciones de los datos.
+- Aviso asimétrico de que salir por encima es señal para consultar, pero salir bien no significa estar sano.
 
-Qué datos usa: lo que trae una analítica de rutina española, lo que se pide a menudo (p. ej. vitamina D) y lo que el usuario sabe sin pensar (edad, sexo, peso, talla), siempre que exista en NHANES. Edad y sexo se extraen del PDF si vienen; si no, se piden. Dato opcional para afinar, nunca obligatorio: tensión arterial. Solo adultos, dentro del rango de edad de los datos de entrenamiento.
+El resultado muestra cuando SE HACE EL CUESTIONARIO:
+- Cuánto años suman/restan sus hábitos.
+
+El resultado muestra cuando LA EDAD BIOLÓGICA esté POR ENCIMA DE UN UMBRAL (sin importar si hay o no cuestionario):
+- Recomendación de revisar la analítica con su médico.
+
+### Datos
+Usa lo que trae una analítica de rutina española, lo que se pide a menudo (p. ej. vitamina D) y lo que el usuario sabe sin pensar (edad, sexo, peso, talla), siempre que exista en NHANES. Edad y sexo se extraen del PDF si vienen; si no, se piden. Dato opcional para afinar, nunca obligatorio: tensión arterial. 
 
 Las analíticas no traen siempre los mismos parámetros: si falta algún dato, se calcula igualmente con menos fiabilidad; si faltan demasiados, se avisa de que no se puede calcular.
 
-Dos modos, a elección del usuario: solo con la analítica, o con la analítica más un cuestionario de hábitos de vida (tabaco, alcohol, actividad, sedentarismo, comida rápida, sueño) de ~10 preguntas de botones, sin escribir. Solo datos objetivos; nada de autovaloraciones ("¿cómo de sana es tu dieta?", "¿cómo es tu salud?").
+### Población
+Solo adultos, dentro del rango de edad de los datos de entrenamiento.
+
+### Diseño
+Dos modos, a elección del usuario: solo con la analítica, o con la analítica más un cuestionario de hábitos de vida (tabaco, alcohol, actividad, sedentarismo, comida rápida, sueño) de ~10 preguntas (sin inputs escritos). Solo datos objetivos; nada de autovaloraciones ("¿cómo de sana es tu dieta?", "¿cómo es tu salud?").
 
 ### Propuesta de valor (frente a lo que existe)
 - Sin introducir datos a mano: la app lee los valores del PDF.
