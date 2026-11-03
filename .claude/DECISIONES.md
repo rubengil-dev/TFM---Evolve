@@ -78,8 +78,8 @@
 - **Por qué:** el usuario trae una analítica española, y así no hay que convertir al recibirla.
 
 ### ¿Qué se hace con los valores imposibles?
-- **Decisión:** en Silver clean se vacían los valores fuera de un rango posible por variable: límites muy por encima de los casos clínicos más extremos (p. ej. LDH < 30, HbA1c < 3 %, diastólica < 20 o más de 50 copas al día). La tabla guarda también el rango normal y el porqué de cada límite.
-- **Por qué:** son errores de dato o de unidades, no outliers. Se vacían antes de Gold para que no entren en las features derivadas, y no es leakage porque es una regla fija. Los outliers reales se tratan en el preprocesado. La app puede reutilizar la tabla en la pantalla de revisión para detectar lecturas erróneas del PDF.
+- **Decisión:** en Silver clean se vacían los valores fuera de un rango posible por variable. El criterio es el de un adulto que va por su pie a una analítica programada: fuera del rango queda lo que solo se ve en una emergencia vital o es un artefacto (p. ej. glucosa > 600, sodio < 100, potasio > 6,5 por muestra hemolizada, diastólica < 30). Los extremos de una enfermedad conocida se quedan (glucosa de 300 en un diabético, creatinina de 15 en diálisis, hierro muy bajo en una ferropenia). La tabla guarda también el rango normal y el porqué de cada límite.
+- **Por qué:** son errores o casos que no representan al usuario de la app, no outliers. Se vacían antes de Gold para que no entren en las features derivadas, y no es leakage porque es una regla fija. Los outliers reales se tratan en el preprocesado.
 
 ### ¿Glucosa, triglicéridos y LDL con o sin ayuno?
 - **Decisión:** glucosa en suero en todas las personas; triglicéridos solo con ayuno ≥ 8 h; LDL fuera.
@@ -148,6 +148,10 @@
 - **Por qué:** infraestimar da una falsa tranquilidad; sobreestimar solo manda al médico. Y un error grande en una persona concreta resta más confianza en el producto que una media algo peor.
 
 ## App
+
+### ¿Qué pasa si la analítica trae un valor fuera del rango posible?
+- **Decisión:** primero, en la pantalla de revisión, se pide al usuario que compruebe el valor (puede ser una mala lectura del PDF). Si lo confirma, la app no calcula la edad biológica y muestra un aviso para ir al médico cuanto antes. Usa la misma tabla de rangos que Silver clean.
+- **Por qué:** son valores de emergencia o de una muestra defectuosa. Dar una edad biológica ahí sería engañoso, y el modelo no ha visto esos valores.
 
 ### ¿Qué hacer si el usuario trae la pareja de una variable del modelo pero no la variable?
 - **Decisión:** estimarla con una ecuación ajustada sobre Gold (p. ej. hemoglobina a partir del hematocrito), solo para parejas con correlación alta.
