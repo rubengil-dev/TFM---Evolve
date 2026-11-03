@@ -18,7 +18,7 @@ Silver clean step, the study population with clean variables and readable names:
 import numpy as np
 import pandas as pd
 
-from src.config.codes import (
+from src.config.nhanes_codes import (
     ALCOHOL_DAYS_2017, ALCOHOL_UNIT_DAYS, LIFETIME_100_PLUS, MISSING_CODES, MORE_THAN_21_MEALS, NEVER_WHOLE_CIGARETTE,
 )
 from src.config.corrections import CORRECTIONS

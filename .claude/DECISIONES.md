@@ -115,6 +115,26 @@
 
 ## Modelo
 
+### ¿Qué tipo de problema es?
+- **Decisión:** supervivencia (tiempo hasta la muerte). El modelo estima el riesgo de morir y ese riesgo se traduce a edad biológica, que es lo que recibe el front.
+- **Por qué:** no existe una etiqueta de edad biológica real; la mortalidad sí se observa.
+
+### ¿A qué horizonte?
+- **Decisión:** 10 años. Fija a qué plazo se traduce el riesgo a edad y a qué plazo se evalúan el C-index y la calibración. Se entrena con todo el seguimiento, censurados incluidos.
+- **Por qué:** es el horizonte de PhenoAge, y así la comparación es directa. A 5 años hay pocas muertes y en jóvenes el riesgo es casi cero; a 15, solo 3 de los 10 ciclos tienen seguimiento completo.
+
+### ¿Cómo se separan los datos?
+- **Decisión:** 80/20 aleatorio, estratificado por ciclo y muerte. El test se mira una sola vez, al final; la comparación de modelos y el preprocesado se hacen con validación cruzada de 5 bloques dentro de train.
+- **Por qué:** la estratificación reparte por igual los huecos por ciclo y las muertes. Separar por ciclos dejaría un test con muy pocas muertes (los ciclos recientes tienen poco seguimiento).
+
+### ¿Qué columnas no pueden ser predictores?
+- **Decisión:** las de contexto y el desenlace: `seqn`, `cycle`, `weight_exam`, `follow_up_months` y `death`.
+- **Por qué:** no existen para el usuario de la app. `cycle` además filtraría: los ciclos recientes tienen menos muertes por su seguimiento más corto, no por estar más sanos.
+
+### ¿Cuál es el baseline?
+- **Decisión:** un Cox solo con edad y sexo, que equivale a decir que la edad biológica es la cronológica. Lo tiene que superar el Cox con biomarcadores; PhenoAge es la referencia externa.
+- **Por qué:** es el baseline sencillo, interpretable y realista: si la analítica no mejora la predicción de la mortalidad frente a la edad, la edad biológica no aporta nada.
+
 ### ¿Modelo clásico o deep learning?
 - **Decisión:** primero un modelo clásico como baseline; deep learning solo si mejora de forma justificable.
 - **Por qué:** un modelo clásico es más fácil de explicar y de desplegar en un plan gratuito; la complejidad extra solo compensa si mejora claramente.

@@ -5,11 +5,9 @@
 
 ## Próxima sesión
 Empezar la fase de modelo, en este orden:
-1. Añadir, antes de guardar en gold, una capa de validación de datos. A decidir si hacerlo en un script aparte que importemos en build gold o directamente en build gold.
-2. Definir el problema: horizonte temporal, separación train/test y variables excluidas por leakage.
-3. Estrategia para analíticas incompletas: imputación, un modelo por subconjunto de variables o modelos que toleren ausentes. Ojo: en NHANES los huecos van por ciclo y en la app por usuario.
-4. Arquitectura: Cox como baseline; después, si compensa, árboles de supervivencia o deep learning.
-5. Variables: cuál entra de cada pareja muy correlacionada y qué juego de cada combinación lineal.
+1. Estrategia para analíticas incompletas: imputación, un modelo por subconjunto de variables o modelos que toleren ausentes. Ojo: en NHANES los huecos van por ciclo y en la app por usuario.
+2. Arquitectura: Cox como baseline; después, si compensa, árboles de supervivencia o deep learning.
+3. Variables: cuál entra de cada pareja muy correlacionada y qué juego de cada combinación lineal.
 
 ## Fases
 - [x] Datos
@@ -32,9 +30,8 @@ Empezar la fase de modelo, en este orden:
 
 ### Decisiones abiertas
 Modelo:
-- Horizonte temporal: a cuántos años se predice la mortalidad (PhenoAge usa 10). Condiciona la traducción de riesgo a edad, las métricas y qué ciclos tienen seguimiento suficiente.
-- Riesgos de leakage a revisar: preprocesado ajustado fuera de train, separación train/test no estratificada por ciclo, y variables que son casi el desenlace (diagnósticos previos, medicación).
-- Baseline mínimo: Cox solo con edad y sexo, como referencia que el modelo con biomarcadores tiene que superar.
+- Causalidad inversa: los muertos en los 2 primeros años, ya muy enfermos al hacerse la analítica, pueden inflar el C-index. Se dejan dentro (como PhenoAge) y se hace una prueba de sensibilidad quitándolos; si cae mucho, va a limitaciones.
+- Pesos muestrales de NHANES: si se usan al entrenar y al evaluar.
 - Métrica del error asimétrico: cómo penalizar más infraestimar la edad que sobreestimarla, y cómo medir las colas de error (casos que se desvían mucho).
 - Mínimo viable de variables: con qué datos faltantes se deja de calcular.
 - Modo con cuestionario: un modelo aparte con hábitos o uno solo que tolere su ausencia, según el C-index.
