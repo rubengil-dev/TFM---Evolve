@@ -1,5 +1,5 @@
 """
-Role of each Gold column: identification, outcome or candidate predictor.
+Role of each Gold column: identification, outcome, candidate predictor or derived feature.
 """
 
 # Identification and survey weight (not model inputs)
@@ -31,3 +31,9 @@ QUESTIONNAIRE = [
 ]
 
 SILVER_PREDICTORS = DEMOGRAPHICS + BLOOD_COUNT + BIOCHEMISTRY + MEASURES + QUESTIONNAIRE
+
+# Derived features (utils/features.py)
+DERIVED_FEATURES = [
+    "nlr", "plr", "sii", "non_hdl", "tg_hdl", "ast_alt", "globulin", "albumin_globulin",
+    "urea_creatinine", "egfr", "homa_ir", "pulse_pressure",
+]

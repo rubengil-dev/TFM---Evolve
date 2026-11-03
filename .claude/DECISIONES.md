@@ -74,8 +74,12 @@
 - **Por qué:** solo hay cuestionario juvenil en 2009-2010 (278 personas, 2 defunciones), así que 1999-2008 seguiría vacío; y no encaja con el de adultos: pregunta por los últimos 30 días en vez del último año y no recoge bebidas por día.
 
 ### ¿En qué unidades?
-- **Decisión:** las del laboratorio español: urea (BUN × 2,14), PCR en mg/L (los dos ensayos en una columna) y cociente albúmina/creatinina en orina en mg/g.
+- **Decisión:** las del laboratorio español: urea (BUN × 2,14), PCR en mg/L (los dos ensayos en una columna), cociente albúmina/creatinina en orina en mg/g y vitamina D en ng/mL (nmol/L ÷ 2,5).
 - **Por qué:** el usuario trae una analítica española, y así no hay que convertir al recibirla.
+
+### ¿Qué se hace con los valores imposibles?
+- **Decisión:** en Silver clean se vacían los valores fuera de un rango posible por variable: límites muy por encima de los casos clínicos más extremos (p. ej. LDH < 30, HbA1c < 3 %, diastólica < 20 o más de 50 copas al día). La tabla guarda también el rango normal y el porqué de cada límite.
+- **Por qué:** son errores de dato o de unidades, no outliers. Se vacían antes de Gold para que no entren en las features derivadas, y no es leakage porque es una regla fija. Los outliers reales se tratan en el preprocesado. La app puede reutilizar la tabla en la pantalla de revisión para detectar lecturas erróneas del PDF.
 
 ### ¿Glucosa, triglicéridos y LDL con o sin ayuno?
 - **Decisión:** glucosa en suero en todas las personas; triglicéridos solo con ayuno ≥ 8 h; LDL fuera.
@@ -92,6 +96,10 @@
 ### ¿Qué se hace en Gold y qué en el preprocesado del modelo?
 - **Decisión:** en Gold solo fórmulas fijas (features derivadas). Rellenar huecos, recortar extremos, escalar y codificar van al preprocesado, ajustado solo con train.
 - **Por qué:** hacerlo con todo el dataset filtraría información del test.
+
+### ¿Cómo se valida Gold?
+- **Decisión:** antes de guardar, en un módulo aparte que llama el paso de Gold. Bloquean (Gold no se guarda): columnas y tipos, tamaño mínimo (personas en total y por ciclo, y defunciones), cobertura mínima (más baja para las variables medidas solo en parte de la muestra), obligatorias sin huecos y sin personas repetidas, desenlace, población, respuestas permitidas y rangos posibles. Solo avisan: las coherencias entre variables (HDL < colesterol total, albúmina < proteínas, diastólica < sistólica, IMC con peso y talla).
+- **Por qué:** una Gold rota o incompleta no avisa por sí sola y falsearía el modelo. Los mínimos de tamaño cuentan las defunciones porque el modelo de supervivencia aprende de ellas, no de las filas.
 
 ### ¿Dónde viven las fórmulas de las features derivadas?
 - **Decisión:** en un único módulo compartido entre el pipeline y la futura app.

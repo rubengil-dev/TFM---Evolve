@@ -5,11 +5,12 @@ Silver clean step, the study population with clean variables and readable names:
     - Variables:
         - Kept as they are, renamed (CLEAN_NAMES)
         - Same test from two files → one column (cholesterol, triglycerides, CRP)
-        - Spanish lab units (urea, urine albumin/creatinine ratio)
+        - Spanish lab units (urea, urine albumin/creatinine ratio, vitamin D)
         - Triglycerides only with fasting ≥ FASTING_HOURS_MIN
         - Blood pressure: mean of readings
         - Questionnaires → form answers (skipped questions: never drinkers, never smokers)
         - Survey weights for the 10 cycles combined
+    - Values outside PLAUSIBLE_RANGES (data or unit errors) → missing
     - Saved to data/02_silver/silver_clean.parquet
 """
 
@@ -22,6 +23,7 @@ from src.config.codes import (
 )
 from src.config.corrections import CORRECTIONS
 from src.config.paths import SILVER_CLEAN, SILVER_RAW
+from src.config.plausible_ranges import PLAUSIBLE_RANGES
 from src.config.renames import CLEAN_NAMES
 from src.config.sources import CYCLES
 from src.config.study import ALCOHOL_FREQUENCY, FASTING_HOURS_MIN, YOUTH_CURRENT_SMOKER_DAYS
@@ -44,6 +46,8 @@ def run():
         blood_pressure(raw),
         questionnaire(raw),
     ], axis=1)
+    clean = vitamin_d_to_ng_ml(clean)
+    clean = remove_implausible_values(clean)
 
     save(clean)
     print_layer_summary(clean, SILVER_CLEAN)
@@ -260,6 +264,24 @@ def physical_activity(raw):
         default=None,
     )
     return pd.Series(answer, index=raw.index)
+
+
+def vitamin_d_to_ng_ml(clean):
+    """Vitamin D: nmol/L → ng/mL (÷ 2.5)."""
+    clean["vitamin_d"] = clean["vitamin_d"] / 2.5
+    return clean
+
+
+def remove_implausible_values(clean):
+    """Values outside PLAUSIBLE_RANGES limits → missing, with a count per variable."""
+    print("Implausible values set to missing:")
+    for variable, (_, _, (low, high), _) in PLAUSIBLE_RANGES.items():
+        implausible = clean[variable].notna() & ~clean[variable].between(low, high)
+        if implausible.any():
+            print(f"    {variable}: {implausible.sum()}")
+        clean[variable] = clean[variable].mask(implausible)
+    print()
+    return clean
 
 
 def save(clean):

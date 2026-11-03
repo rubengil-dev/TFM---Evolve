@@ -3,6 +3,7 @@ Gold step, the only table the model and the app read (one row per person):
     - Derived features (utils/features.py)
     - Columns: identification, outcome, candidate predictors (config/column_roles.py) and derived features
     - Follow-up of 0 months → FOLLOW_UP_MIN
+    - Validation (utils/validation.py): any error → not saved
     - Saved to data/03_gold/gold.parquet
 """
 
@@ -14,6 +15,7 @@ from src.config.paths import GOLD, GOLD_TABLE, SILVER_CLEAN
 from src.config.study import FOLLOW_UP_MIN
 from src.utils.features import derived_features
 from src.utils.summary import print_layer_summary
+from src.utils.validation import validate_gold
 
 
 def run():
@@ -24,6 +26,7 @@ def run():
         derived_features(clean),
     ], axis=1)
     gold = fix_zero_follow_up(gold)
+    validate_gold(gold)
 
     save(gold)
     print_layer_summary(gold, GOLD_TABLE)
