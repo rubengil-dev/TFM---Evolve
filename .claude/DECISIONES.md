@@ -143,6 +143,30 @@
 - **Decisión:** con métricas de supervivencia (C-index y calibración) y con distintos subconjuntos de variables.
 - **Por qué:** son las métricas estándar de supervivencia, y los subconjuntos dicen cuánto se pierde según lo que falte en la analítica.
 
+### ¿Cuántos modelos y cómo se comparan?
+- **Decisión:** una escalera de niveles. Nivel 0: el baseline (Cox con edad y sexo). Nivel 1: Base (edad, sexo y el bloque principal). Nivel 2: Base + Extras y Base + Cuestionario. Nivel 3: Completo. Cada nivel tiene que superar al mejor del anterior, y cada salto se explica por lo que aporta.
+- **Por qué:** cada comparación responde a una pregunta del producto: cuánto aporta la analítica frente a la edad, cuánto la analítica ampliada y cuánto los hábitos.
+
+### ¿Qué algoritmos compiten?
+- **Decisión:** en cada nivel, los mismos cuatro y en igualdad: Cox, Cox elastic net, random survival forest y gradient boosting (XGBoost o similar). Gana el mejor de cada nivel.
+- **Por qué:** el elastic net selecciona variables por sí solo; los árboles captan relaciones no lineales. Con los mismos contendientes en cada nivel, los saltos entre niveles son comparables.
+
+### ¿Cómo se eligen las variables de cada nivel?
+- **Decisión:** se anidan. Cada nivel parte de las variables que sobrevivieron en el anterior y solo añade su bloque. Si en un nivel no sobrevive casi nada de lo añadido, ese modelo se descarta.
+- **Por qué:** así cada salto mide solo lo que aporta el bloque nuevo, y se evita volver a probar lo ya descartado.
+
+### ¿Cómo se tratan las analíticas incompletas?
+- **Decisión:** con los cuatro modelos más imputación. La variable que falte de una pareja correlacionada se estima siempre desde su pareja, en todos los modelos y en la app; el resto de huecos sueltos se imputan con un imputador ajustado solo con train. No se usan los nulos como información.
+- **Por qué:** en NHANES un hueco suele significar "ciclo sin esa prueba", y los ciclos antiguos tienen más muertes por su seguimiento largo: un modelo que aprenda de los nulos aprendería el ciclo. En la app, un hueco significa "no me lo han pedido".
+
+### ¿Qué modelo usa la app?
+- **Decisión:** el más completo que permitan los datos del usuario, pero solo si ese nivel ha superado de verdad al anterior; si no, el anterior. No se promedian modelos.
+- **Por qué:** promediar con un modelo peor empeora el resultado, y un modelo que no mejora solo añade preguntas y datos que pueden faltar.
+
+### ¿Cómo se organiza el código del modelo?
+- **Decisión:** un archivo por paso, no por modelo, en `src/models/` con prefijo `s1_`…`s5_` (split, preprocesado, algoritmos, edad biológica, evaluación). Las variables de cada bloque y el algoritmo ganador de cada modelo, en `src/config/model_sets.py`. El punto de entrada del entrenamiento, `src/train.py`, junto a `main.py`. Un notebook de trabajo por modelo, que importa de `src/`.
+- **Por qué:** los cuatro modelos son el mismo proceso con otra lista de variables; por modelo serían cuatro copias. Split se separa del preprocesado porque la app usa el preprocesado y nunca el split. La edad biológica va aparte porque es igual para todos los algoritmos. Python no importa módulos que empiezan por número; de ahí la `s`.
+
 ### ¿Qué error es peor?
 - **Decisión:** infraestimar la edad biológica (falso negativo) es peor que sobreestimarla. Con métricas parecidas, se prefiere el modelo con menos errores grandes aunque su media sea algo peor.
 - **Por qué:** infraestimar da una falsa tranquilidad; sobreestimar solo manda al médico. Y un error grande en una persona concreta resta más confianza en el producto que una media algo peor.

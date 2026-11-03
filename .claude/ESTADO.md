@@ -5,9 +5,9 @@
 
 ## Próxima sesión
 Empezar la fase de modelo, en este orden:
-1. Estrategia para analíticas incompletas: imputación, un modelo por subconjunto de variables o modelos que toleren ausentes. Ojo: en NHANES los huecos van por ciclo y en la app por usuario.
-2. Arquitectura: Cox como baseline; después, si compensa, árboles de supervivencia o deep learning.
-3. Variables: cuál entra de cada pareja muy correlacionada y qué juego de cada combinación lineal.
+1. Fijar qué variables forman cada bloque (Base, Extras y Cuestionario), cuál entra de cada pareja muy correlacionada y qué juego de cada combinación lineal.
+2. Montar `src/models/` y `src/train.py` y hacer de principio a fin el nivel 0 (baseline) y el nivel 1 (Base) con los cuatro contendientes.
+3. Repetir con los niveles 2 y 3, cada uno en su notebook de trabajo.
 
 ## Fases
 - [x] Datos
@@ -34,7 +34,7 @@ Modelo:
 - Pesos muestrales de NHANES: si se usan al entrenar y al evaluar.
 - Métrica del error asimétrico: cómo penalizar más infraestimar la edad que sobreestimarla, y cómo medir las colas de error (casos que se desvían mucho).
 - Mínimo viable de variables: con qué datos faltantes se deja de calcular.
-- Modo con cuestionario: un modelo aparte con hábitos o uno solo que tolere su ausencia, según el C-index.
+- Criterio de mejora real entre niveles (propuesta: intervalo de confianza por bootstrap de la diferencia de C-index que no incluya el 0).
 
 Resultado:
 - Cómo calcular y mostrar el margen ± X años.

@@ -23,7 +23,7 @@
 - En cambios grandes (reestructuraciones, rediseños), antes de ejecutarlos lista punto a punto qué borras y qué creas, para tener el control y reflejarlo en `HISTORICO.md`. Del código existente conserva lo que sirva para no gastar tokens, pero cambia sin miedo lo que no sirva o se pueda hacer mejor.
 - Al terminar, resume como un dev junior a su jefe de proyecto: por cada archivo nuevo o cambiado, 2-4 líneas de qué hace y cómo se combinan sus funciones principales para dar el resultado. Sin código ni explicación línea a línea. Los docstrings, claros, para que también sirvan de resumen.
 - Cuando cambies archivos de `.claude/`, dime solo qué archivos has tocado y qué has cambiado, en pocas líneas. Cuando dé el OK a una revisión, commit, para que la siguiente ronda de cambios se vea limpia en el editor.
-- Si hay notebooks y código, los notebooks son independientes: no importan nada del código. Las funciones que comparten se duplican y, si cambian, se actualizan en los dos sitios.
+- Si hay notebooks y código, los notebooks entregables son independientes: no importan nada del código. Las funciones que comparten se duplican y, si cambian, se actualizan en los dos sitios. Los notebooks de trabajo (experimentos, pruebas) sí importan del código.
 
 ## Pruebas
 - Las ejecutas tú (tests, scripts, servidor local + peticiones).
