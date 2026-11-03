@@ -3,6 +3,10 @@
 - **No contiene:** cifras, decisiones con su porqué ni el estado actual.
 - **Se actualiza:** al cerrar cada sesión, después del commit del trabajo.
 
+## 2026-11-03: bloques de variables del modelo
+- Bloques Base, Extras y Cuestionario fijados y lista de descartadas con su motivo en `model_sets.py`; elección de parejas y combinaciones lineales en DECISIONES; salto del RDW apuntado como limitación; notebook de correlaciones de las candidatas a Base; esqueleto de `src/models/` y `src/train.py`, solo con docstrings (`196e6bd`).
+- Incidencia: un primer análisis de lo que aporta cada variable frente a la mortalidad se hizo en scripts temporales, fuera de notebooks y sin acordarlo; se descartó y no se usó para decidir.
+
 ## 2026-11-03: validación de Gold y diseño del modelo
 - Resumen de la vuelta tras una semana, con los apuntes de la clase del profesor y el enunciado de la Entrega 03 en ESTADO y DECISIONES (`ee487aa`).
 - Validación de Gold antes de guardar, en su propio módulo con sus umbrales; rangos posibles por variable con criterio ambulatorio (emergencia o artefacto), con rango normal y porqué; valores fuera de rango vaciados en Silver clean; vitamina D a ng/mL (`168cbc4`, `258f68c` merge de `validacion-gold`, `c7ee1e7`).
