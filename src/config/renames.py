@@ -91,7 +91,7 @@ CLEAN_NAMES = {
     "LBXSLDSI":     "ldh",                # U/L
     "LBXSCK":       "cpk",                # U/L
     "LBXGH":        "hba1c",              # %
-    "LBXVIDMS":     "vitamin_d",          # nmol/L
+    "LBXVIDMS":     "vitamin_d",          # nmol/L (ng/mL in Silver clean)
     "LBXIN":        "insulin",            # uU/mL, fasting subsample
 
     # Measures

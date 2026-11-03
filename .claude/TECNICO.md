@@ -17,8 +17,8 @@
 
 ## Estructura
 - `src/main.py`: único punto de entrada del pipeline; llama a cada `run()` en orden.
-- `src/config/`: rutas, fuentes externas, códigos de los cuestionarios, parámetros del estudio, renombres, correcciones CDC y papel de cada columna de Gold.
-- `src/utils/`: funciones compartidas por tema (descarga, lectura de NHANES, fórmulas de las features derivadas, resumen de cada capa).
+- `src/config/`: rutas, fuentes externas, códigos de los cuestionarios, parámetros del estudio, renombres, correcciones CDC, papel de cada columna de Gold, rangos posibles por variable y umbrales de la validación.
+- `src/utils/`: funciones compartidas por tema (descarga, lectura de NHANES, fórmulas de las features derivadas, resumen de cada capa, validación de Gold).
 - `src/pipeline/`: un archivo por paso, cada uno con su `run()`.
 - `notebooks/`: exploración y muestra para la Entrega 02.
 - `docs/entregas/`: entregas del máster.
@@ -28,8 +28,8 @@
 ## Datos
 - Bronze (`data/01_bronze/`): una carpeta por ciclo con los ficheros de la CDC y su nombre original, mortalidad incluida. La descarga es reanudable y deja un `manifest.csv`.
 - Silver raw (`data/02_silver/silver_raw.parquet`): un único dataframe, una fila por persona, con los alias de laboratorio ya unificados entre ciclos.
-- Silver clean (`data/02_silver/silver_clean.parquet`): población del estudio, correcciones CDC, unidades españolas, cuestionarios a respuestas de botón y pesos combinados.
-- Gold (`data/03_gold/gold.parquet`): la tabla del modelo y de la app, con identificación, desenlace, predictores candidatos (parejas correlacionadas incluidas) y features derivadas.
+- Silver clean (`data/02_silver/silver_clean.parquet`): población del estudio, correcciones CDC, unidades españolas, cuestionarios a respuestas de botón, pesos combinados y valores imposibles vaciados.
+- Gold (`data/03_gold/gold.parquet`): la tabla del modelo y de la app, con identificación, desenlace, predictores candidatos (parejas correlacionadas incluidas) y features derivadas. Solo se guarda si pasa la validación.
 
 ## Limitaciones conocidas de los datos
 - Fosfatasa alcalina y LDH más altas en 1999-2000, sin ecuación oficial de corrección. Urea algo más alta en 2017-2018 incluso corregida.
