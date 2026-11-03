@@ -4,10 +4,11 @@
 - **Se actualiza:** al cerrar cada sesión.
 
 ## Próxima sesión
-Empezar la fase de modelo, en este orden:
-1. Fijar qué variables forman cada bloque (Base, Extras y Cuestionario), cuál entra de cada pareja muy correlacionada y qué juego de cada combinación lineal.
-2. Montar `src/models/` y `src/train.py` y hacer de principio a fin el nivel 0 (baseline) y el nivel 1 (Base) con los cuatro contendientes.
-3. Repetir con los niveles 2 y 3, cada uno en su notebook de trabajo.
+Seguir con la fase de modelo, por pasos pequeños y con lo que se analice en notebooks. Bloques de variables ya fijados; `src/models/` y `src/train.py` ya existen, solo con su docstring. En este orden:
+1. Revisar en la documentación de la CDC el salto del RDW y decidir qué se hace con él.
+2. Rellenar `s1_split.py`: el split es lo primero que necesita todo lo demás.
+3. Seguir con el resto de `src/models/` y `src/train.py` y hacer de principio a fin el nivel 0 (baseline) y el nivel 1 (Base) con los cuatro contendientes.
+4. Repetir con los niveles 2 y 3, cada uno en su notebook de trabajo.
 
 ## Fases
 - [x] Datos
@@ -27,6 +28,7 @@ Empezar la fase de modelo, en este orden:
 
 ### Tareas
 - Conseguir analíticas de ejemplo de distintos laboratorios españoles para probar el parser (tengo PDFs propios).
+- Decidir cómo anonimizar los PDFs de `private/` antes de que Claude los lea; la app puede leerlos sin anonimizar en local.
 
 ### Decisiones abiertas
 Modelo:
@@ -34,6 +36,7 @@ Modelo:
 - Pesos muestrales de NHANES: si se usan al entrenar y al evaluar.
 - Métrica del error asimétrico: cómo penalizar más infraestimar la edad que sobreestimarla, y cómo medir las colas de error (casos que se desvían mucho).
 - Mínimo viable de variables: con qué datos faltantes se deja de calcular.
+- Relaciones en U (IMC, por ejemplo): si el Cox y el elastic net llevan términos curvos en el preprocesado, porque por sí solos no las ven y los árboles sí.
 - Criterio de mejora real entre niveles (propuesta: intervalo de confianza por bootstrap de la diferencia de C-index que no incluya el 0).
 
 Resultado:

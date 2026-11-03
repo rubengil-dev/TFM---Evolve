@@ -155,6 +155,14 @@
 - **Decisión:** se anidan. Cada nivel parte de las variables que sobrevivieron en el anterior y solo añade su bloque. Si en un nivel no sobrevive casi nada de lo añadido, ese modelo se descarta.
 - **Por qué:** así cada salto mide solo lo que aporta el bloque nuevo, y se evita volver a probar lo ya descartado.
 
+### ¿Qué variables forman cada bloque?
+- **Decisión:** las listas viven en `src/config/model_sets.py`. Base: lo que trae una analítica básica española (hemograma con fórmula e índices, glucosa, función renal, colesterol total y HDL, transaminasas, ácido úrico, sodio, potasio y calcio), más edad, sexo e IMC. Extras: lo que se pide a menudo o es opcional, incluidos triglicéridos, GGT, albúmina, PCR, vitamina D, tensión y el cociente albúmina/creatinina en orina. Cuestionario: las siete variables de hábitos. Las variables de Gold que no se usan quedan en una lista de descartadas con su motivo.
+- **Por qué:** cada bloque responde a qué trae el usuario, no a cuánto predice cada variable: si una aporta o no, lo dice el modelo en la escalera de niveles. Triglicéridos va a Extras porque solo está medido en el subgrupo en ayunas. Cintura y CPK se descartan porque el usuario no conoce la primera y la segunda solo existe en 4 ciclos.
+
+### ¿Qué entra de cada pareja y combinación lineal?
+- **Decisión:** por defecto, las variables que vienen escritas en el PDF. Serie roja: hemoglobina, hematíes y CHCM. Serie blanca: los cinco tipos, sin leucocitos. Colesterol total + HDL, proteínas totales + albúmina y sistólica + diastólica. El IMC sustituye a peso y talla, que el usuario sigue dando. Fuera insulina, HOMA-IR y los cocientes derivados.
+- **Por qué:** en una combinación lineal, el juego no cambia lo que sabe un Cox, y así la app no tiene que calcular nada. Hemoglobina, hematíes y CHCM son tres datos independientes de los que salen hematocrito, VCM y HCM. Leucocitos es la suma de los cinco tipos. Un Cox no puede construir por sí solo un cociente como el IMC. Insulina y HOMA-IR cubren menos de la mitad, con un salto sin explicar y rara vez pedidas. Si el modelo se queda corto, en futuras iteraciones se pueden reintroducir los descartados.
+
 ### ¿Cómo se tratan las analíticas incompletas?
 - **Decisión:** con los cuatro modelos más imputación. La variable que falte de una pareja correlacionada se estima siempre desde su pareja, en todos los modelos y en la app; el resto de huecos sueltos se imputan con un imputador ajustado solo con train. No se usan los nulos como información.
 - **Por qué:** en NHANES un hueco suele significar "ciclo sin esa prueba", y los ciclos antiguos tienen más muertes por su seguimiento largo: un modelo que aprenda de los nulos aprendería el ciclo. En la app, un hueco significa "no me lo han pedido".
