@@ -115,6 +115,10 @@
 - **Decisión:** con métricas de supervivencia (C-index y calibración) y con distintos subconjuntos de variables.
 - **Por qué:** son las métricas estándar de supervivencia, y los subconjuntos dicen cuánto se pierde según lo que falte en la analítica.
 
+### ¿Qué error es peor?
+- **Decisión:** infraestimar la edad biológica (falso negativo) es peor que sobreestimarla. Con métricas parecidas, se prefiere el modelo con menos errores grandes aunque su media sea algo peor.
+- **Por qué:** infraestimar da una falsa tranquilidad; sobreestimar solo manda al médico. Y un error grande en una persona concreta resta más confianza en el producto que una media algo peor.
+
 ## App
 
 ### ¿Qué hacer si el usuario trae la pareja de una variable del modelo pero no la variable?
