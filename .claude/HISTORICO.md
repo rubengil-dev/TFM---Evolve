@@ -3,6 +3,12 @@
 - **No contiene:** cifras, decisiones con su porqué ni el estado actual.
 - **Se actualiza:** al cerrar cada sesión, después del commit del trabajo.
 
+## 2026-11-03: validación de Gold y diseño del modelo
+- Resumen de la vuelta tras una semana, con los apuntes de la clase del profesor y el enunciado de la Entrega 03 en ESTADO y DECISIONES (`ee487aa`).
+- Validación de Gold antes de guardar, en su propio módulo con sus umbrales; rangos posibles por variable con criterio ambulatorio (emergencia o artefacto), con rango normal y porqué; valores fuera de rango vaciados en Silver clean; vitamina D a ng/mL (`168cbc4`, `258f68c` merge de `validacion-gold`, `c7ee1e7`).
+- `codes.py` renombrado a `nhanes_codes.py`; definición del problema: supervivencia a 10 años, 80/20 estratificado, columnas de contexto fuera de los predictores (`ae2e380`).
+- Diseño del modelo: escalera de niveles con cuatro contendientes, variables anidadas, imputación para analíticas incompletas, modelo de la app y estructura de `src/models/`; notebooks de trabajo pueden importar del código (`ce5abfa`).
+
 ## 2026-10-19: revisión del código y tabaco juvenil
 - Revisión integral del código contra la documentación de la CDC: nuevas correcciones de insulina (llevada a la escala de 2013-2018), PCR ultrasensible de 2017-2018 y creatinina en orina antes de 2007; códigos de los cuestionarios en su propio archivo; resumen de cada capa compartido; DEMO como base explícita de Silver raw; eGFR vacío si falta el sexo; limpieza de estilo.
 - Tabaco de los de 18-19 años hasta 2012 completado con las preguntas juveniles de NHANES; el alcohol juvenil se descarta. Espacios finales quitados de las entregas.
