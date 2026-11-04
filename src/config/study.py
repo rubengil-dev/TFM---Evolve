@@ -22,3 +22,8 @@ YOUTH_CURRENT_SMOKER_DAYS = 10  # days smoked of the past 30 to count an 18-19 y
 
 # Follow-up
 FOLLOW_UP_MIN = 0.1  # months; parametric survival models need time > 0
+
+# Split
+TEST_SIZE = 0.2
+CV_FOLDS = 5
+SPLIT_SEED = 42

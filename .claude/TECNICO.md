@@ -10,7 +10,7 @@
 ## Entorno
 - Python 3.11 en `.venv`: `py -3.11 -m venv .venv` y `.venv/Scripts/python -m pip install -r requirements.txt`.
 - Al añadir una librería: instalarla en `.venv` y regenerar con `pip freeze > requirements.txt`.
-- Librerías clave: pandas y numpy, pyarrow (parquet), lifelines (supervivencia), requests (descarga) y matplotlib.
+- Librerías clave: pandas y numpy, pyarrow (parquet), lifelines (supervivencia), scikit-learn (split), requests (descarga) y matplotlib.
 
 ## Comandos
 - Pipeline de datos completo, desde la raíz: `.venv/Scripts/python -m src.main`. Sin la descarga tarda menos de un minuto.
