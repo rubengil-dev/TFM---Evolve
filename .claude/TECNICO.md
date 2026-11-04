@@ -21,7 +21,7 @@
 - `src/config/`: rutas, fuentes externas, códigos de los cuestionarios, parámetros del estudio, renombres, correcciones CDC, papel de cada columna de Gold, rangos posibles por variable, umbrales de la validación y variables de cada bloque del modelo, con las descartadas.
 - `src/utils/`: funciones compartidas por tema (descarga, lectura de NHANES, fórmulas de las features derivadas, resumen de cada capa, validación de Gold).
 - `src/pipeline/`: un archivo por paso, numerado y con su `run()`: `s1_download_bronze`, `s2_build_raw_silver`, `s3_build_clean_silver`, `s4_build_gold` y `s5_build_model` (por ahora, sin lógica).
-- `src/models/`: los subpasos que llama `s5_build_model`: `s1_split`, `s2_preprocessing`, `s3_algorithms`, `s4_biological_age` y `s5_evaluation`. Por ahora, solo `s1_split` tiene lógica.
+- `src/models/`: los subpasos que llama `s5_build_model`: `s1_split`, `s2_preprocessing`, `s3_algorithms`, `s4_biological_age` y `s5_evaluation`. Por ahora, solo `s1_split` y `s2_preprocessing` tienen lógica.
 - `notebooks/`: exploración, muestra para la Entrega 02 y correlaciones de las candidatas a Base.
 - `docs/entregas/`: entregas del máster.
 - `data/`: capas de datos; se regenera con el pipeline.

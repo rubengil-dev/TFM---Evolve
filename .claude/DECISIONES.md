@@ -168,8 +168,12 @@
 - **Por qué:** la CDC lo atribuye al analizador y no da corrección oficial. Un ajuste propio no resolvería la escala de los laboratorios españoles, que es desconocida, y quitarlo sería decidir sin saber cuánto pesa.
 
 ### ¿Cómo se tratan las analíticas incompletas?
-- **Decisión:** con los cuatro modelos más imputación. La variable que falte de una pareja correlacionada se estima siempre desde su pareja, en todos los modelos y en la app; el resto de huecos sueltos se imputan con un imputador ajustado solo con train. No se usan los nulos como información.
+- **Decisión:** con los cuatro modelos más imputación. En la app, la variable que falte de una pareja correlacionada se estima desde su pareja; en NHANES no hace falta, porque las parejas faltan juntas. El resto de huecos se imputan con un imputador ajustado solo con train. No se usan los nulos como información.
 - **Por qué:** en NHANES un hueco suele significar "ciclo sin esa prueba", y los ciclos antiguos tienen más muertes por su seguimiento largo: un modelo que aprenda de los nulos aprendería el ciclo. En la app, un hueco significa "no me lo han pedido".
+
+### ¿Cómo se preprocesa?
+- **Decisión:** un `Pipeline` de scikit-learn, ajustado solo con train (el de cada ronda, en validación cruzada), que se guarda entero con el modelo. En este orden: recorte a los percentiles 0,1 y 99,9; huecos con la mediana, o la respuesta más frecuente, de su sexo y grupo de edad; logaritmo en las variables con asimetría mayor de 2; escalado; una columna 0/1 por categoría; y término al cuadrado en IMC y horas de sueño. Quien nunca bebe queda con 0 bebidas.
+- **Por qué:** con la mediana general, una persona mayor con un hueco parecería más joven, que es el error peor. El recorte y el logaritmo evitan que un valor extremo domine un modelo lineal; el cuadrado le deja ver las U conocidas, y se elige por conocimiento previo. Todos los modelos reciben los mismos datos, para que la comparación sea justa. El `Pipeline` reaprende cada ronda por sí solo, lo que evita fugas por descuido, y la app aplica exactamente el mismo objeto; a cambio, necesita las mismas versiones de scikit-learn. Imputar con otras variables o usar curvas flexibles queda para futuras iteraciones si el modelo se queda corto.
 
 ### ¿Qué modelo usa la app?
 - **Decisión:** el más completo que permitan los datos del usuario, pero solo si ese nivel ha superado de verdad al anterior; si no, el anterior. No se promedian modelos.
