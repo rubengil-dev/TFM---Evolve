@@ -3,6 +3,14 @@
 - **No contiene:** cifras, decisiones con su porqué ni el estado actual.
 - **Se actualiza:** al cerrar cada sesión, después del commit del trabajo.
 
+## 2026-11-04: código del modelo, hasta la evaluación
+- Salto del RDW: la CDC lo atribuye al cambio de analizador; se deja sin corregir y se medirá su efecto (`bf8a65e`).
+- Split 80/20 estratificado con 5 bloques en train (`cc20882`). Pipeline numerado de `s1` a `s5`, con `s5_build_model` como paso del modelo (`ab7e21e`).
+- Preprocesado reescrito como `Pipeline` de scikit-learn, siguiendo el de un proyecto anterior (`a01ae42`).
+- Cuatro contendientes con valores fijos; XGBoost sustituye al gradient boosting de scikit-survival, demasiado lento (`2d2e650`).
+- Evaluación a 10 años con resumen por nivel; notebooks por nivel, no por modelo; orden cambiado: entrenar y evaluar antes de traducir a edad (`7bad730`).
+- Incidencia: una tabla de resultados de un comando de prueba se presentó como si fueran resultados; solo sirvió para probar el código y no se usó para decidir.
+
 ## 2026-11-03: bloques de variables del modelo
 - Bloques Base, Extras y Cuestionario fijados y lista de descartadas con su motivo en `model_sets.py`; elección de parejas y combinaciones lineales en DECISIONES; salto del RDW apuntado como limitación; notebook de correlaciones de las candidatas a Base; esqueleto de `src/models/` y `src/train.py`, solo con docstrings (`196e6bd`).
 - Incidencia: un primer análisis de lo que aporta cada variable frente a la mortalidad se hizo en scripts temporales, fuera de notebooks y sin acordarlo; se descartó y no se usó para decidir.

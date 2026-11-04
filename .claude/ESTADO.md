@@ -4,7 +4,7 @@
 - **Se actualiza:** al cerrar cada sesión.
 
 ## Próxima sesión
-Seguir con la fase de modelo, por pasos pequeños y con lo que se analice en notebooks. Bloques de variables ya fijados; `src/models/` ya existe, solo con docstrings. En este orden:
+Seguir con la fase de modelo, por pasos pequeños y con lo que se analice en notebooks. Ya están hechos los bloques de variables, el split, el preprocesado, los cuatro modelos y la evaluación; aún no hay resultados válidos. En este orden:
 1. Entrenar y comparar el nivel 0 (baseline) y el nivel 1 (Base) con los cuatro contendientes, en su notebook de trabajo.
 2. Medir PhenoAge sobre los mismos datos, en ese notebook.
 3. Rellenar `s4_biological_age.py` y, en ese notebook, medir cuánto mueve la edad biológica el salto del RDW.
