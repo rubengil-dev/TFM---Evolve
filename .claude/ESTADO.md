@@ -4,10 +4,10 @@
 - **Se actualiza:** al cerrar cada sesión.
 
 ## Próxima sesión
-Seguir con la fase de modelo, por pasos pequeños y con lo que se analice en notebooks. Bloques de variables ya fijados; `src/models/` y `src/train.py` ya existen, solo con su docstring. En este orden:
-1. Revisar en la documentación de la CDC el salto del RDW y decidir qué se hace con él.
-2. Rellenar `s1_split.py`: el split es lo primero que necesita todo lo demás.
-3. Seguir con el resto de `src/models/` y `src/train.py` y hacer de principio a fin el nivel 0 (baseline) y el nivel 1 (Base) con los cuatro contendientes.
+Seguir con la fase de modelo, por pasos pequeños y con lo que se analice en notebooks. Bloques de variables ya fijados; `src/models/` ya existe, solo con docstrings. En este orden:
+1. Rellenar `s1_split.py`: el split es lo primero que necesita todo lo demás.
+2. Seguir con el resto de `src/models/` y hacer de principio a fin el nivel 0 (baseline) y el nivel 1 (Base) con los cuatro contendientes.
+3. En el notebook del nivel 1, medir cuánto mueve la edad biológica el salto del RDW.
 4. Repetir con los niveles 2 y 3, cada uno en su notebook de trabajo.
 
 ## Fases

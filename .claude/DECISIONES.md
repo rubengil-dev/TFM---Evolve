@@ -163,6 +163,10 @@
 - **Decisión:** por defecto, las variables que vienen escritas en el PDF. Serie roja: hemoglobina, hematíes y CHCM. Serie blanca: los cinco tipos, sin leucocitos. Colesterol total + HDL, proteínas totales + albúmina y sistólica + diastólica. El IMC sustituye a peso y talla, que el usuario sigue dando. Fuera insulina, HOMA-IR y los cocientes derivados.
 - **Por qué:** en una combinación lineal, el juego no cambia lo que sabe un Cox, y así la app no tiene que calcular nada. Hemoglobina, hematíes y CHCM son tres datos independientes de los que salen hematocrito, VCM y HCM. Leucocitos es la suma de los cinco tipos. Un Cox no puede construir por sí solo un cociente como el IMC. Insulina y HOMA-IR cubren menos de la mitad, con un salto sin explicar y rara vez pedidas. Si el modelo se queda corto, en futuras iteraciones se pueden reintroducir los descartados.
 
+### ¿Qué se hace con el salto del RDW?
+- **Decisión:** se deja sin corregir y en la Base. En el notebook del nivel 1 se mide cuántos años cambia la edad biológica si el RDW sube lo que subió con el cambio de analizador, con un límite aceptable fijado antes de ver el resultado. Si lo supera, se ajusta o se quita.
+- **Por qué:** la CDC lo atribuye al analizador y no da corrección oficial. Un ajuste propio no resolvería la escala de los laboratorios españoles, que es desconocida, y quitarlo sería decidir sin saber cuánto pesa.
+
 ### ¿Cómo se tratan las analíticas incompletas?
 - **Decisión:** con los cuatro modelos más imputación. La variable que falte de una pareja correlacionada se estima siempre desde su pareja, en todos los modelos y en la app; el resto de huecos sueltos se imputan con un imputador ajustado solo con train. No se usan los nulos como información.
 - **Por qué:** en NHANES un hueco suele significar "ciclo sin esa prueba", y los ciclos antiguos tienen más muertes por su seguimiento largo: un modelo que aprenda de los nulos aprendería el ciclo. En la app, un hueco significa "no me lo han pedido".
@@ -172,7 +176,7 @@
 - **Por qué:** promediar con un modelo peor empeora el resultado, y un modelo que no mejora solo añade preguntas y datos que pueden faltar.
 
 ### ¿Cómo se organiza el código del modelo?
-- **Decisión:** un archivo por paso, no por modelo, en `src/models/` con prefijo `s1_`…`s5_` (split, preprocesado, algoritmos, edad biológica, evaluación). Las variables de cada bloque y el algoritmo ganador de cada modelo, en `src/config/model_sets.py`. El punto de entrada del entrenamiento, `src/train.py`, junto a `main.py`. Un notebook de trabajo por modelo, que importa de `src/`.
+- **Decisión:** un archivo por paso, no por modelo, en `src/models/` con prefijo `s1_`…`s5_` (split, preprocesado, algoritmos, edad biológica, evaluación). Las variables de cada bloque y el algoritmo ganador de cada modelo, en `src/config/model_sets.py`. El punto de entrada del entrenamiento, `src/models/train.py`, junto a sus pasos. Un notebook de trabajo por modelo, que importa de `src/`.
 - **Por qué:** los cuatro modelos son el mismo proceso con otra lista de variables; por modelo serían cuatro copias. Split se separa del preprocesado porque la app usa el preprocesado y nunca el split. La edad biológica va aparte porque es igual para todos los algoritmos. Python no importa módulos que empiezan por número; de ahí la `s`.
 
 ### ¿Qué error es peor?

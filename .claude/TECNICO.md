@@ -20,8 +20,7 @@
 - `src/config/`: rutas, fuentes externas, códigos de los cuestionarios, parámetros del estudio, renombres, correcciones CDC, papel de cada columna de Gold, rangos posibles por variable, umbrales de la validación y variables de cada bloque del modelo, con las descartadas.
 - `src/utils/`: funciones compartidas por tema (descarga, lectura de NHANES, fórmulas de las features derivadas, resumen de cada capa, validación de Gold).
 - `src/pipeline/`: un archivo por paso, cada uno con su `run()`.
-- `src/train.py`: punto de entrada del entrenamiento. Por ahora, solo docstring.
-- `src/models/`: un archivo por paso del modelo (`s1_split`, `s2_preprocessing`, `s3_algorithms`, `s4_biological_age`, `s5_evaluation`). Por ahora, solo docstrings.
+- `src/models/`: un archivo por paso del modelo (`s1_split`, `s2_preprocessing`, `s3_algorithms`, `s4_biological_age`, `s5_evaluation`) y `train.py`, su punto de entrada. Por ahora, solo docstrings.
 - `notebooks/`: exploración, muestra para la Entrega 02 y correlaciones de las candidatas a Base.
 - `docs/entregas/`: entregas del máster.
 - `data/`: capas de datos; se regenera con el pipeline.
@@ -35,7 +34,8 @@
 
 ## Limitaciones conocidas de los datos
 - Fosfatasa alcalina y LDH más altas en 1999-2000, sin ecuación oficial de corrección. Urea algo más alta en 2017-2018 incluso corregida.
-- RDW: la mediana salta de 12,7 a 13,4 en 2013-2014 y sigue así hasta 2018. Sin corregir y sin causa confirmada (quizá un cambio de analizador); falta revisar la documentación de la CDC.
+- RDW: la mediana salta de 12,7 a 13,4 en 2013-2014 y sigue así hasta 2018. La CDC lo atribuye al cambio de analizador de 2012 y no hay corrección oficial, porque no se pudieron repetir muestras antiguas.
+- Serie roja, plaquetas y leucocitos: la CDC también avisa de posibles efectos de método en hematocrito, HCM, CHCM y leucocitos en 2013-2014, y de cambios de tendencia en plaquetas, hematíes, hematocrito, leucocitos y CHCM entre 2005-2006 y 2011-2012.
 - Actividad física con salto en 2007 por el cambio de cuestionario.
 - Tabaco de 18-19 años hasta 2012 sacado de las preguntas juveniles: hasta 2010 no distingue exfumadores.
 - Alcohol sin dato para 18-19 años en 1999-2010: el cuestionario de adultos solo se pasó a mayores de 20, y el juvenil solo existe en 2009-2010.
