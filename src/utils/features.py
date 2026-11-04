@@ -6,11 +6,14 @@ Builds derived features from lab values and measures:
     - Kidney: urea/creatinine, eGFR (CKD-EPI 2021)
     - Glucose: HOMA-IR
     - Blood pressure: pulse pressure
+    - Age groups, for the preprocessing and the evaluation
 """
 
 # Imports
 import numpy as np
 import pandas as pd
+
+from src.config.study import AGE_GROUP_EDGES
 
 
 def derived_features(data):
@@ -46,3 +49,10 @@ def egfr_ckd_epi_2021(creatinine, age, sex):
     ratio = creatinine / kappa
     egfr = 142 * np.minimum(ratio, 1) ** alpha * np.maximum(ratio, 1) ** -1.200 * 0.9938 ** age
     return (egfr * np.where(female, 1.012, 1)).where(sex.isin(["male", "female"]))
+
+
+def age_groups(data):
+    """Age group of each person, e.g. '30-39'; missing outside the study ages."""
+    edges = AGE_GROUP_EDGES
+    labels = [f"{low}-{high - 1}" for low, high in zip(edges[:-1], edges[1:])]
+    return pd.cut(data["age"], bins=edges, right=False, labels=labels)

@@ -10,6 +10,7 @@ Step 3, the four contenders of every level:
 from sklearn.pipeline import Pipeline
 from sksurv.ensemble import RandomSurvivalForest
 from sksurv.linear_model import CoxnetSurvivalAnalysis, CoxPHSurvivalAnalysis
+from sksurv.linear_model.coxph import BreslowEstimator
 from sksurv.util import Surv
 from xgboost import XGBRegressor
 
@@ -18,11 +19,24 @@ from src.models.s2_preprocessing import build_preprocessor
 
 
 class GradientBoostingCox(XGBRegressor):
-    """XGBoost with the outcome format of the other models."""
+    """XGBoost with the outcome format and the survival curves of the other models."""
 
     def fit(self, X, y, **kwargs):
-        """Survival outcome → XGBoost label: months of follow-up, negative if the person did not die."""
-        return super().fit(X, y["time"] * (2 * y["event"] - 1), **kwargs)
+        """
+        Survival outcome → XGBoost label, then the baseline risk over time:
+            - Label: months of follow-up, negative if the person did not die
+        """
+        super().fit(X, y["time"] * (2 * y["event"] - 1), **kwargs)
+        self.baseline_ = BreslowEstimator().fit(self.log_hazard(X), y["event"], y["time"])
+        return self
+
+    def predict_survival_function(self, X):
+        """Survival curve of each person."""
+        return self.baseline_.get_survival_function(self.log_hazard(X))
+
+    def log_hazard(self, X):
+        """Raw score of the model."""
+        return self.predict(X, output_margin=True)
 
 
 MODELS = {

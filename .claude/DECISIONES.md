@@ -140,8 +140,8 @@
 - **Por qué:** un modelo clásico es más fácil de explicar y de desplegar en un plan gratuito; la complejidad extra solo compensa si mejora claramente.
 
 ### ¿Cómo se evalúa?
-- **Decisión:** con métricas de supervivencia (C-index y calibración) y con distintos subconjuntos de variables.
-- **Por qué:** son las métricas estándar de supervivencia, y los subconjuntos dicen cuánto se pierde según lo que falte en la analítica.
+- **Decisión:** a 10 años, fuera de entrenamiento y con un resumen por nivel: C-index de Uno global y dentro del mismo grupo de edad, C-index por sexo, calibración por deciles de riesgo con su peor infraestimación, C-index en entrenamiento y tiempo. Un nivel mejora de verdad si el intervalo de confianza por bootstrap de la diferencia de C-index no incluye el 0. PhenoAge se mide sobre los mismos datos.
+- **Por qué:** son las métricas estándar de supervivencia. La edad sola ya ordena muy bien, así que el C-index dentro del mismo grupo de edad es el que dice si la analítica aporta algo. La infraestimación es el error peor. El C-index en entrenamiento delata el sobreajuste.
 
 ### ¿Cuántos modelos y cómo se comparan?
 - **Decisión:** una escalera de niveles. Nivel 0: el baseline (Cox con edad y sexo). Nivel 1: Base (edad, sexo y el bloque principal). Nivel 2: Base + Extras y Base + Cuestionario. Nivel 3: Completo. Cada nivel tiene que superar al mejor del anterior, y cada salto se explica por lo que aporta.
@@ -188,7 +188,7 @@
 - **Por qué:** promediar con un modelo peor empeora el resultado, y un modelo que no mejora solo añade preguntas y datos que pueden faltar.
 
 ### ¿Cómo se organiza el código del modelo?
-- **Decisión:** un archivo por paso, no por modelo, en `src/models/` con prefijo `s1_`…`s5_` (split, preprocesado, algoritmos, edad biológica, evaluación). Las variables de cada bloque y el algoritmo ganador de cada modelo, en `src/config/model_sets.py`. El entrenamiento se lanza desde `src/pipeline/s5_build_model.py`, el quinto paso del pipeline, que llama a esos archivos. Un notebook de trabajo por modelo, que importa de `src/`.
+- **Decisión:** un archivo por paso, no por modelo, en `src/models/` con prefijo `s1_`…`s5_` (split, preprocesado, algoritmos, edad biológica, evaluación). Las variables de cada bloque y el algoritmo ganador de cada modelo, en `src/config/model_sets.py`. El entrenamiento se lanza desde `src/pipeline/s5_build_model.py`, el quinto paso del pipeline, que llama a esos archivos. Un notebook de trabajo por nivel, con todos sus modelos para poder compararlos, que importa de `src/`.
 - **Por qué:** los cuatro modelos son el mismo proceso con otra lista de variables; por modelo serían cuatro copias. Split se separa del preprocesado porque la app usa el preprocesado y nunca el split. La edad biológica va aparte porque es igual para todos los algoritmos. Python no importa módulos que empiezan por número; de ahí la `s`.
 
 ### ¿Qué error es peor?

@@ -5,19 +5,13 @@ Step 2, preprocessing pipeline, fitted only on train and reused by the app:
 
 # Imports
 import numpy as np
-import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer, OneHotEncoder, StandardScaler
 
-from src.config.study import (
-    AGE_GROUP_EDGES,
-    CATEGORICAL_LEVELS,
-    CLIP_QUANTILES,
-    LOG_VARIABLES,
-    SQUARED_VARIABLES,
-)
+from src.config.study import CATEGORICAL_LEVELS, CLIP_QUANTILES, LOG_VARIABLES, SQUARED_VARIABLES
+from src.utils.features import age_groups
 
 
 def build_preprocessor(columns):
@@ -88,9 +82,8 @@ class GroupImputer(BaseEstimator, TransformerMixin):
 
 
 def group_keys(data):
-    """Imputation group of each person: sex and age group, e.g. 'female|3'."""
-    age_groups = pd.cut(data["age"], bins=AGE_GROUP_EDGES, right=False, labels=False)
-    return data["sex"].astype(str) + "|" + age_groups.astype("Int64").astype(str)
+    """Imputation group of each person: sex and age group, e.g. 'female|30-39'."""
+    return data["sex"].astype(str) + "|" + age_groups(data).astype(str)
 
 
 def fill_value(values):

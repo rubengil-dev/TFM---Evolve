@@ -36,6 +36,11 @@ MODEL_PARAMS = {
     "gradient_boosting":  {"objective": "survival:cox", "n_estimators": 200, "learning_rate": 0.05, "max_depth": 3, "subsample": 0.8, "n_jobs": -1, "random_state": SPLIT_SEED},
 }
 
+# Evaluation
+HORIZON_MONTHS = 120
+CALIBRATION_GROUPS = 10
+BOOTSTRAP_SAMPLES = 200
+
 # Preprocessing: imputation groups
 AGE_GROUP_EDGES = [18, 30, 40, 50, 60, 70, 80]  # lower bound included
 
