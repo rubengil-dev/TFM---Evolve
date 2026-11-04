@@ -151,6 +151,14 @@
 - **Decisión:** en cada nivel, los mismos cuatro y en igualdad: Cox, Cox elastic net, random survival forest y gradient boosting (XGBoost o similar). Gana el mejor de cada nivel.
 - **Por qué:** el elastic net selecciona variables por sí solo; los árboles captan relaciones no lineales. Con los mismos contendientes en cada nivel, los saltos entre niveles son comparables.
 
+### ¿Con qué librerías?
+- **Decisión:** scikit-survival para Cox, elastic net y random survival forest; XGBoost para gradient boosting, adaptado al formato de los demás.
+- **Por qué:** scikit-survival encaja en el `Pipeline`, pero su gradient boosting tardaba unos 46 minutos por entrenamiento, y XGBoost, unos segundos con los mismos ajustes.
+
+### ¿Cómo se ajustan los modelos?
+- **Decisión:** primero, con valores fijos razonables, para tener una estimación. Después se optimiza solo el ganador, con Optuna o una búsqueda pequeña; si dos quedan cerca, ambos. Sin pesos muestrales en esta primera prueba.
+- **Por qué:** optimizar los cuatro en cada nivel costaría horas sin saber aún cuál importa. El usuario es español, así que representar exactamente a EE. UU. no es el objetivo; se declara como limitación.
+
 ### ¿Cómo se eligen las variables de cada nivel?
 - **Decisión:** se anidan. Cada nivel parte de las variables que sobrevivieron en el anterior y solo añade su bloque. Si en un nivel no sobrevive casi nada de lo añadido, ese modelo se descarta.
 - **Por qué:** así cada salto mide solo lo que aporta el bloque nuevo, y se evita volver a probar lo ya descartado.

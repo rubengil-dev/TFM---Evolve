@@ -28,6 +28,14 @@ TEST_SIZE = 0.2
 CV_FOLDS = 5
 SPLIT_SEED = 42
 
+# Model settings: fixed, first estimate
+MODEL_PARAMS = {
+    "cox":                {"ties": "efron"},
+    "elastic_net":        {"l1_ratio": 0.5, "alphas": [0.001], "fit_baseline_model": True},
+    "random_forest":      {"n_estimators": 100, "min_samples_leaf": 15, "max_features": "sqrt", "n_jobs": -1, "random_state": SPLIT_SEED},
+    "gradient_boosting":  {"objective": "survival:cox", "n_estimators": 200, "learning_rate": 0.05, "max_depth": 3, "subsample": 0.8, "n_jobs": -1, "random_state": SPLIT_SEED},
+}
+
 # Preprocessing: imputation groups
 AGE_GROUP_EDGES = [18, 30, 40, 50, 60, 70, 80]  # lower bound included
 

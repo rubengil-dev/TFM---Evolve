@@ -10,7 +10,7 @@
 ## Entorno
 - Python 3.11 en `.venv`: `py -3.11 -m venv .venv` y `.venv/Scripts/python -m pip install -r requirements.txt`.
 - Al añadir una librería: instalarla en `.venv` y regenerar con `pip freeze > requirements.txt`.
-- Librerías clave: pandas y numpy, pyarrow (parquet), lifelines (supervivencia), scikit-learn (split), requests (descarga) y matplotlib.
+- Librerías clave: pandas y numpy, pyarrow (parquet), lifelines (supervivencia), scikit-learn (split y preprocesado), scikit-survival y xgboost (modelos), requests (descarga) y matplotlib.
 
 ## Comandos
 - Pipeline completo, desde la raíz: `.venv/Scripts/python -m src.main`. Sin la descarga, los pasos de datos tardan menos de un minuto.
@@ -21,7 +21,7 @@
 - `src/config/`: rutas, fuentes externas, códigos de los cuestionarios, parámetros del estudio, renombres, correcciones CDC, papel de cada columna de Gold, rangos posibles por variable, umbrales de la validación y variables de cada bloque del modelo, con las descartadas.
 - `src/utils/`: funciones compartidas por tema (descarga, lectura de NHANES, fórmulas de las features derivadas, resumen de cada capa, validación de Gold).
 - `src/pipeline/`: un archivo por paso, numerado y con su `run()`: `s1_download_bronze`, `s2_build_raw_silver`, `s3_build_clean_silver`, `s4_build_gold` y `s5_build_model` (por ahora, sin lógica).
-- `src/models/`: los subpasos que llama `s5_build_model`: `s1_split`, `s2_preprocessing`, `s3_algorithms`, `s4_biological_age` y `s5_evaluation`. Por ahora, solo `s1_split` y `s2_preprocessing` tienen lógica.
+- `src/models/`: los subpasos que llama `s5_build_model`: `s1_split`, `s2_preprocessing`, `s3_algorithms`, `s4_biological_age` y `s5_evaluation`. Por ahora, `s4_biological_age` y `s5_evaluation` no tienen lógica.
 - `notebooks/`: exploración, muestra para la Entrega 02 y correlaciones de las candidatas a Base.
 - `docs/entregas/`: entregas del máster.
 - `data/`: capas de datos; se regenera con el pipeline.
