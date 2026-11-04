@@ -1,7 +1,7 @@
 # Datos de NHANES (se descargan con script)
 data/
 
-# Analíticas reales y cualquier dato personal: nunca al repo
+# Analíticas reales
 private/
 
 # Python
@@ -19,3 +19,6 @@ __pycache__/
 Thumbs.db
 desktop.ini
 .DS_Store
+
+#Otros
+enunciado*

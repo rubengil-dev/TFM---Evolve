@@ -176,7 +176,7 @@
 - **Por qué:** promediar con un modelo peor empeora el resultado, y un modelo que no mejora solo añade preguntas y datos que pueden faltar.
 
 ### ¿Cómo se organiza el código del modelo?
-- **Decisión:** un archivo por paso, no por modelo, en `src/models/` con prefijo `s1_`…`s5_` (split, preprocesado, algoritmos, edad biológica, evaluación). Las variables de cada bloque y el algoritmo ganador de cada modelo, en `src/config/model_sets.py`. El punto de entrada del entrenamiento, `src/models/train.py`, junto a sus pasos. Un notebook de trabajo por modelo, que importa de `src/`.
+- **Decisión:** un archivo por paso, no por modelo, en `src/models/` con prefijo `s1_`…`s5_` (split, preprocesado, algoritmos, edad biológica, evaluación). Las variables de cada bloque y el algoritmo ganador de cada modelo, en `src/config/model_sets.py`. El entrenamiento se lanza desde `src/pipeline/s5_build_model.py`, el quinto paso del pipeline, que llama a esos archivos. Un notebook de trabajo por modelo, que importa de `src/`.
 - **Por qué:** los cuatro modelos son el mismo proceso con otra lista de variables; por modelo serían cuatro copias. Split se separa del preprocesado porque la app usa el preprocesado y nunca el split. La edad biológica va aparte porque es igual para todos los algoritmos. Python no importa módulos que empiezan por número; de ahí la `s`.
 
 ### ¿Qué error es peor?

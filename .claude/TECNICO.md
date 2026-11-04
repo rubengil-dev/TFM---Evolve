@@ -13,14 +13,15 @@
 - Librerías clave: pandas y numpy, pyarrow (parquet), lifelines (supervivencia), scikit-learn (split), requests (descarga) y matplotlib.
 
 ## Comandos
-- Pipeline de datos completo, desde la raíz: `.venv/Scripts/python -m src.main`. Sin la descarga tarda menos de un minuto.
+- Pipeline completo, desde la raíz: `.venv/Scripts/python -m src.main`. Sin la descarga, los pasos de datos tardan menos de un minuto.
+- Solo el modelo: `.venv/Scripts/python -c "from src.pipeline import s5_build_model; s5_build_model.run()"`.
 
 ## Estructura
 - `src/main.py`: único punto de entrada del pipeline; llama a cada `run()` en orden.
 - `src/config/`: rutas, fuentes externas, códigos de los cuestionarios, parámetros del estudio, renombres, correcciones CDC, papel de cada columna de Gold, rangos posibles por variable, umbrales de la validación y variables de cada bloque del modelo, con las descartadas.
 - `src/utils/`: funciones compartidas por tema (descarga, lectura de NHANES, fórmulas de las features derivadas, resumen de cada capa, validación de Gold).
-- `src/pipeline/`: un archivo por paso, cada uno con su `run()`.
-- `src/models/`: un archivo por paso del modelo (`s1_split`, `s2_preprocessing`, `s3_algorithms`, `s4_biological_age`, `s5_evaluation`) y `train.py`, su punto de entrada. Por ahora, solo docstrings.
+- `src/pipeline/`: un archivo por paso, numerado y con su `run()`: `s1_download_bronze`, `s2_build_raw_silver`, `s3_build_clean_silver`, `s4_build_gold` y `s5_build_model` (por ahora, sin lógica).
+- `src/models/`: los subpasos que llama `s5_build_model`: `s1_split`, `s2_preprocessing`, `s3_algorithms`, `s4_biological_age` y `s5_evaluation`. Por ahora, solo `s1_split` tiene lógica.
 - `notebooks/`: exploración, muestra para la Entrega 02 y correlaciones de las candidatas a Base.
 - `docs/entregas/`: entregas del máster.
 - `data/`: capas de datos; se regenera con el pipeline.
