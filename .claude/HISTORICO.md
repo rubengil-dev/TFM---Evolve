@@ -3,6 +3,11 @@
 - **No contiene:** cifras, decisiones con su porqué ni el estado actual.
 - **Se actualiza:** al cerrar cada sesión, después del commit del trabajo.
 
+## 2026-11-06: nivel 1 del modelo
+- Notebook del nivel 1: los cuatro contendientes con valores fijos, optimización con Optuna, bootstrap frente al baseline, pesos de cada variable y variantes de Base. Elegido Cox simple y Base reducida a 19 variables (`aeb3acd`).
+- Notebooks sin prefijo numérico, reservado a los entregables (`base_correlations`, `models_lvl1`).
+- Los niveles quedan en Base + Extras, Base + Cuestionario y, si es pertinente, los dos juntos; PhenoAge se mide al final.
+
 ## 2026-11-04: código del modelo, hasta la evaluación
 - Salto del RDW: la CDC lo atribuye al cambio de analizador; se deja sin corregir y se medirá su efecto (`bf8a65e`).
 - Split 80/20 estratificado con 5 bloques en train (`cc20882`). Pipeline numerado de `s1` a `s5`, con `s5_build_model` como paso del modelo (`ab7e21e`).
