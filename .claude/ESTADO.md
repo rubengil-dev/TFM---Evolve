@@ -4,11 +4,11 @@
 - **Se actualiza:** al cerrar cada sesión.
 
 ## Próxima sesión
-Seguir con la fase de modelo, por pasos pequeños y con lo que se analice en notebooks. Ya están hechos los bloques de variables, el split, el preprocesado, los cuatro modelos y la evaluación; aún no hay resultados válidos. En este orden:
-1. Entrenar y comparar el nivel 0 (baseline) y el nivel 1 (Base) con los cuatro contendientes, en su notebook de trabajo.
-2. Medir PhenoAge sobre los mismos datos, en ese notebook.
-3. Rellenar `s4_biological_age.py` y, en ese notebook, medir cuánto mueve la edad biológica el salto del RDW.
-4. Repetir con los niveles 2 y 3, cada uno en su notebook de trabajo.
+Seguir con la fase de modelo, por pasos pequeños y con lo que se analice en notebooks. Ya están hechos los bloques de variables, el split, el preprocesado, los cuatro modelos, la evaluación y el nivel 1. En este orden:
+1. Programar y ejecutar el nivel 2 (Base + Extras) con los cuatro contendientes, y compararlo con Cox simple de Base.
+2. Repetir con el nivel 3 (Base + Cuestionario) y con el 4 (los dos juntos), si es pertinente.
+3. Rellenar `s4_biological_age.py` y medir cuánto mueve la edad biológica el salto del RDW.
+4. Medir PhenoAge contra el mejor modelo de cada nivel.
 5. Rellenar `s5_build_model.py`, que une todos los pasos.
 
 ## Fases
@@ -40,7 +40,7 @@ Modelo:
 
 Resultado:
 - Cómo calcular y mostrar el margen ± X años.
-- Definición de "mejor/peor parámetro". Propuesta para el MVP: cuánto empuja cada parámetro la edad frente a una persona media de la misma edad y sexo.
+- Definición de "mejor/peor parámetro". Propuesta para el MVP: cuánto empuja cada parámetro la edad frente a una persona media de la misma edad y sexo, agrupando las variables ligadas (serie roja, transaminasas) para que los signos se entiendan.
 - Cuántos parámetros mejores/peores se muestran.
 - Umbral de años por encima para remitir al médico.
 

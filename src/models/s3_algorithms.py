@@ -47,11 +47,11 @@ MODELS = {
 }
 
 
-def build_pipeline(name, columns):
-    """Unfitted preprocessing and model for an algorithm and a list of Gold columns."""
+def build_pipeline(name, columns, settings=None):
+    """Unfitted preprocessing and model for an algorithm and a list of Gold columns; settings replace the fixed ones."""
     return Pipeline([
         ("preprocessing", build_preprocessor(columns)),
-        ("model", MODELS[name](**MODEL_PARAMS[name])),
+        ("model", MODELS[name](**{**MODEL_PARAMS[name], **(settings or {})})),
     ])
 
 

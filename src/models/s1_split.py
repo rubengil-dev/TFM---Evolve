@@ -24,12 +24,12 @@ def split_train_test(gold):
     return train_test_split(gold, test_size=TEST_SIZE, stratify=strata(gold), random_state=SPLIT_SEED)
 
 
-def cv_folds(train):
+def cv_folds(train, seed=SPLIT_SEED):
     """
     Folds of train, stratified by cycle and death:
         - List of (fit positions, validation positions)
     """
-    splitter = StratifiedKFold(n_splits=CV_FOLDS, shuffle=True, random_state=SPLIT_SEED)
+    splitter = StratifiedKFold(n_splits=CV_FOLDS, shuffle=True, random_state=seed)
     return list(splitter.split(train, strata(train)))
 
 

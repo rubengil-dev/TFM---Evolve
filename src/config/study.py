@@ -41,6 +41,27 @@ HORIZON_MONTHS = 120
 CALIBRATION_GROUPS = 10
 BOOTSTRAP_SAMPLES = 200
 
+# Tuning: settings searched, as (kind, lowest, highest)
+TUNING_TRIALS = 50
+TUNING_SPACES = {
+    "gradient_boosting": {
+        "n_estimators":      ("int", 100, 800),
+        "learning_rate":     ("log", 0.01, 0.2),
+        "max_depth":         ("int", 2, 6),
+        "min_child_weight":  ("int", 1, 50),
+        "subsample":         ("float", 0.5, 1.0),
+        "colsample_bytree":  ("float", 0.5, 1.0),
+        "reg_lambda":        ("log", 0.001, 10.0),
+    },
+    "elastic_net": {
+        "alphas":            ("log_list", 0.0001, 0.05),
+        "l1_ratio":          ("float", 0.01, 1.0),
+    },
+}
+
+# Comparison of tuned models: folds other than those used for tuning
+COMPARISON_SEED = 7
+
 # Preprocessing: imputation groups
 AGE_GROUP_EDGES = [18, 30, 40, 50, 60, 70, 80]  # lower bound included
 

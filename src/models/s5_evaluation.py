@@ -3,6 +3,7 @@ Step 5, evaluation at 10 years, out of training:
     - evaluate_level: summary of every model of a level
     - compare_risks: whether one model really beats another
     - plot_calibration: predicted against observed risk
+    - tune_model: best settings of a model
 """
 
 # Imports
@@ -10,34 +11,44 @@ import time
 
 import matplotlib.pyplot as plt
 import numpy as np
+import optuna
 import pandas as pd
 from sksurv.metrics import concordance_index_ipcw
 from sksurv.nonparametric import kaplan_meier_estimator
 
-from src.config.study import BOOTSTRAP_SAMPLES, CALIBRATION_GROUPS, HORIZON_MONTHS, SPLIT_SEED
+from src.config.study import (
+    BOOTSTRAP_SAMPLES,
+    CALIBRATION_GROUPS,
+    HORIZON_MONTHS,
+    SPLIT_SEED,
+    TUNING_SPACES,
+    TUNING_TRIALS,
+)
 from src.models.s3_algorithms import MODELS, build_pipeline, survival_target
 from src.utils.features import age_groups
 
 
-def evaluate_level(columns, train, folds, models=MODELS):
+def evaluate_level(columns, train, folds, models=MODELS, settings=None):
     """
     Every model of a level, cross-validated:
+        - settings: tuned values of each model, if any
         - summary: one row per model
         - details: each model's risk, groups and calibration
     """
-    details = {name: cross_validate(name, columns, train, folds) for name in models}
+    settings = settings or {}
+    details = {name: cross_validate(name, columns, train, folds, settings.get(name)) for name in models}
     summary = pd.DataFrame({name: summarize(detail) for name, detail in details.items()}).T
     return summary.round(4), details
 
 
-def cross_validate(name, columns, train, folds):
+def cross_validate(name, columns, train, folds, settings=None):
     """One model over the folds → out-of-fold risk and metrics."""
     risk = pd.Series(index=train.index, dtype=float)
     rows = []
     for fit_rows, validation_rows in folds:
         fit, validation = train.iloc[fit_rows], train.iloc[validation_rows]
         start = time.time()
-        pipeline = build_pipeline(name, columns).fit(fit, survival_target(fit))
+        pipeline = build_pipeline(name, columns, settings).fit(fit, survival_target(fit))
         seconds = time.time() - start
         risk.loc[validation.index] = risk_at_horizon(pipeline, validation)
         rows.append({
@@ -143,6 +154,35 @@ def compare_risks(risk_new, risk_old, data, samples=BOOTSTRAP_SAMPLES):
         "low": differences.quantile(0.025),
         "high": differences.quantile(0.975),
     }).round(4)
+
+
+def tune_model(name, columns, train, folds, trials=TUNING_TRIALS):
+    """Settings with the best same-age C-index, searched with Optuna."""
+    optuna.logging.set_verbosity(optuna.logging.WARNING)
+    study = optuna.create_study(direction="maximize", sampler=optuna.samplers.TPESampler(seed=SPLIT_SEED))
+    study.optimize(lambda trial: same_age_score(name, columns, train, folds, suggest_settings(trial, name)), n_trials=trials)
+    return suggest_settings(optuna.trial.FixedTrial(study.best_params), name)
+
+
+def suggest_settings(trial, name):
+    """One set of settings from the search space of a model."""
+    suggest = {
+        "int": trial.suggest_int,
+        "float": trial.suggest_float,
+        "log": lambda key, low, high: trial.suggest_float(key, low, high, log=True),
+        "log_list": lambda key, low, high: [trial.suggest_float(key, low, high, log=True)],
+    }
+    return {key: suggest[kind](key, low, high) for key, (kind, low, high) in TUNING_SPACES[name].items()}
+
+
+def same_age_score(name, columns, train, folds, settings):
+    """Same-age C-index of some settings, on people left out of each fit."""
+    risk = pd.Series(index=train.index, dtype=float)
+    for fit_rows, validation_rows in folds:
+        fit, validation = train.iloc[fit_rows], train.iloc[validation_rows]
+        pipeline = build_pipeline(name, columns, settings).fit(fit, survival_target(fit))
+        risk.loc[validation.index] = risk_at_horizon(pipeline, validation)
+    return same_age_c_index(c_index_by_group(risk, train, age_groups(train)))
 
 
 def plot_calibration(details):

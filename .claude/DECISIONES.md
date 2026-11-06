@@ -140,11 +140,11 @@
 - **Por qué:** un modelo clásico es más fácil de explicar y de desplegar en un plan gratuito; la complejidad extra solo compensa si mejora claramente.
 
 ### ¿Cómo se evalúa?
-- **Decisión:** a 10 años, fuera de entrenamiento y con un resumen por nivel: C-index de Uno global y dentro del mismo grupo de edad, C-index por sexo, calibración por deciles de riesgo con su peor infraestimación, C-index en entrenamiento y tiempo. Un nivel mejora de verdad si el intervalo de confianza por bootstrap de la diferencia de C-index no incluye el 0. PhenoAge se mide sobre los mismos datos.
+- **Decisión:** a 10 años, fuera de entrenamiento y con un resumen por nivel: C-index de Uno global y dentro del mismo grupo de edad, C-index por sexo, calibración por deciles de riesgo con su peor infraestimación, C-index en entrenamiento y tiempo. Un nivel mejora de verdad si el intervalo de confianza por bootstrap de la diferencia de C-index no incluye el 0. PhenoAge se mide una vez, al final, contra el mejor modelo de cada nivel y con las personas que tienen todas sus variables, porque usa variables de Extras.
 - **Por qué:** son las métricas estándar de supervivencia. La edad sola ya ordena muy bien, así que el C-index dentro del mismo grupo de edad es el que dice si la analítica aporta algo. La infraestimación es el error peor. El C-index en entrenamiento delata el sobreajuste.
 
 ### ¿Cuántos modelos y cómo se comparan?
-- **Decisión:** una escalera de niveles. Nivel 0: el baseline (Cox con edad y sexo). Nivel 1: Base (edad, sexo y el bloque principal). Nivel 2: Base + Extras y Base + Cuestionario. Nivel 3: Completo. Cada nivel tiene que superar al mejor del anterior, y cada salto se explica por lo que aporta.
+- **Decisión:** una escalera de niveles. Nivel 0: el baseline (Cox con edad y sexo). Nivel 1: Base (edad, sexo y el bloque principal). Nivel 2: Base + Extras. Nivel 3: Base + Cuestionario. Nivel 4, si es pertinente: los dos juntos. Cada nivel se compara con el ganador de Base, y cada salto se explica por lo que aporta.
 - **Por qué:** cada comparación responde a una pregunta del producto: cuánto aporta la analítica frente a la edad, cuánto la analítica ampliada y cuánto los hábitos.
 
 ### ¿Qué algoritmos compiten?
@@ -156,8 +156,8 @@
 - **Por qué:** scikit-survival encaja en el `Pipeline`, pero su gradient boosting tardaba unos 46 minutos por entrenamiento, y XGBoost, unos segundos con los mismos ajustes.
 
 ### ¿Cómo se ajustan los modelos?
-- **Decisión:** primero, con valores fijos razonables, para tener una estimación. Después se optimiza solo el ganador, con Optuna o una búsqueda pequeña; si dos quedan cerca, ambos. Sin pesos muestrales en esta primera prueba.
-- **Por qué:** optimizar los cuatro en cada nivel costaría horas sin saber aún cuál importa. El usuario es español, así que representar exactamente a EE. UU. no es el objetivo; se declara como limitación.
+- **Decisión:** primero, con valores fijos razonables, para tener una estimación. Después se optimiza solo el ganador, con Optuna; si dos quedan cerca, ambos. Los modelos optimizados se comparan con otros bloques. En el nivel 1 se queda Cox simple. Sin pesos muestrales en esta primera prueba.
+- **Por qué:** optimizar los cuatro en cada nivel costaría horas sin saber aún cuál importa. No compensa perder la explicabilidad por clasificar mejor 1 de cada 100. Comparar con otros bloques evita que la optimización infle el resultado. El usuario es español, así que representar exactamente a EE. UU. no es el objetivo; se declara como limitación.
 
 ### ¿Cómo se eligen las variables de cada nivel?
 - **Decisión:** se anidan. Cada nivel parte de las variables que sobrevivieron en el anterior y solo añade su bloque. Si en un nivel no sobrevive casi nada de lo añadido, ese modelo se descarta.
@@ -166,6 +166,10 @@
 ### ¿Qué variables forman cada bloque?
 - **Decisión:** las listas viven en `src/config/model_sets.py`. Base: lo que trae una analítica básica española (hemograma con fórmula e índices, glucosa, función renal, colesterol total y HDL, transaminasas, ácido úrico, sodio, potasio y calcio), más edad, sexo e IMC. Extras: lo que se pide a menudo o es opcional, incluidos triglicéridos, GGT, albúmina, PCR, vitamina D, tensión y el cociente albúmina/creatinina en orina. Cuestionario: las siete variables de hábitos. Las variables de Gold que no se usan quedan en una lista de descartadas con su motivo.
 - **Por qué:** cada bloque responde a qué trae el usuario, no a cuánto predice cada variable: si una aporta o no, lo dice el modelo en la escalera de niveles. Triglicéridos va a Extras porque solo está medido en el subgrupo en ayunas. Cintura y CPK se descartan porque el usuario no conoce la primera y la segunda solo existe en 4 ciclos.
+
+### ¿Qué queda de Base tras el nivel 1?
+- **Decisión:** Cox simple con 19 variables. Salen plaquetas, VPM, eosinófilos, basófilos, colesterol total y calcio. La serie roja se mantiene con sus tres variables.
+- **Por qué:** las seis no tienen un efecto claro y quitarlas no baja el C-index misma edad. Dejar solo la hemoglobina corregiría su signo, pero baja 0,008 ese C-index y no arregla otros signos; las variables ligadas se agruparán al explicar el resultado.
 
 ### ¿Qué entra de cada pareja y combinación lineal?
 - **Decisión:** por defecto, las variables que vienen escritas en el PDF. Serie roja: hemoglobina, hematíes y CHCM. Serie blanca: los cinco tipos, sin leucocitos. Colesterol total + HDL, proteínas totales + albúmina y sistólica + diastólica. El IMC sustituye a peso y talla, que el usuario sigue dando. Fuera insulina, HOMA-IR y los cocientes derivados.

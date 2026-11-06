@@ -9,10 +9,9 @@ BASELINE = ["age", "sex"]
 BASE = [
     "age", "sex", "bmi",
     "hemoglobin", "erythrocytes", "mchc", "rdw",
-    "neutrophils", "lymphocytes", "monocytes", "eosinophils", "basophils",
-    "platelets", "mpv",
-    "glucose", "creatinine", "urea", "uric_acid", "total_cholesterol", "hdl", "ast", "alt",
-    "sodium", "potassium", "calcium",
+    "neutrophils", "lymphocytes", "monocytes",
+    "glucose", "creatinine", "urea", "uric_acid", "hdl", "ast", "alt",
+    "sodium", "potassium",
 ]
 
 # Level 2: added to Base when the user brings them
@@ -28,6 +27,11 @@ QUESTIONNAIRE = [
     "smoking", "alcohol_frequency", "alcohol_drinks", "physical_activity",
     "sedentary_hours", "fast_food_meals", "sleep_hours",
 ]
+
+# Algorithm kept for each level
+LEVEL_MODELS = {
+    "base":  "cox",
+}
 
 # Not used by any model: variable → reason
 DISCARDED = {
@@ -52,4 +56,10 @@ DISCARDED = {
     "albumin_globulin":  "ratio of variables in Extras; not on the PDF",
     "cpk":               "only 4 cycles, 15% of deaths",
     "waist":             "the user does not know it",
+    "platelets":         "no clear effect in Base; removing it does not lower the C-index",
+    "mpv":               "no clear effect in Base; removing it does not lower the C-index",
+    "eosinophils":       "no clear effect in Base; removing it does not lower the C-index",
+    "basophils":         "no clear effect in Base; removing it does not lower the C-index",
+    "total_cholesterol": "no clear effect in Base; removing it does not lower the C-index",
+    "calcium":           "no clear effect in Base; removing it does not lower the C-index",
 }
