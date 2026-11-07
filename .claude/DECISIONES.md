@@ -156,7 +156,7 @@
 - **Por qué:** scikit-survival encaja en el `Pipeline`, pero su gradient boosting tardaba unos 46 minutos por entrenamiento, y XGBoost, unos segundos con los mismos ajustes.
 
 ### ¿Cómo se ajustan los modelos?
-- **Decisión:** primero, con valores fijos razonables, para tener una estimación. Después se optimiza solo el ganador, con Optuna; si dos quedan cerca, ambos. Los modelos optimizados se comparan con otros bloques. En los niveles 1 y 2 se queda Cox simple. Sin pesos muestrales en esta primera prueba.
+- **Decisión:** primero, con valores fijos razonables, para tener una estimación. Después se optimiza solo el ganador, con Optuna; si dos quedan cerca, ambos. Los modelos optimizados se comparan con otros bloques. En los niveles 1, 2 y 3 se queda Cox simple. Sin pesos muestrales en esta primera prueba.
 - **Por qué:** optimizar los cuatro en cada nivel costaría horas sin saber aún cuál importa. No compensa perder la explicabilidad por clasificar mejor 1 de cada 100. Comparar con otros bloques evita que la optimización infle el resultado. El usuario es español, así que representar exactamente a EE. UU. no es el objetivo; se declara como limitación.
 
 ### ¿Cómo se eligen las variables de cada nivel?
@@ -174,6 +174,10 @@
 ### ¿Qué queda de Extras tras el nivel 2?
 - **Decisión:** Cox simple con las 19 de Base y 10 de Extras: cociente albúmina/creatinina en orina, albúmina, GGT, vitamina D, LDH, cloro, fósforo, fosfatasa alcalina, sistólica y diastólica. Salen triglicéridos, PCR, bilirrubina, hierro, proteínas totales y HbA1c. Las de Base se quedan aunque pierdan fuerza.
 - **Por qué:** los seis no tienen efecto claro y quitarlos no baja el C-index misma edad; dejar los de poca cobertura (triglicéridos y PCR) tampoco suma. XGBoost optimizado no llega al listón fijado de antemano (+0,02 en misma edad) y se queda menos corto en el grupo de mayor riesgo, pero ese desajuste de calibración se puede corregir al traducir el riesgo a edad, y con Cox los dos niveles se explican igual. Base tiene que funcionar sola.
+
+### ¿Qué queda del Cuestionario tras el nivel 3?
+- **Decisión:** Cox simple con las 19 de Base y 4 hábitos: tabaco, actividad física, horas sentado y horas de sueño. Sale el alcohol, con sus dos preguntas, y la comida rápida. Un hábito con efecto claro contrario al conocido no entra aunque suba el C-index, y las preguntas de un mismo hábito se juzgan juntas.
+- **Por qué:** beber sale protector frente a no beber nunca, por la causalidad inversa de quienes lo dejaron por enfermedad; al quitar solo la frecuencia, las bebidas pasaban a salir protectoras. Quitar el alcohol cuesta 0,004 de C-index misma edad, el precio de no decir al usuario que beber le quita años. La comida rápida no tiene efecto claro y quitarla no baja ese C-index. XGBoost optimizado no llega al listón (+0,02 en misma edad), como en los niveles 1 y 2. Juzgar el alcohol entero se fijó tras la primera ejecución, al ver el cambio de signo.
 
 ### ¿Qué entra de cada pareja y combinación lineal?
 - **Decisión:** por defecto, las variables que vienen escritas en el PDF. Serie roja: hemoglobina, hematíes y CHCM. Serie blanca: los cinco tipos, sin leucocitos. Colesterol total + HDL, proteínas totales + albúmina y sistólica + diastólica. El IMC sustituye a peso y talla, que el usuario sigue dando. Fuera insulina, HOMA-IR y los cocientes derivados.
@@ -217,6 +221,6 @@
 - **Decisión:** no como variable del modelo, pero el parser puede usarlo para recuperar la creatinina si falta.
 - **Por qué:** es redundante con creatinina, edad y sexo.
 
-### ¿Cómo se pregunta el alcohol?
-- **Decisión:** frecuencia y, solo si no marca "nunca", bebidas por día.
-- **Por qué:** es como lo pregunta NHANES, y la segunda pregunta no tiene sentido si nunca bebe.
+### ¿Se pregunta el alcohol?
+- **Decisión:** no, porque el modelo no lo usa. La app explica por qué falta en el cuestionario.
+- **Por qué:** en NHANES beber sale protector por causalidad inversa (ver el nivel 3), y el usuario espera que el alcohol esté en un cuestionario de hábitos.

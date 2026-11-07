@@ -23,14 +23,14 @@ EXTRAS = [
 
 # Level 3: added to Base in questionnaire mode
 QUESTIONNAIRE = [
-    "smoking", "alcohol_frequency", "alcohol_drinks", "physical_activity",
-    "sedentary_hours", "fast_food_meals", "sleep_hours",
+    "smoking", "physical_activity", "sedentary_hours", "sleep_hours",
 ]
 
 # Algorithm kept for each level
 LEVEL_MODELS = {
-    "base":   "cox",
-    "extras": "cox",
+    "base":          "cox",
+    "extras":        "cox",
+    "questionnaire": "cox",
 }
 
 # Not used by any model: variable → reason
@@ -68,4 +68,7 @@ DISCARDED = {
     "iron":              "no clear effect in Extras; removing it does not lower the C-index",
     "total_protein":     "no clear effect in Extras; removing it does not lower the C-index",
     "hba1c":             "no clear effect in Extras; removing it does not lower the C-index",
+    "alcohol_frequency": "protective sign from reverse causation (sick quitters)",
+    "alcohol_drinks":    "protective sign from reverse causation (sick quitters)",
+    "fast_food_meals":   "no clear effect in Questionnaire; removing it does not lower the C-index",
 }
