@@ -156,7 +156,7 @@
 - **Por qué:** scikit-survival encaja en el `Pipeline`, pero su gradient boosting tardaba unos 46 minutos por entrenamiento, y XGBoost, unos segundos con los mismos ajustes.
 
 ### ¿Cómo se ajustan los modelos?
-- **Decisión:** primero, con valores fijos razonables, para tener una estimación. Después se optimiza solo el ganador, con Optuna; si dos quedan cerca, ambos. Los modelos optimizados se comparan con otros bloques. En el nivel 1 se queda Cox simple. Sin pesos muestrales en esta primera prueba.
+- **Decisión:** primero, con valores fijos razonables, para tener una estimación. Después se optimiza solo el ganador, con Optuna; si dos quedan cerca, ambos. Los modelos optimizados se comparan con otros bloques. En los niveles 1 y 2 se queda Cox simple. Sin pesos muestrales en esta primera prueba.
 - **Por qué:** optimizar los cuatro en cada nivel costaría horas sin saber aún cuál importa. No compensa perder la explicabilidad por clasificar mejor 1 de cada 100. Comparar con otros bloques evita que la optimización infle el resultado. El usuario es español, así que representar exactamente a EE. UU. no es el objetivo; se declara como limitación.
 
 ### ¿Cómo se eligen las variables de cada nivel?
@@ -170,6 +170,10 @@
 ### ¿Qué queda de Base tras el nivel 1?
 - **Decisión:** Cox simple con 19 variables. Salen plaquetas, VPM, eosinófilos, basófilos, colesterol total y calcio. La serie roja se mantiene con sus tres variables.
 - **Por qué:** las seis no tienen un efecto claro y quitarlas no baja el C-index misma edad. Dejar solo la hemoglobina corregiría su signo, pero baja 0,008 ese C-index y no arregla otros signos; las variables ligadas se agruparán al explicar el resultado.
+
+### ¿Qué queda de Extras tras el nivel 2?
+- **Decisión:** Cox simple con las 19 de Base y 10 de Extras: cociente albúmina/creatinina en orina, albúmina, GGT, vitamina D, LDH, cloro, fósforo, fosfatasa alcalina, sistólica y diastólica. Salen triglicéridos, PCR, bilirrubina, hierro, proteínas totales y HbA1c. Las de Base se quedan aunque pierdan fuerza.
+- **Por qué:** los seis no tienen efecto claro y quitarlos no baja el C-index misma edad; dejar los de poca cobertura (triglicéridos y PCR) tampoco suma. XGBoost optimizado no llega al listón fijado de antemano (+0,02 en misma edad) y se queda menos corto en el grupo de mayor riesgo, pero ese desajuste de calibración se puede corregir al traducir el riesgo a edad, y con Cox los dos niveles se explican igual. Base tiene que funcionar sola.
 
 ### ¿Qué entra de cada pareja y combinación lineal?
 - **Decisión:** por defecto, las variables que vienen escritas en el PDF. Serie roja: hemoglobina, hematíes y CHCM. Serie blanca: los cinco tipos, sin leucocitos. Colesterol total + HDL, proteínas totales + albúmina y sistólica + diastólica. El IMC sustituye a peso y talla, que el usuario sigue dando. Fuera insulina, HOMA-IR y los cocientes derivados.

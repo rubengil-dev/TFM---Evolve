@@ -16,13 +16,12 @@ BASE = [
 
 # Level 2: added to Base when the user brings them
 EXTRAS = [
-    "triglycerides", "ggt", "alkaline_phosphatase", "bilirubin", "iron",
-    "total_protein", "albumin", "hba1c", "crp", "vitamin_d",
+    "ggt", "alkaline_phosphatase", "albumin", "vitamin_d",
     "chloride", "phosphorus", "ldh", "urine_acr",
     "systolic_bp", "diastolic_bp",
 ]
 
-# Level 2: added to Base in questionnaire mode
+# Level 3: added to Base in questionnaire mode
 QUESTIONNAIRE = [
     "smoking", "alcohol_frequency", "alcohol_drinks", "physical_activity",
     "sedentary_hours", "fast_food_meals", "sleep_hours",
@@ -30,7 +29,8 @@ QUESTIONNAIRE = [
 
 # Algorithm kept for each level
 LEVEL_MODELS = {
-    "base":  "cox",
+    "base":   "cox",
+    "extras": "cox",
 }
 
 # Not used by any model: variable → reason
@@ -62,4 +62,10 @@ DISCARDED = {
     "basophils":         "no clear effect in Base; removing it does not lower the C-index",
     "total_cholesterol": "no clear effect in Base; removing it does not lower the C-index",
     "calcium":           "no clear effect in Base; removing it does not lower the C-index",
+    "triglycerides":     "no clear effect in Extras; removing it does not lower the C-index",
+    "crp":               "no clear effect in Extras; removing it does not lower the C-index",
+    "bilirubin":         "no clear effect in Extras; removing it does not lower the C-index",
+    "iron":              "no clear effect in Extras; removing it does not lower the C-index",
+    "total_protein":     "no clear effect in Extras; removing it does not lower the C-index",
+    "hba1c":             "no clear effect in Extras; removing it does not lower the C-index",
 }
