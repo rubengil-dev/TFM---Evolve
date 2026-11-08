@@ -148,8 +148,8 @@
 - **Por qué:** cada comparación responde a una pregunta del producto: cuánto aporta la analítica frente a la edad, cuánto la analítica ampliada y cuánto los hábitos.
 
 ### ¿Qué algoritmos compiten?
-- **Decisión:** en cada nivel, los mismos cuatro y en igualdad: Cox, Cox elastic net, random survival forest y gradient boosting (XGBoost o similar). Gana el mejor de cada nivel.
-- **Por qué:** el elastic net selecciona variables por sí solo; los árboles captan relaciones no lineales. Con los mismos contendientes en cada nivel, los saltos entre niveles son comparables.
+- **Decisión:** en los niveles 1 a 3, los mismos cuatro y en igualdad: Cox, Cox elastic net, random survival forest y gradient boosting (XGBoost o similar). Gana el mejor de cada nivel. El nivel 4 usa directamente Cox simple, sin competición.
+- **Por qué:** el elastic net selecciona variables por sí solo; los árboles captan relaciones no lineales. Con los mismos contendientes en cada nivel, los saltos entre niveles son comparables. El nivel 4 solo junta bloques ya probados, y Cox ganó en los tres niveles con XGBoost optimizado lejos del listón: repetirlo costaría casi toda la ejecución para confirmar lo sabido.
 
 ### ¿Con qué librerías?
 - **Decisión:** scikit-survival para Cox, elastic net y random survival forest; XGBoost para gradient boosting, adaptado al formato de los demás.
@@ -178,6 +178,10 @@
 ### ¿Qué queda del Cuestionario tras el nivel 3?
 - **Decisión:** Cox simple con las 19 de Base y 4 hábitos: tabaco, actividad física, horas sentado y horas de sueño. Sale el alcohol, con sus dos preguntas, y la comida rápida. Un hábito con efecto claro contrario al conocido no entra aunque suba el C-index, y las preguntas de un mismo hábito se juzgan juntas.
 - **Por qué:** beber sale protector frente a no beber nunca, por la causalidad inversa de quienes lo dejaron por enfermedad; al quitar solo la frecuencia, las bebidas pasaban a salir protectoras. Quitar el alcohol cuesta 0,004 de C-index misma edad, el precio de no decir al usuario que beber le quita años. La comida rápida no tiene efecto claro y quitarla no baja ese C-index. XGBoost optimizado no llega al listón (+0,02 en misma edad), como en los niveles 1 y 2. Juzgar el alcohol entero se fijó tras la primera ejecución, al ver el cambio de signo.
+
+### ¿Hay modelo del nivel 4?
+- **Decisión:** sí, Cox simple con las 33 variables de Base, Extras y Cuestionario, sin quitar ninguna. La app lo usa cuando el usuario trae Extras y responde el cuestionario.
+- **Por qué:** supera al nivel 2 con bootstrap (+0,013 de C-index misma edad, intervalo de 0,009 a 0,017) y ningún hábito cambia de signo al juntar los bloques. Lo que solo pierda fuerza se habría quedado igualmente: cada bloque tiene que funcionar con el otro o sin él. Las mejoras no se suman (+0,013 frente a +0,021 de los hábitos sobre Base), porque los Extras recogen parte de lo mismo.
 
 ### ¿Qué entra de cada pareja y combinación lineal?
 - **Decisión:** por defecto, las variables que vienen escritas en el PDF. Serie roja: hemoglobina, hematíes y CHCM. Serie blanca: los cinco tipos, sin leucocitos. Colesterol total + HDL, proteínas totales + albúmina y sistólica + diastólica. El IMC sustituye a peso y talla, que el usuario sigue dando. Fuera insulina, HOMA-IR y los cocientes derivados.

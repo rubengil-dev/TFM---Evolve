@@ -26,11 +26,14 @@ QUESTIONNAIRE = [
     "smoking", "physical_activity", "sedentary_hours", "sleep_hours",
 ]
 
+# Level 4: Base + Extras + Questionnaire, with no further pruning
+
 # Algorithm kept for each level
 LEVEL_MODELS = {
     "base":          "cox",
     "extras":        "cox",
     "questionnaire": "cox",
+    "full":          "cox",
 }
 
 # Not used by any model: variable → reason
