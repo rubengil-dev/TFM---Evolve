@@ -14,6 +14,9 @@ BRONZE = DATA / "01_bronze"
 SILVER = DATA / "02_silver"
 GOLD = DATA / "03_gold"
 
+# Trained models, one file per level (in git: the app needs them)
+TRAINED_MODELS = ROOT / "models"
+
 # Outputs
 BRONZE_MANIFEST = BRONZE / "manifest.csv"
 SILVER_RAW = SILVER / "silver_raw.parquet"

@@ -28,6 +28,14 @@ QUESTIONNAIRE = [
 
 # Level 4: Base + Extras + Questionnaire, with no further pruning
 
+# Variables of each level
+LEVEL_COLUMNS = {
+    "base":          BASE,
+    "extras":        BASE + EXTRAS,
+    "questionnaire": BASE + QUESTIONNAIRE,
+    "full":          BASE + EXTRAS + QUESTIONNAIRE,
+}
+
 # Algorithm kept for each level
 LEVEL_MODELS = {
     "base":          "cox",

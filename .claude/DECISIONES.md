@@ -192,7 +192,7 @@
 - **Por qué:** en la app sería un sesgo de todo un laboratorio que el usuario no puede ver ni corregir. La CDC no da corrección oficial, y un ajuste propio no resolvería la escala de los analizadores españoles, que es desconocida. Quitarlo cuesta de 0,006 (nivel 4) a 0,018 (nivel 1) de C-index misma edad, y ninguna variable del nivel 1 cambia entre efecto claro y no claro.
 
 ### ¿Cómo se traduce el riesgo a edad?
-- **Decisión:** la edad biológica es la edad a la que la persona típica del mismo sexo tiene el mismo riesgo a 10 años según el modelo del nivel. La persona típica es la mediana del riesgo que ese modelo da en train a cada edad y sexo, en la escala log(−log(1 − riesgo)), con una curva de segundo grado por sexo. Fuera de 18-79 la curva sigue en línea recta.
+- **Decisión:** la edad biológica es la edad a la que la persona típica del mismo sexo tiene el mismo riesgo a 10 años según el modelo del nivel. La persona típica es la mediana del riesgo que ese modelo, ya entrenado, da a la gente de train de cada edad y sexo, en la escala log(−log(1 − riesgo)), con una curva de segundo grado por sexo. Fuera de 18-79 la curva sigue en línea recta.
 - **Por qué:** con una referencia común (el baseline, como PhenoAge) la persona típica salía hasta 5 años más joven, y peor cuanto más completo el modelo: al separar más a la gente, la media en escala logarítmica cae. Con la media de cada nivel, la persona típica seguía 1-2 años por debajo por la cola de personas muy enfermas; con la mediana y la curva, la mediana de cada grupo de edad y sexo queda dentro de ±1 año y la media algo por encima, el lado prudente. Por sexo, porque a igual edad un hombre tiene el riesgo de una mujer 5 años mayor.
 
 ### ¿Cómo se tratan las analíticas incompletas?
@@ -206,6 +206,10 @@
 ### ¿Qué modelo usa la app?
 - **Decisión:** el más completo que permitan los datos del usuario, pero solo si ese nivel ha superado de verdad al anterior; si no, el anterior. No se promedian modelos.
 - **Por qué:** promediar con un modelo peor empeora el resultado, y un modelo que no mejora solo añade preguntas y datos que pueden faltar.
+
+### ¿Con qué datos se entrena el modelo final y dónde se guarda?
+- **Decisión:** primero con train, para mirar el test una sola vez con esos modelos; después del test, con todos los datos, y ese es el que usa la app. Se guarda un archivo por nivel (1 a 4) en una carpeta del repo, versionada en git. El baseline no se guarda: la evaluación final lo entrena si lo necesita.
+- **Por qué:** todas las decisiones se tomaron con validación cruzada dentro de train, así que solo el test da una cifra sin sesgo; reentrenar con todo después solo añade gente y la cifra del test sigue valiendo. Los modelos van en git porque el servidor de la app no puede regenerarlos sin descargar NHANES, y pesan poco.
 
 ### ¿Cómo se organiza el código del modelo?
 - **Decisión:** un archivo por paso, no por modelo, en `src/models/` con prefijo `s1_`…`s5_` (split, preprocesado, algoritmos, edad biológica, evaluación). Las variables de cada bloque y el algoritmo ganador de cada modelo, en `src/config/model_sets.py`. El entrenamiento se lanza desde `src/pipeline/s5_build_model.py`, el quinto paso del pipeline, que llama a esos archivos. Un notebook de trabajo por nivel, con todos sus modelos para poder compararlos, que importa de `src/`.
