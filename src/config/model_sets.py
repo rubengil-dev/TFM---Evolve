@@ -8,7 +8,7 @@ BASELINE = ["age", "sex"]
 # Level 1: routine Spanish blood test, plus age, sex and BMI (from weight and height)
 BASE = [
     "age", "sex", "bmi",
-    "hemoglobin", "erythrocytes", "mchc", "rdw",
+    "hemoglobin", "erythrocytes", "mchc",
     "neutrophils", "lymphocytes", "monocytes",
     "glucose", "creatinine", "urea", "uric_acid", "hdl", "ast", "alt",
     "sodium", "potassium",
@@ -65,6 +65,7 @@ DISCARDED = {
     "basophils":         "no clear effect in Base; removing it does not lower the C-index",
     "total_cholesterol": "no clear effect in Base; removing it does not lower the C-index",
     "calcium":           "no clear effect in Base; removing it does not lower the C-index",
+    "rdw":               "analyser-dependent: +1 point moves the biological age 2-3 years",
     "triglycerides":     "no clear effect in Extras; removing it does not lower the C-index",
     "crp":               "no clear effect in Extras; removing it does not lower the C-index",
     "bilirubin":         "no clear effect in Extras; removing it does not lower the C-index",
