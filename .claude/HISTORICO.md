@@ -3,6 +3,13 @@
 - **No contiene:** cifras, decisiones con su porqué ni el estado actual.
 - **Se actualiza:** al cerrar cada sesión, después del commit del trabajo.
 
+## 2026-11-07 a 2026-11-09: niveles 2 a 4, edad biológica, PhenoAge y modelos guardados
+- Niveles 2, 3 y 4 con Cox simple: Base + 10 Extras (`66e5157`), Base + 4 hábitos (`51fddfa`) y los dos juntos (`3c80ce5`).
+- Edad biológica: referencia propia de cada nivel con la mediana por edad y sexo; el RDW sale de todos los modelos por el salto del analizador (`c7bb4b4`).
+- Comparación con PhenoAge en train: el nivel 1 la iguala y el nivel 2 la supera (`45b6955`). Incidencia: el riesgo de PhenoAge se redondeaba a 1 en casos graves y daba edades infinitas; se calculó desde la puntuación.
+- `s5_build_model` entrena con train los niveles 1 a 4 y los guarda en `models/`, en git (`7d39d82`).
+- Incidencia: los notebooks se ejecutan con el Python de `.venv`; el Jupyter global no tiene scikit-survival.
+
 ## 2026-11-06: nivel 1 del modelo
 - Notebook del nivel 1: los cuatro contendientes con valores fijos, optimización con Optuna, bootstrap frente al baseline, pesos de cada variable y variantes de Base. Elegido Cox simple y Base reducida a 19 variables (`aeb3acd`).
 - Notebooks sin prefijo numérico, reservado a los entregables (`base_correlations`, `models_lvl1`).

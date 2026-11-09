@@ -2,6 +2,8 @@
 Step 5, evaluation at 10 years, out of training:
     - evaluate_level: summary of every model of a level
     - compare_risks: whether one model really beats another
+    - bootstrap_c_indexes, confidence_interval: C-index of several models with its interval
+    - calibration_in_years: calibration gap told in years of biological age
     - plot_calibration: predicted against observed risk
     - tune_model: best settings of a model
 """
@@ -13,6 +15,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import optuna
 import pandas as pd
+from scipy.optimize import brentq
 from sksurv.metrics import concordance_index_ipcw
 from sksurv.nonparametric import kaplan_meier_estimator
 
@@ -25,7 +28,10 @@ from src.config.study import (
     TUNING_TRIALS,
 )
 from src.models.s3_algorithms import MODELS, build_pipeline, survival_target
+from src.models.s4_biological_age import reference_risk
 from src.utils.features import age_groups
+
+YEARS_SEARCHED = 50  # largest shift tried when telling a calibration gap in years
 
 
 def evaluate_level(columns, train, folds, models=MODELS, settings=None):
@@ -154,6 +160,64 @@ def compare_risks(risk_new, risk_old, data, samples=BOOTSTRAP_SAMPLES):
         "low": differences.quantile(0.025),
         "high": differences.quantile(0.975),
     }).round(4)
+
+
+def bootstrap_c_indexes(risks, data, samples=BOOTSTRAP_SAMPLES):
+    """
+    C-index of several models on the same resampled people:
+        - risks: model name → risk of each person in data
+        - One row per sample; columns (model, 'c_index' / 'c_index_same_age')
+        - Differences between columns give the interval of an improvement
+    """
+    rng = np.random.default_rng(SPLIT_SEED)
+    rows = []
+    for _ in range(samples):
+        picked = rng.integers(0, len(data), len(data))
+        sample = data.iloc[picked].reset_index(drop=True)
+        groups = age_groups(sample)
+        row = {}
+        for name, risk in risks.items():
+            resampled = pd.Series(np.asarray(risk)[picked])
+            row[(name, "c_index")] = c_index(resampled, sample, data)
+            row[(name, "c_index_same_age")] = same_age_c_index(c_index_by_group(resampled, sample, groups, data))
+        rows.append(row)
+    table = pd.DataFrame(rows)
+    table.columns = pd.MultiIndex.from_tuples(table.columns)
+    return table
+
+
+def confidence_interval(values):
+    """Mean and 95% interval of each column of bootstrap values."""
+    return pd.DataFrame({
+        "value": values.mean(),
+        "low": values.quantile(0.025),
+        "high": values.quantile(0.975),
+    }).round(4)
+
+
+def calibration_in_years(risk, age, data, reference):
+    """
+    Calibration table with each gap told in years:
+        - age: biological age of each person from this risk
+        - years: shift of the group's biological ages that makes its predicted risk match the observed one
+        - years above 0 = biological age underestimated
+    """
+    table = calibration_table(risk, data)
+    groups = pd.qcut(risk, CALIBRATION_GROUPS, labels=False, duplicates="drop")
+    table["age"] = pd.Series(np.asarray(age), index=data.index).groupby(groups).mean()
+    table["years"] = [
+        years_to_observed(np.asarray(age)[np.asarray(groups == group)], data.loc[groups == group, "sex"], observed, reference)
+        for group, observed in table["observed"].items()
+    ]
+    return table
+
+
+def years_to_observed(ages, sex, observed, reference):
+    """Years to add to every age so that the mean typical risk equals the observed risk; NaN if out of reach."""
+    gap = lambda years: reference_risk(ages + years, sex, reference).mean() - observed
+    if gap(-YEARS_SEARCHED) * gap(YEARS_SEARCHED) > 0:
+        return np.nan
+    return brentq(gap, -YEARS_SEARCHED, YEARS_SEARCHED)
 
 
 def tune_model(name, columns, train, folds, trials=TUNING_TRIALS):

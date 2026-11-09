@@ -15,14 +15,15 @@
 ## Comandos
 - Pipeline completo, desde la raíz: `.venv/Scripts/python -m src.main`. Sin la descarga, los pasos de datos tardan menos de un minuto.
 - Solo el modelo: `.venv/Scripts/python -c "from src.pipeline import s5_build_model; s5_build_model.run()"`.
+- Ejecutar un notebook desde la terminal, en `notebooks/`: `JUPYTER_PATH=../.venv/share/jupyter ../.venv/Scripts/jupyter nbconvert --to notebook --execute --inplace <notebook>.ipynb`. El `JUPYTER_PATH` hace que el kernel `python3` sea el de `.venv` (registrado ahí con `ipykernel install --sys-prefix`); sin él, arranca el Python global, que no tiene scikit-survival.
 
 ## Estructura
 - `src/main.py`: único punto de entrada del pipeline; llama a cada `run()` en orden.
 - `src/config/`: rutas, fuentes externas, códigos de los cuestionarios, parámetros del estudio, renombres, correcciones CDC, papel de cada columna de Gold, rangos posibles por variable, umbrales de la validación y variables de cada bloque del modelo, con las descartadas.
-- `src/utils/`: funciones compartidas por tema (descarga, lectura de NHANES, fórmulas de las features derivadas, resumen de cada capa, validación de Gold).
+- `src/utils/`: funciones compartidas por tema (descarga, lectura de NHANES, fórmulas de las features derivadas, resumen de cada capa, validación de Gold y la fórmula de PhenoAge).
 - `src/pipeline/`: un archivo por paso, numerado y con su `run()`: `s1_download_bronze`, `s2_build_raw_silver`, `s3_build_clean_silver`, `s4_build_gold` y `s5_build_model`, que entrena el modelo final de los niveles 1 a 4 (unos 3 minutos).
 - `src/models/`: los subpasos que llama `s5_build_model`: `s1_split`, `s2_preprocessing`, `s3_algorithms`, `s4_biological_age` y `s5_evaluation`.
-- `notebooks/`: exploración, muestra para la Entrega 02, correlaciones de las candidatas a Base y uno de trabajo por nivel del modelo, otro de la edad biológica y otro de la comparación con PhenoAge.
+- `notebooks/`: exploración, muestra para la Entrega 02, correlaciones de las candidatas a Base y uno de trabajo por nivel del modelo, otro de la edad biológica, otro de la comparación con PhenoAge y el de la evaluación final en test (`final_evaluation`).
 - `docs/entregas/`: entregas del máster.
 - `models/`: un `.joblib` por nivel (`base`, `extras`, `questionnaire`, `full`), en git, con el pipeline ajustado, la referencia de edad, sus columnas, con cuánta gente se entrenó y las versiones de scikit-learn y scikit-survival. Se carga con `joblib.load`; para el riesgo, `risk_at_horizon`, y para la edad, `biological_age`.
 - `data/`: capas de datos; se regenera con el pipeline.

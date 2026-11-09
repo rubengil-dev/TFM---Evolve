@@ -156,8 +156,12 @@
 - **Por qué:** scikit-survival encaja en el `Pipeline`, pero su gradient boosting tardaba unos 46 minutos por entrenamiento, y XGBoost, unos segundos con los mismos ajustes.
 
 ### ¿Cómo se ajustan los modelos?
-- **Decisión:** primero, con valores fijos razonables, para tener una estimación. Después se optimiza solo el ganador, con Optuna; si dos quedan cerca, ambos. Los modelos optimizados se comparan con otros bloques. En los niveles 1, 2 y 3 se queda Cox simple. Sin pesos muestrales en esta primera prueba.
-- **Por qué:** optimizar los cuatro en cada nivel costaría horas sin saber aún cuál importa. No compensa perder la explicabilidad por clasificar mejor 1 de cada 100. Comparar con otros bloques evita que la optimización infle el resultado. El usuario es español, así que representar exactamente a EE. UU. no es el objetivo; se declara como limitación.
+- **Decisión:** primero, con valores fijos razonables, para tener una estimación. Después se optimiza solo el ganador, con Optuna; si dos quedan cerca, ambos. Los modelos optimizados se comparan con otros bloques. En los niveles 1, 2 y 3 se queda Cox simple.
+- **Por qué:** optimizar los cuatro en cada nivel costaría horas sin saber aún cuál importa. No compensa perder la explicabilidad por clasificar mejor 1 de cada 100. Comparar con otros bloques evita que la optimización infle el resultado.
+
+### ¿Se usan los pesos muestrales de NHANES?
+- **Decisión:** no, ni al entrenar ni al traducir el riesgo a edad ni al evaluar. Se declara como limitación.
+- **Por qué:** el usuario es español, así que representar exactamente a la población de EE. UU. no es el objetivo.
 
 ### ¿Cómo se eligen las variables de cada nivel?
 - **Decisión:** se anidan. Cada nivel parte de las variables que sobrevivieron en el anterior y solo añade su bloque. Si en un nivel no sobrevive casi nada de lo añadido, ese modelo se descarta.
@@ -214,6 +218,19 @@
 ### ¿Cómo se organiza el código del modelo?
 - **Decisión:** un archivo por paso, no por modelo, en `src/models/` con prefijo `s1_`…`s5_` (split, preprocesado, algoritmos, edad biológica, evaluación). Las variables de cada bloque y el algoritmo ganador de cada modelo, en `src/config/model_sets.py`. El entrenamiento se lanza desde `src/pipeline/s5_build_model.py`, el quinto paso del pipeline, que llama a esos archivos. Un notebook de trabajo por nivel, con todos sus modelos para poder compararlos, que importa de `src/`.
 - **Por qué:** los cuatro modelos son el mismo proceso con otra lista de variables; por modelo serían cuatro copias. Split se separa del preprocesado porque la app usa el preprocesado y nunca el split. La edad biológica va aparte porque es igual para todos los algoritmos. Python no importa módulos que empiezan por número; de ahí la `s`.
+
+### ¿Cómo se mide la infraestimación?
+- **Decisión:** en años. En cada decil de riesgo, cuántos años habría que sumar a la edad biológica de ese decil para que su riesgo predicho cuadre con el observado. Por encima de 0, la edad se queda corta. Las colas se miden con el porcentaje de personas a más de 10 años de su edad, por arriba y por abajo.
+- **Por qué:** es la unidad que ve el usuario, y el signo separa el error peor (infraestimar) del otro.
+
+### ¿Qué se mide en la evaluación final y qué cuenta como aprobado?
+- **Decisión:** en test, una sola vez, a 10 años, con los modelos guardados, el baseline y PhenoAge. Se fijaron antes de abrir el test: cada salto (1 vs 0, 2 vs 1, 3 vs 1 y 4 vs 2) es real si el intervalo del bootstrap de la diferencia de C-index misma edad queda entero por encima de 0; el C-index misma edad cae como mucho 0,02 frente a la validación cruzada; ningún decil infraestima más de 2 años; la mediana de cada grupo de edad y sexo queda dentro de ±1,5 años; el nivel 2 no queda por debajo de PhenoAge; y sin las muertes de los 2 primeros años el C-index misma edad cae como mucho 0,02. Si se suspende un criterio, no se vuelve a ajustar el modelo: va a limitaciones, salvo si el nivel 1 no supera al baseline.
+- **Resultado:** se cumple todo menos la infraestimación, que en los deciles de riesgo bajo llega a entre 3,7 y 9,6 años (el baseline, que es la edad misma, también falla con 5,2), y desde el decil 6 no pasa de 1,4. Los cuatro saltos son reales (el 4 vs 2, +0,018 sin RDW), así que la app usa los cuatro niveles.
+- **Por qué:** fijar los listones después de mirar el test los ajustaría a lo que saliera. La infraestimación en riesgo bajo es sobre todo ruido (unas 970 personas por decil con pocas muertes, y a esas edades poco riesgo equivale a muchos años), pero se mantiene como limitación: en jóvenes de riesgo bajo, el margen ± X años tiene que ser más ancho.
+
+### ¿Se quitan las muertes de los 2 primeros años (causalidad inversa)?
+- **Decisión:** no, se quedan dentro, como en PhenoAge.
+- **Por qué:** en test, quitarlas baja el C-index misma edad entre 0,007 y 0,012, dentro del listón de 0,02 fijado antes. El modelo no se apoya sobre todo en enfermedad ya avanzada.
 
 ### ¿Qué error es peor?
 - **Decisión:** infraestimar la edad biológica (falso negativo) es peor que sobreestimarla. Con métricas parecidas, se prefiere el modelo con menos errores grandes aunque su media sea algo peor.
