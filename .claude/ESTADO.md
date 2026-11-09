@@ -4,14 +4,12 @@
 - **Se actualiza:** al cerrar cada sesión.
 
 ## Próxima sesión
-Cerrar la fase de modelo y preparar la Entrega 03. Ya están hechos los cuatro niveles, la edad biológica, la comparación con PhenoAge, los modelos guardados y la evaluación final en test. En este orden:
-1. Reentrenar los modelos con todos los datos para la app.
-2. Preparar la Entrega 03.
+Preparar la Entrega 03. La fase de modelo está terminada: cuatro niveles, edad biológica, comparación con PhenoAge, evaluación final en test y modelo final reentrenado con todos los datos.
 
 ## Fases
 - [x] Datos
 - [x] Preparación
-- [ ] Modelo
+- [x] Modelo
 - [ ] App: lectura del PDF, pantalla de revisión, cuestionario, resultado y front.
 - [ ] Despliegue
 
