@@ -3,6 +3,12 @@
 - **No contiene:** cifras, decisiones con su porqué ni el estado actual.
 - **Se actualiza:** al cerrar cada sesión, después del commit del trabajo.
 
+## 2026-11-09 a 2026-11-10: evaluación final en test y modelo final con todos los datos
+- Criterios de aprobado fijados antes de mirar el test y evaluación final ejecutada una sola vez: todos los saltos entre niveles son reales y PhenoAge queda igualada o superada; la infraestimación en los deciles de riesgo bajo queda como limitación. La fórmula de PhenoAge pasa a `src/utils/` (`e5b81f5`).
+- Incidencia: el criterio de infraestimación en años estaba mal planteado (inestable con riesgo bajo; también lo suspende el baseline). No se cambió a posteriori: se documenta como limitación.
+- `s5_build_model` entrena el modelo final con toda Gold; el notebook de evaluación entrena los suyos con train mediante `build_level`. Reentrenar no cambia ningún signo y mueve poco la edad biológica (`700c846`, merge `39a2d68` de `modelo-final-todos-los-datos`).
+- Fase de modelo cerrada.
+
 ## 2026-11-07 a 2026-11-09: niveles 2 a 4, edad biológica, PhenoAge y modelos guardados
 - Niveles 2, 3 y 4 con Cox simple: Base + 10 Extras (`66e5157`), Base + 4 hábitos (`51fddfa`) y los dos juntos (`3c80ce5`).
 - Edad biológica: referencia propia de cada nivel con la mediana por edad y sexo; el RDW sale de todos los modelos por el salto del analizador (`c7bb4b4`).
