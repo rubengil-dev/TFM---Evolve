@@ -4,7 +4,8 @@
 - **Se actualiza:** al cerrar cada sesión.
 
 ## Próxima sesión
-Preparar la Entrega 03. La fase de modelo está terminada: cuatro niveles, edad biológica, comparación con PhenoAge, evaluación final en test y modelo final reentrenado con todos los datos.
+1. Revisión completa del proyecto: la última fue antes de todo el código del modelo.
+2. Empezar la fase de app pensando en la Entrega 04 (solución UX): cerrar las decisiones abiertas de App y Resultado, empezando por el stack y el flujo de pantallas.
 
 ## Fases
 - [x] Datos
@@ -16,7 +17,7 @@ Preparar la Entrega 03. La fase de modelo está terminada: cuatro niveles, edad 
 ## Entregas
 - [x] Entrega 01: ideas de producto.
 - [x] Entrega 02: datos y preparación.
-- [ ] Entrega 03: diseñar, desarrollar y evaluar una primera solución de Machine Learning [15 noviembre 2026].
+- [x] Entrega 03: diseñar, desarrollar y evaluar una primera solución de Machine Learning.
 - [ ] Entrega 04: solución UX [29 noviembre 2026].
 - [ ] Entrega final: 13 diciembre de 2026.
 
