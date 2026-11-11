@@ -3,6 +3,10 @@
 - **No contiene:** cifras, decisiones con su porqué ni el estado actual.
 - **Se actualiza:** al cerrar cada sesión, después del commit del trabajo.
 
+## 2026-11-11: Entrega 03
+- Documento de la Entrega 03 redactado a partir de DECISIONES y de los notebooks de los niveles y de la evaluación final, y revisado por mí; `final_evaluation` se enlaza tal cual como código reproducible (`e6f73ea`).
+- ESTADO: Entrega 03 hecha; la próxima sesión, revisión completa del proyecto (la última, el 2026-10-19) y arranque de la fase de app (`31c1ab4`).
+
 ## 2026-11-09 a 2026-11-10: evaluación final en test y modelo final con todos los datos
 - Criterios de aprobado fijados antes de mirar el test y evaluación final ejecutada una sola vez: todos los saltos entre niveles son reales y PhenoAge queda igualada o superada; la infraestimación en los deciles de riesgo bajo queda como limitación. La fórmula de PhenoAge pasa a `src/utils/` (`e5b81f5`).
 - Incidencia: el criterio de infraestimación en años estaba mal planteado (inestable con riesgo bajo; también lo suspende el baseline). No se cambió a posteriori: se documenta como limitación.
