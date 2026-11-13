@@ -1,4 +1,6 @@
-# Tests on every push and pull request, without the data/ folder (models/ is in git)
+# Tests on every push and pull request:
+#   - Only the app requirements: proves they are enough to load the models and predict
+#   - Without data/ (not in git): its tests are skipped; models/ is in git
 name: tests
 
 on: [push, pull_request]
@@ -12,5 +14,5 @@ jobs:
         with:
           python-version: "3.11"
           cache: pip
-      - run: pip install -r requirements.txt
+      - run: pip install -r requirements.txt pytest==9.2.0
       - run: pytest

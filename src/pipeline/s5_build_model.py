@@ -7,18 +7,16 @@ Model step of the pipeline, the final model of each level (1 to 4), the one the 
 """
 
 # Imports
-import hashlib
-import subprocess
-
 import joblib
 import pandas as pd
 
 from src.config.model_sets import LEVEL_COLUMNS, LEVEL_MODELS
-from src.config.paths import GOLD_TABLE, ROOT, TRAINED_MODELS
+from src.config.paths import GOLD_TABLE, TRAINED_MODELS
 from src.models.predict import library_versions, risk_at_horizon
 from src.models.s3_algorithms import build_pipeline, survival_target
 from src.models.s4_biological_age import fit_reference
 from src.models.s5_evaluation import c_index
+from src.utils.provenance import code_version, data_fingerprint
 
 
 def run():
@@ -50,25 +48,6 @@ def build_level(level, columns, data):
         },
         "versions": library_versions(),
     }
-
-
-def data_fingerprint(data):
-    """Short hash of the rows and columns of data: same data → same fingerprint."""
-    rows = pd.util.hash_pandas_object(data, index=False).to_numpy().tobytes()
-    columns = ",".join(data.columns).encode()
-    return hashlib.sha256(columns + rows).hexdigest()[:16]
-
-
-def code_version():
-    """Git commit of the code, with '-dirty' if src/ has uncommitted changes."""
-    commit = git("rev-parse", "--short", "HEAD")
-    changed = git("status", "--porcelain", "--", "src")
-    return commit + ("-dirty" if changed else "")
-
-
-def git(*arguments):
-    """Output of a git command run at the project root."""
-    return subprocess.run(["git", *arguments], cwd=ROOT, capture_output=True, text=True, check=True).stdout.strip()
 
 
 def print_summary(bundle, path):
