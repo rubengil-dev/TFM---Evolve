@@ -3,6 +3,15 @@
 - **No contiene:** cifras, decisiones con su porqué ni el estado actual.
 - **Se actualiza:** al cerrar cada sesión, después del commit del trabajo.
 
+## 2026-11-12 a 2026-11-13: revisión completa y bloque 1 de mejoras
+- Revisión completa del proyecto (la última, el 2026-10-19) con mejoras de código, de estructura y una propuesta de MLOps (tests, DVC y MLflow), ordenadas en un plan de tres bloques en ESTADO (`a0fa2c0`).
+- Bloque 1, en la rama `mejoras-bloque-1`:
+  - Predicción separada del entrenamiento; tests de los modelos (edades de referencia) y de la configuración; CI con GitHub Actions; cada modelo guarda la huella de sus datos, el commit y las versiones, y falla al cargar si no coinciden (`e1703a1`).
+  - Modelos reentrenados después de commitear el código, para que apunten a un commit limpio; las edades no cambian (`e86a6f3`).
+  - Test de las personas de test de la evaluación final; requisitos de la app separados de los del análisis; README (`0a93f40`).
+  - ESTADO, TECNICO y DECISIONES al día (`94b3392`), merge `b4bdc72` a `main` y primer push con CI.
+- Incidencia: el reentreno tarda unos 6,5 minutos, no unos 3 como decía TECNICO.
+
 ## 2026-11-11: Entrega 03
 - Documento de la Entrega 03 redactado a partir de DECISIONES y de los notebooks de los niveles y de la evaluación final, y revisado por mí; `final_evaluation` se enlaza tal cual como código reproducible (`e6f73ea`).
 - ESTADO: Entrega 03 hecha; la próxima sesión, revisión completa del proyecto (la última, el 2026-10-19) y arranque de la fase de app (`31c1ab4`).
