@@ -4,7 +4,7 @@
 - **Se actualiza:** al cerrar cada sesión.
 
 ## Próxima sesión
-1. Bloque 1 del plan de mejoras (quick wins), en su orden.
+1. Comprobar que la CI pasó en GitHub tras el primer push.
 2. Empezar la fase de app pensando en la Entrega 04 (solución UX): cerrar las decisiones abiertas de App y Resultado, empezando por el stack y el flujo de pantallas. El punto 2.1 del plan va dentro.
 
 ## Fases
@@ -13,7 +13,7 @@
 - [x] Modelo
 - [ ] App: lectura del PDF, pantalla de revisión, cuestionario, resultado y front.
 - [ ] Despliegue
-- [ ] MLOps (requisito nuevo del máster): tests, historial, versionado de datos y de modelos.
+- [ ] MLOps (requisito nuevo del máster): tests, historial, versionado de datos y de modelos. Hechos los tests básicos, la CI y la trazabilidad de los modelos; faltan los puntos 2.2 a 2.4 del plan.
 
 ## Entregas
 - [x] Entrega 01: ideas de producto.
@@ -26,21 +26,7 @@
 Sale de la revisión completa del 12 de noviembre de 2026. Cada punto dice qué, por qué y cómo. Dentro de cada bloque, el orden es el de ejecución. Del bloque 2, el 2.1 va con la app y el resto después de la Entrega 04, salvo que el profesor pida MLOps antes.
 
 ### Bloque 1: quick wins (fácil y aporta)
-- [ ] **1.1 Separar la predicción del entrenamiento.**
-  - Por qué: predecir obliga hoy a instalar las librerías de optimización, gráficas y gradient boosting, y la app solo predice.
-  - Cómo: un módulo propio de predicción (cargar el modelo, riesgo y edad biológica), del que importan la evaluación y el paso del modelo. El preprocesado no se mueve: los modelos guardados apuntan a su ruta.
-- [ ] **1.2 Test de referencia de los modelos y CI.**
-  - Por qué: avisa si alguien reentrena, toca el preprocesado o actualiza una librería sin querer, y cubre el requisito de tests desde el primer día.
-  - Cómo: unas pocas personas inventadas con su edad biológica guardada como referencia, un test de coherencia de la configuración y GitHub Actions en cada push. Va antes del 1.3 para demostrar que ese reentrenamiento no mueve ninguna edad.
-- [ ] **1.3 Trazabilidad dentro de cada modelo.**
-  - Por qué: cada ejecución cambia los modelos guardados sin motivo, y no se sabe de qué datos ni de qué código salió cada uno.
-  - Cómo: quitar la fecha del modelo guardado; añadir el commit, la huella de Gold y las versiones de todas las librerías de las que depende; fallar al cargar si no coinciden con las instaladas. Reentrenar y comprobar que el test del 1.2 sigue pasando.
-- [ ] **1.4 Fijar el test por persona.**
-  - Por qué: el split depende del orden de las filas; si la CDC republica un fichero, hay personas que cambian de train a test sin aviso.
-  - Cómo: guardar la huella de los identificadores de test y comprobarla con un test que se salta si no hay datos.
-- [ ] **1.5 README y dependencias separadas.**
-  - Por qué: se evalúa el producto y el repo no explica qué es ni cómo reproducirlo; el hosting instalaría todas las librerías del análisis.
-  - Cómo: README en la raíz (qué es, comandos, estructura, limitaciones); un archivo de requisitos para la app, con versiones exactas de las librerías del modelo, y otro para el análisis. Se completa al elegir el stack.
+- [x] Hecho del 1.1 al 1.5. Lo que queda: al elegir el stack, añadir sus librerías a los requisitos de la app y completar el README.
 
 ### Bloque 2: hard wins (difícil y aporta mucho)
 - [ ] **2.1 Validar lo que entra al modelo.**
@@ -63,7 +49,7 @@ Sale de la revisión completa del 12 de noviembre de 2026. Cada punto dice qué,
 - [ ] **3.4 Imputador: pasarle la columna de forma explícita.** Por qué: hoy depende de un detalle interno de pandas. Cómo: junto al test de preprocesado del 2.2.
 - [ ] **3.5 Limpiar lo que no se usa.** Por qué: quedan variables en la lista de logaritmos que ningún modelo usa y columnas de Silver que nadie lee. Cómo: borrarlas y comprobar que Gold no cambia.
 - [ ] **3.6 Etiquetas en git.** Por qué: no se localizan las entregas ni las versiones del modelo. Cómo: una por entrega y una por modelo, la primera tras el 1.3.
-- [ ] **3.7 Poner al día los archivos de Claude.** Por qué: el requisito de MLOps no está en el contexto y el técnico cita como clave una librería que solo usan los notebooks. Cómo: con mi OK.
+- [ ] **3.7 Poner al día el contexto.** Por qué: el requisito de MLOps no está en el contexto del proyecto. Cómo: con mi OK.
 
 ## Pendiente para más adelante
 
