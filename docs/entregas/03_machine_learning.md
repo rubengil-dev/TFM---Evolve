@@ -160,14 +160,22 @@ Cómo el proyecto empieza a tener infinidad de archivos, te dejo aquí un peque�
   - `notebooks/phenoage.ipynb`: comparación con PhenoAge.
   - **`notebooks/final_evaluation.ipynb`: evaluación final en test, con todas las cifras de los apartados 3 y 4.** Entrena con train sus propios modelos, con la misma función que el pipeline.
 - **Salida para el producto:** `models/{base,extras,questionnaire,full}.joblib`. Cada archivo contiene el pipeline de preprocesado y modelo, la referencia para traducir el riesgo a edad y sus columnas.
+  - Además, cada modelo guarda de dónde sale: la huella de los datos con que se entrenó, el commit del código y las versiones de Python y de las librerías. Si al cargarlo las versiones instaladas no coinciden, falla en vez de dar resultados distintos sin avisar.
+- **Predicción para la app:** `src/models/predict.py` carga un modelo (`load_bundle`) y calcula la edad biológica (`predict_age`) sin necesitar las librerías de entrenamiento.
+- **Tests:** `tests/`, con pytest. Comprueban que los cuatro modelos dan la misma edad que la referencia para unas personas inventadas, que la configuración es coherente y que el test sigue siendo exactamente el de la evaluación final. Se ejecutan solos en GitHub Actions en cada push.
+- **Requisitos:** `requirements.txt` tiene solo lo que necesita la app para predecir; `requirements-dev.txt`, todo el análisis.
+- **Visión general del proyecto:** `README.md`.
 
 
 **Reproducir**
 Desde la raíz del repo con Python 3.11:
   ```bash
   py -3.11 -m venv .venv
-  .venv/Scripts/python -m pip install -r requirements.txt
+  .venv/Scripts/python -m pip install -r requirements-dev.txt
   .venv/Scripts/python -m src.main
+  .venv/Scripts/python -m pytest
   ```
-  Descarga NHANES, construye Gold y entrena el modelo final (unos 3 minutos más la descarga). 
-  Después, ejecuta `notebooks/final_evaluation.ipynb`.
+  Descarga NHANES, construye Gold y entrena el modelo final (unos 7 minutos más la descarga). Después, los tests comprueban que todo cuadra.
+  Por último, ejecuta `notebooks/final_evaluation.ipynb`.
+
+**Aviso:** el proyecto sigue vivo y no paro de trabajar en él, así que si algo del repo no cuadra exactamente con este documento, es por eso. Las cifras de los apartados 3 y 4 son las de la evaluación final, que no se ha vuelto a tocar.
