@@ -1,0 +1,34 @@
+{
+    "base": {
+        "healthy_young": 22.9659,
+        "typical_middle": 43.7798,
+        "unhealthy_old": 86.5828,
+        "partial_data": 60.7027,
+        "age_sex_only": 48.2455,
+        "older_than_79": 80.6487
+    },
+    "extras": {
+        "healthy_young": 22.8236,
+        "typical_middle": 48.8254,
+        "unhealthy_old": 97.003,
+        "partial_data": 61.7567,
+        "age_sex_only": 49.7483,
+        "older_than_79": 85.807
+    },
+    "questionnaire": {
+        "healthy_young": 18.6389,
+        "typical_middle": 43.2835,
+        "unhealthy_old": 95.7048,
+        "partial_data": 59.9708,
+        "age_sex_only": 48.4038,
+        "older_than_79": 79.942
+    },
+    "full": {
+        "healthy_young": 19.931,
+        "typical_middle": 49.4486,
+        "unhealthy_old": 103.8445,
+        "partial_data": 60.7441,
+        "age_sex_only": 49.0122,
+        "older_than_79": 85.8973
+    }
+}

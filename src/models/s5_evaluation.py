@@ -27,6 +27,7 @@ from src.config.study import (
     TUNING_SPACES,
     TUNING_TRIALS,
 )
+from src.models.predict import risk_at_horizon
 from src.models.s3_algorithms import MODELS, build_pipeline, survival_target
 from src.models.s4_biological_age import reference_risk
 from src.utils.features import age_groups
@@ -69,12 +70,6 @@ def cross_validate(name, columns, train, folds, settings=None):
         "by_sex": c_index_by_group(risk, train, train["sex"]),
         "calibration": calibration_table(risk, train),
     }
-
-
-def risk_at_horizon(pipeline, data):
-    """Probability of dying within the horizon, for each person."""
-    curves = pipeline.predict_survival_function(data)
-    return 1 - np.array([curve(HORIZON_MONTHS) for curve in curves])
 
 
 def c_index(risk, data, reference):
