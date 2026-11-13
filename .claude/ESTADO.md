@@ -4,8 +4,7 @@
 - **Se actualiza:** al cerrar cada sesión.
 
 ## Próxima sesión
-1. Comprobar que la CI pasó en GitHub tras el primer push.
-2. Empezar la fase de app pensando en la Entrega 04 (solución UX): cerrar las decisiones abiertas de App y Resultado, empezando por el stack y el flujo de pantallas. El punto 2.1 del plan va dentro.
+1. Empezar la fase de app pensando en la Entrega 04 (solución UX): cerrar las decisiones abiertas de App y Resultado, empezando por el stack y el flujo de pantallas. El punto 2.1 del plan va dentro.
 
 ## Fases
 - [x] Datos
