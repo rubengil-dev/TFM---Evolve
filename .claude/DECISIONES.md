@@ -6,8 +6,12 @@
 ## Entorno
 
 ### ¿Qué versión de Python y qué gestión de dependencias?
-- **Decisión:** Python 3.11 en un entorno virtual, con las dependencias congeladas con `pip freeze`.
-- **Por qué:** es lo estándar, lo reproduce cualquiera y las plataformas de hosting leen el archivo de requisitos directamente. La 3.11 tiene soporte hasta 2027 y todas las librerías la soportan; la 3.14 es demasiado nueva.
+- **Decisión:** Python 3.11 en un entorno virtual, con dos archivos de requisitos: el del análisis, congelado con `pip freeze`, y el de la app, escrito a mano con solo las librerías que necesita un modelo guardado y las mismas versiones. Un test comprueba que coinciden.
+- **Por qué:** es lo estándar, lo reproduce cualquiera y las plataformas de hosting leen el archivo de requisitos directamente. La 3.11 tiene soporte hasta 2027 y todas las librerías la soportan; la 3.14 es demasiado nueva. Separarlos evita que el hosting gratuito instale las librerías de entrenamiento, y las versiones tienen que ser idénticas porque el modelo guardado solo se carga bien con las mismas.
+
+### ¿Cómo se prueba el código?
+- **Decisión:** con pytest y GitHub Actions en cada push. La pieza central es un test de referencia: la edad biológica de unas personas inventadas en los cuatro niveles, con un margen de 0,01 años. La CI instala solo los requisitos de la app y no tiene los datos: los tests que los necesitan se saltan.
+- **Por qué:** el test de referencia avisa de cualquier cambio sin querer en el modelo, el preprocesado o las librerías, que de otro modo moverían edades en silencio. Instalar solo lo de la app demuestra que esos requisitos bastan para predecir. Los datos no están en git.
 
 ### ¿Cómo se organizan los datos?
 - **Decisión:** en capas: Bronze (tal como llega de la fuente, nunca se modifica), Silver (unido, limpio y armonizado) y Gold (tabla final que consume el modelo).
@@ -214,6 +218,10 @@
 ### ¿Con qué datos se entrena el modelo final y dónde se guarda?
 - **Decisión:** el pipeline entrena con todos los datos (train y test), y ese es el único modelo que se guarda: un archivo por nivel (1 a 4) en una carpeta del repo, versionada en git, que es lo que usa la app. La evaluación final no lo carga: entrena sus propios modelos con train, con la misma función del pipeline, y también el baseline.
 - **Por qué:** todas las decisiones se tomaron con validación cruzada dentro de train, así que solo el test da una cifra sin sesgo; reentrenar con todo después solo añade gente y la cifra del test sigue valiendo. Si la evaluación cargara los modelos guardados, al volver a ejecutarla evaluaría con gente ya vista y daría cifras infladas sin avisar; así no puede pasar. Al reentrenar, ningún coeficiente cambia de signo y la edad de cada persona se mueve menos de ±0,85 años en el 90 % de los casos. Los modelos van en git porque el servidor de la app no puede regenerarlos sin descargar NHANES, y pesan poco.
+
+### ¿Qué guarda cada modelo de su origen?
+- **Decisión:** la huella de los datos con que se entrenó, el commit del código (marcado si había cambios sin commitear en el código) y las versiones de Python y de cada librería de la que depende. Sin fecha. Al cargarlo, falla si alguna versión instalada es distinta. Se reentrena después de commitear el código, y los modelos se commitean aparte.
+- **Por qué:** así se sabe de qué datos y de qué código sale cada modelo, y uno guardado con otras versiones de las librerías no da resultados distintos sin avisar. Con la fecha, cada reentreno cambiaba los archivos aunque nada hubiera cambiado.
 
 ### ¿Cómo se organiza el código del modelo?
 - **Decisión:** un archivo por paso, no por modelo, en `src/models/` con prefijo `s1_`…`s5_` (split, preprocesado, algoritmos, edad biológica, evaluación). Las variables de cada bloque y el algoritmo ganador de cada modelo, en `src/config/model_sets.py`. El entrenamiento se lanza desde `src/pipeline/s5_build_model.py`, el quinto paso del pipeline, que llama a esos archivos. Un notebook de trabajo por nivel, con todos sus modelos para poder compararlos, que importa de `src/`.
