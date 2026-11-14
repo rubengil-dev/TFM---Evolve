@@ -12,7 +12,7 @@
 - [x] Modelo
 - [ ] App: lectura del PDF, pantalla de revisión, cuestionario, resultado y front.
 - [ ] Despliegue
-- [ ] MLOps (requisito nuevo del máster): tests, historial, versionado de datos y de modelos. Hechos los tests básicos, la CI y la trazabilidad de los modelos; faltan los puntos 2.2 a 2.4 del plan.
+- [ ] MLOps (requisito nuevo del máster): tests, historial, versionado de datos y de modelos. Hechos los tests, la CI y la trazabilidad de los modelos; faltan los puntos 2.3 y 2.4 del plan.
 
 ## Entregas
 - [x] Entrega 01: ideas de producto.
@@ -31,9 +31,7 @@ Sale de la revisión completa del 12 de noviembre de 2026. Cada punto dice qué,
 - [ ] **2.1 Validar lo que entra al modelo.**
   - Por qué: una columna ausente, una categoría mal escrita o un número como texto dan un error técnico, y un valor imposible devuelve una edad sin avisar.
   - Cómo: una validación en el módulo de predicción (columnas, tipos, categorías, rangos posibles y edad), con errores con código que el front traduce. Depende de cerrar el mínimo viable de variables.
-- [ ] **2.2 Batería completa de tests.**
-  - Por qué: las reglas de la CDC y de los cuestionarios son el código más delicado y nada avisa si se rompen.
-  - Cómo: una Gold inventada pequeña como base; tests de Silver clean (empezando por los cortes de las correcciones y de los cuestionarios), validación de Gold, preprocesado y edad biológica.
+- [x] **2.2 Batería completa de tests.** Hecho.
 - [ ] **2.3 DVC para datos y pipeline.**
   - Por qué: es el versionado de datos que piden; liga cada modelo a sus datos y detecta cambios en los ficheros de la CDC.
   - Cómo: una etapa por paso del pipeline, llamando al código actual; los modelos siguen en git y DVC solo anota su huella; la descarga no se borra al repetir. Antes, elegir el almacén remoto.
@@ -42,13 +40,7 @@ Sale de la revisión completa del 12 de noviembre de 2026. Cada punto dice qué,
   - Cómo: una función de registro llamada desde los notebooks y desde el paso del modelo, sin tocar la evaluación. Reejecutar los notebooks nivel a nivel y revisando juntos, porque las cifras pueden moverse respecto a las ya escritas.
 
 ### Bloque 3: quick fixes (aporta poco, pero hay que hacerlo)
-- [ ] **3.1 Unificar los dos remuestreos y los dos bucles de validación cruzada de la evaluación.** Por qué: mismo código dos veces. Cómo: una función común para cada pareja.
-- [ ] **3.2 Llevar al código las funciones copiadas entre notebooks de trabajo.** Por qué: están repetidas en hasta cinco notebooks. Cómo: moverlas e importarlas.
-- [ ] **3.3 Una sola lista de categorías.** Por qué: la validación y el preprocesado guardan el mismo dato por separado. Cómo: que la validación importe la del estudio.
-- [ ] **3.4 Imputador: pasarle la columna de forma explícita.** Por qué: hoy depende de un detalle interno de pandas. Cómo: junto al test de preprocesado del 2.2.
-- [ ] **3.5 Limpiar lo que no se usa.** Por qué: quedan variables en la lista de logaritmos que ningún modelo usa y columnas de Silver que nadie lee. Cómo: borrarlas y comprobar que Gold no cambia.
-- [ ] **3.6 Etiquetas en git.** Por qué: no se localizan las entregas ni las versiones del modelo. Cómo: una por entrega y una por modelo, la primera tras el 1.3.
-- [ ] **3.7 Poner al día el contexto.** Por qué: el requisito de MLOps no está en el contexto del proyecto. Cómo: con mi OK.
+- [x] Hecho entero. Los notebooks de trabajo importan ya las funciones comunes, pero sus salidas no se han reejecutado: se hará en el 2.4.
 
 ## Pendiente para más adelante
 

@@ -162,7 +162,7 @@ Cómo el proyecto empieza a tener infinidad de archivos, te dejo aquí un peque�
 - **Salida para el producto:** `models/{base,extras,questionnaire,full}.joblib`. Cada archivo contiene el pipeline de preprocesado y modelo, la referencia para traducir el riesgo a edad y sus columnas.
   - Además, cada modelo guarda de dónde sale: la huella de los datos con que se entrenó, el commit del código y las versiones de Python y de las librerías. Si al cargarlo las versiones instaladas no coinciden, falla en vez de dar resultados distintos sin avisar.
 - **Predicción para la app:** `src/models/predict.py` carga un modelo (`load_bundle`) y calcula la edad biológica (`predict_age`) sin necesitar las librerías de entrenamiento.
-- **Tests:** `tests/`, con pytest. Comprueban que los cuatro modelos dan la misma edad que la referencia para unas personas inventadas, que la configuración es coherente y que el test sigue siendo exactamente el de la evaluación final. Se ejecutan solos en GitHub Actions en cada push.
+- **Tests:** `tests/`, con pytest. Comprueban que los cuatro modelos dan la misma edad que la referencia para unas personas inventadas, que la configuración es coherente y que el test sigue siendo exactamente el de la evaluación final. Además, con datos inventados, prueban las reglas más delicadas: las correcciones de la CDC y los cuestionarios de Silver, la validación de Gold, el preprocesado y la traducción del riesgo a edad. Se ejecutan solos en GitHub Actions en cada push.
 - **Requisitos:** `requirements.txt` tiene solo lo que necesita la app para predecir; `requirements-dev.txt`, todo el análisis.
 - **Visión general del proyecto:** `README.md`.
 

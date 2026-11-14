@@ -1,9 +1,6 @@
 """
-Gold validation thresholds and allowed values (plausible ranges in config/plausible_ranges.py).
+Gold validation thresholds (plausible ranges in config/plausible_ranges.py, answers in config/study.py).
 """
-
-# Imports
-from src.config.study import ALCOHOL_FREQUENCY
 
 # Size
 MIN_PERSONS = 45000            # one lost cycle drops 4000-5600 persons
@@ -21,13 +18,7 @@ PARTIAL_COVERAGE = [  # measured on part of the sample by design (subsample, fas
     "sleep_hours", "crp", "alcohol_frequency", "alcohol_drinks", "vitamin_d",
 ]
 
-# Text columns and their allowed values (missing also allowed, except cycle and sex)
-CATEGORIES = {
-    "sex":               ["male", "female"],
-    "smoking":           ["never", "former", "current"],
-    "alcohol_frequency": list(ALCOHOL_FREQUENCY),
-    "physical_activity": ["sedentary", "moderate", "intense"],
-}
+# Required values (text answers may be missing, except sex)
 REQUIRED = ["seqn", "cycle", "weight_exam", "follow_up_months", "death", "age", "sex"]
 
 # Consistency between variables

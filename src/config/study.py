@@ -68,7 +68,7 @@ AGE_GROUP_EDGES = [18, 30, 40, 50, 60, 70, 80]  # lower bound included
 # Preprocessing: extremes
 CLIP_QUANTILES = (0.001, 0.999)
 
-# Preprocessing: skewness above 2 in train
+# Preprocessing: skewness above 2 in train; includes variables discarded in the level notebooks, to keep them reproducible
 LOG_VARIABLES = [
     "rdw", "neutrophils", "lymphocytes", "monocytes", "eosinophils", "basophils",
     "glucose", "creatinine", "urea", "ast", "alt",
@@ -79,10 +79,10 @@ LOG_VARIABLES = [
 # Preprocessing: U-shaped relationships
 SQUARED_VARIABLES = ["bmi", "sleep_hours"]
 
-# Preprocessing: categories of each variable; the first one is the reference and gets no column
+# Text variables and their answers; in the model, the first one is the reference and gets no column
 CATEGORICAL_LEVELS = {
     "sex":                ["female", "male"],
     "smoking":            ["never", "former", "current"],
-    "alcohol_frequency":  ["never", "less_than_weekly", "weekly", "daily"],
+    "alcohol_frequency":  list(ALCOHOL_FREQUENCY),
     "physical_activity":  ["sedentary", "moderate", "intense"],
 }

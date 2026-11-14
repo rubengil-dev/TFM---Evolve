@@ -59,11 +59,6 @@ CLEAN_NAMES = {
     "LBXRDW":       "rdw",                # %
     "LBXPLTSI":     "platelets",          # 10^3/uL
     "LBXMPSI":      "mpv",                # fL
-    "LBXNEPCT":     "neutrophils_pct",    # %
-    "LBXLYPCT":     "lymphocytes_pct",    # %
-    "LBXMOPCT":     "monocytes_pct",      # %
-    "LBXEOPCT":     "eosinophils_pct",    # %
-    "LBXBAPCT":     "basophils_pct",      # %
     "LBDNENO":      "neutrophils",        # 10^3/uL
     "LBDLYMNO":     "lymphocytes",        # 10^3/uL
     "LBDMONO":      "monocytes",          # 10^3/uL

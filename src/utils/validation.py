@@ -11,9 +11,9 @@ import pandas as pd
 from src.config.column_roles import DERIVED_FEATURES, ID_COLUMNS, OUTCOME_COLUMNS, SILVER_PREDICTORS
 from src.config.plausible_ranges import PLAUSIBLE_RANGES
 from src.config.sources import CYCLES
-from src.config.study import AGE_MAX, AGE_MIN, FOLLOW_UP_MIN
+from src.config.study import AGE_MAX, AGE_MIN, CATEGORICAL_LEVELS, FOLLOW_UP_MIN
 from src.config.validation_rules import (
-    BMI_TOLERANCE, CATEGORIES, LOWER_THAN, MAX_FOLLOW_UP, MIN_COVERAGE, MIN_COVERAGE_PARTIAL, MIN_DEATHS,
+    BMI_TOLERANCE, LOWER_THAN, MAX_FOLLOW_UP, MIN_COVERAGE, MIN_COVERAGE_PARTIAL, MIN_DEATHS,
     MIN_PERSONS, MIN_PERSONS_PER_CYCLE, PARTIAL_COVERAGE, REQUIRED,
 )
 from src.utils.nhanes import cycle_label
@@ -38,7 +38,7 @@ def check_structure(gold):
     expected = ID_COLUMNS + OUTCOME_COLUMNS + SILVER_PREDICTORS + DERIVED_FEATURES
     errors = [f"missing column: {column}" for column in expected if column not in gold]
     errors += [f"unexpected column: {column}" for column in gold if column not in expected]
-    text = ["cycle"] + list(CATEGORIES)
+    text = ["cycle"] + list(CATEGORICAL_LEVELS)
     for column in gold.columns.intersection(expected):
         is_number = pd.api.types.is_numeric_dtype(gold[column])
         if is_number == (column in text):
@@ -102,9 +102,9 @@ def check_population(gold):
 
 
 def check_categories(gold):
-    """Text answers only from CATEGORIES (or missing)."""
+    """Text answers only from CATEGORICAL_LEVELS (or missing)."""
     errors = []
-    for column, allowed in CATEGORIES.items():
+    for column, allowed in CATEGORICAL_LEVELS.items():
         unknown = gold[column].dropna()
         unknown = unknown[~unknown.isin(allowed)].unique()
         if len(unknown):
