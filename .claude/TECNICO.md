@@ -1,54 +1,86 @@
-# Qué hay en este archivo y cómo usarlo
-- **Contiene:** cómo está hecho el proyecto: repo, entorno, comandos, estructura, datos y sus limitaciones conocidas. Es un resumen para no tener que buscarlo en el código.
-- **No contiene:** el porqué de cada elección ni lo pendiente.
-- **Se actualiza:** cuando cambia algo de lo que describe.
+# Metadatos
 
-## Repo
-- GitHub: https://github.com/rubengil-dev/TFM---Evolve. Rama principal: `main`.
-- Ignorados en git: `data/`, `private/`, `.venv/` y `.env`. Windows, con Git Bash y PowerShell.
+## Qué contiene
+El stack del proyecto (qué tecnologías y servicios se usan y por qué), el resto de decisiones técnicas con su porqué, las restricciones técnicas y las trampas técnicas que no se deducen del código.
 
-## Entorno
-- Python 3.11 en `.venv`: `py -3.11 -m venv .venv` y `.venv/Scripts/python -m pip install -r requirements-dev.txt`.
-- Dos archivos de requisitos:
-  - `requirements-dev.txt`: todo el análisis, congelado con `pip freeze`.
-  - `requirements.txt`: solo lo que la app necesita para cargar un modelo y predecir, escrito a mano con las mismas versiones. Es el que lee el hosting.
-- Al añadir una librería: instalarla en `.venv` y regenerar con `.venv/Scripts/python -m pip freeze > requirements-dev.txt`. Si la usa la app, añadirla también a `requirements.txt` con la misma versión; un test avisa si no coinciden.
-- Librerías clave: pandas y numpy, pyarrow (parquet), scikit-learn (split y preprocesado), scikit-survival y xgboost (modelos), optuna (optimización), requests (descarga), matplotlib, pytest (tests) y lifelines (solo en notebooks, a través de `src/utils/notebook_helpers.py`).
+Lo que no encaje en esta descripción no va aquí. Librerías y versiones, comandos, endpoints, modelo de datos y contratos de funciones tampoco: eso sale del código, del archivo de dependencias o de git.
 
-## Comandos
-- Pipeline completo, desde la raíz: `.venv/Scripts/python -m src.main`. Sin la descarga, los pasos de datos tardan menos de un minuto.
-- Solo el modelo (unos 6,5 minutos): `.venv/Scripts/python -c "from src.pipeline import s5_build_model; s5_build_model.run()"`. Antes, commitear el código: el modelo guarda el commit y lo marca como `-dirty` si `src/` tiene cambios sin commitear. Después, commitear los modelos aparte.
-- Tests, desde la raíz: `.venv/Scripts/python -m pytest`. Los que necesitan `data/` se saltan si no existe. GitHub Actions los ejecuta en cada push, instalando solo `requirements.txt` y pytest.
-- Rehacer la referencia de edades de los tests, solo tras cambiar el modelo a propósito: `.venv/Scripts/python -c "from tests.test_models import write_reference; write_reference()"`, y revisar el diff.
-- Ejecutar un notebook desde la terminal, en `notebooks/`: `JUPYTER_PATH=../.venv/share/jupyter ../.venv/Scripts/jupyter nbconvert --to notebook --execute --inplace <notebook>.ipynb`. El `JUPYTER_PATH` hace que el kernel `python3` sea el de `.venv` (registrado ahí con `ipykernel install --sys-prefix`); sin él, arranca el Python global, que no tiene scikit-survival.
+## Actualización
+- Casi inmutable. Se añade un punto cuando se toma una decisión técnica o se descubre una restricción o una trampa.
+- Las decisiones sencillas y rápidas (tecnologías, servicios) van en `Stack`, una línea cada una. Las que necesitan más explicación (arquitectura, patrones) van en `Otras decisiones`.
+- Cada decisión ocupa una línea, con cómo se decidió entre paréntesis y, solo si aporta, `Descartado: X, motivo corto.` en la misma línea (ver "Cómo anotar decisiones relevantes" en `PROTOCOLOS.md`). Una restricción lleva etiqueta solo si fue una decisión.
+- Si una decisión cambia, se reescribe el punto y su porqué cuenta el cambio: "porque antes había X y pasó Y".
+- Una trampa se apunta cuando ya ha costado tiempo y no es evidente leyendo el código. Va con su porqué.
+- Si crece demasiado, avísame para dividirlo.
 
-## Estructura
-- `src/main.py`: único punto de entrada del pipeline; llama a cada `run()` en orden.
-- `src/config/`: rutas, fuentes externas, códigos de los cuestionarios, parámetros del estudio, renombres, correcciones CDC, papel de cada columna de Gold, rangos posibles por variable, umbrales de la validación y variables de cada bloque del modelo, con las descartadas.
-- `src/utils/`: funciones compartidas por tema (descarga, lectura de NHANES, fórmulas de las features derivadas, resumen de cada capa, validación de Gold, la fórmula de PhenoAge, el origen de un modelo: huella de los datos y commit del código, y las funciones compartidas por los notebooks de trabajo, como los pesos de Cox). Las respuestas de cada variable de texto están solo en `CATEGORICAL_LEVELS` (`config/study.py`), y de ahí las leen la validación y el preprocesado.
-- `src/pipeline/`: un archivo por paso, numerado y con su `run()`: `s1_download_bronze`, `s2_build_raw_silver`, `s3_build_clean_silver`, `s4_build_gold` y `s5_build_model`, que entrena con toda Gold el modelo final de los niveles 1 a 4 (unos 3 minutos). Su `build_level` también lo usa el notebook de evaluación final para entrenar con train.
-- `src/models/`: los subpasos que llama `s5_build_model`: `s1_split`, `s2_preprocessing`, `s3_algorithms`, `s4_biological_age` y `s5_evaluation`. Aparte, `predict`: lo que usa la app (cargar un modelo y calcular la edad), sin librerías de entrenamiento. `s2_preprocessing` no se puede mover ni renombrar: los modelos guardados apuntan a su ruta.
-- `tests/`: modelos (edades de referencia de unas personas inventadas), configuración, datos locales y, con datos inventados, Silver clean, validación de Gold, preprocesado y edad biológica. `conftest.py` crea una Gold inventada pequeña que pasa toda la validación salvo el tamaño. `pyproject.toml` solo configura pytest; la CI está en `.github/workflows/`.
-- `README.md`: presentación del proyecto para quien lo evalúa.
-- `notebooks/`: exploración, muestra para la Entrega 02, correlaciones de las candidatas a Base y uno de trabajo por nivel del modelo, otro de la edad biológica, otro de la comparación con PhenoAge y el de la evaluación final en test (`final_evaluation`).
-- `docs/entregas/`: entregas del máster.
-- `models/`: un `.joblib` por nivel (`base`, `extras`, `questionnaire`, `full`), en git, entrenado con toda Gold (test incluido, así que no sirve para evaluar), con el pipeline ajustado, la referencia de edad, sus columnas, con cuánta gente se entrenó, la huella de esos datos, el commit del código y las versiones de Python y de las librerías de las que depende. Se carga con `load_bundle`, que falla si las versiones instaladas no coinciden, y la edad sale de `predict_age`.
-- `data/`: capas de datos; se regenera con el pipeline.
-- `private/`: analíticas reales.
 
-## Datos
-- Bronze (`data/01_bronze/`): una carpeta por ciclo con los ficheros de la CDC y su nombre original, mortalidad incluida. La descarga es reanudable y deja un `manifest.csv`.
-- Silver raw (`data/02_silver/silver_raw.parquet`): un único dataframe, una fila por persona, con los alias de laboratorio ya unificados entre ciclos.
-- Silver clean (`data/02_silver/silver_clean.parquet`): población del estudio, correcciones CDC, unidades españolas, cuestionarios a respuestas de botón, peso muestral del examen combinado y valores imposibles vaciados. Guarda la causa de muerte y el diseño muestral (`psu`, `strata`) aunque Gold no los use.
-- Gold (`data/03_gold/gold.parquet`): la tabla del modelo y de la app, con identificación, desenlace, predictores candidatos (parejas correlacionadas incluidas) y features derivadas. Solo se guarda si pasa la validación.
+# Contenido
 
-## Limitaciones conocidas de los datos
-- Fosfatasa alcalina y LDH más altas en 1999-2000, sin ecuación oficial de corrección. Urea algo más alta en 2017-2018 incluso corregida.
-- RDW: la mediana pasa de 12,5 antes de 2013 a 13,5 en 2013-2018. La CDC lo atribuye al cambio de analizador de 2012 y no hay corrección oficial, porque no se pudieron repetir muestras antiguas. Está en Gold, pero ningún modelo lo usa.
-- Serie roja, plaquetas y leucocitos: la CDC también avisa de posibles efectos de método en hematocrito, HCM, CHCM y leucocitos en 2013-2014, y de cambios de tendencia en plaquetas, hematíes, hematocrito, leucocitos y CHCM entre 2005-2006 y 2011-2012.
-- Actividad física con salto en 2007 por el cambio de cuestionario.
-- Tabaco de 18-19 años hasta 2012 sacado de las preguntas juveniles: hasta 2010 no distingue exfumadores.
-- Alcohol sin dato para 18-19 años en 1999-2010: el cuestionario de adultos solo se pasó a mayores de 20, y el juvenil solo existe en 2009-2010.
-- Insulina: armonizada, pero a igual IMC queda un salto de ~15% entre 2007-2008 y 2009-2010 que ninguna ecuación de la CDC explica.
-- Variables solo en parte de la muestra: subgrupo en ayunas (triglicéridos, insulina), CPK solo en 2011-2018 y PCR sin 2011-2014.
-- Últimos ciclos con pocas defunciones por su seguimiento corto.
+## Stack
+- **Python 3.11** en `.venv`: la soportan todas las librerías y tiene soporte hasta 2027. Descartado: 3.14, demasiado nueva.
+- **Dos archivos de requisitos:** el del análisis, congelado con `pip freeze`, y el de la app, escrito a mano solo con lo que necesita un modelo guardado para predecir. El hosting gratuito lee el de la app y no instala las librerías de entrenamiento; las versiones son idénticas en los dos (un test lo comprueba) porque un modelo guardado solo se carga bien con las mismas.
+- **NHANES continuo 1999-2018** con la mortalidad pública enlazada hasta 2019: los datos de entrenamiento, descargados como una lista cerrada de ficheros verificada contra el catálogo de la CDC. Descartado: NHANES III, con métodos de laboratorio y formato distintos; mortalidad hasta 2022, de acceso restringido.
+- **scikit-survival y XGBoost:** los modelos de supervivencia. Descartado: el gradient boosting de scikit-survival, unos 46 minutos por entrenamiento frente a segundos.
+- **`Pipeline` de scikit-learn:** el preprocesado se ajusta solo con train, se guarda entero con el modelo y la app aplica exactamente el mismo objeto.
+- **pytest y GitHub Actions:** tests en cada push. La CI instala solo los requisitos de la app, lo que demuestra que bastan para predecir, y no tiene `data/`: los tests que la necesitan se saltan.
+- **GitHub:** `rubengil-dev/TFM---Evolve`, rama principal `main`.
+- [pendiente: stack de front y backend y hosting; son bloqueos de `ESTADO.md`.]
+
+## Otras decisiones
+
+### Arquitectura
+- **Enfoque:** un modelo de supervivencia estima el riesgo de morir a 10 años y ese riesgo se traduce a edad biológica, al estilo de PhenoAge (Levine et al., 2018), que es la referencia externa. No existe una etiqueta de edad biológica real y la mortalidad sí se observa; 10 años es el horizonte de PhenoAge, a 5 hay pocas muertes y a 15 solo 3 de los 10 ciclos tienen seguimiento completo.
+- **Población de referencia:** la de EE. UU. (NHANES), asumiendo que equivale a la española.
+- **El modelo y la app leen solo de Gold:** con un único punto de lectura se sabe qué datos usan y Silver se puede cambiar sin romperlos; por eso Gold guarda también las parejas correlacionadas que el modelo no usa. Lo pide el profesor.
+- **Gold solo lleva fórmulas fijas:** rellenar huecos, recortar, escalar y codificar van al preprocesado, porque hacerlo con todo el dataset filtraría información del test.
+- **Las fórmulas de las features derivadas viven en un único módulo** compartido por el pipeline y la app: tienen que calcularlas exactamente igual.
+- **Gold se valida antes de guardar:** bloquean la estructura, el tamaño mínimo (personas y defunciones), la cobertura, el desenlace, la población, las respuestas permitidas y los rangos posibles; las coherencias entre variables solo avisan. Una Gold rota no avisa por sí sola y falsearía el modelo.
+- **Código del modelo: un archivo por paso, no por modelo,** con prefijo `s1_`…`s5_`: los cuatro modelos son el mismo proceso con otra lista de variables, y Python no importa módulos que empiezan por número.
+- **Predicción separada del entrenamiento:** la app carga un modelo y calcula la edad sin instalar las librerías de entrenamiento.
+- **Los modelos van en git, uno por nivel y entrenados con todos los datos (train y test):** el servidor no puede regenerarlos sin descargar NHANES y pesan poco. La evaluación final no los carga, entrena los suyos con train con la misma función: si los cargara, evaluaría con gente ya vista y daría cifras infladas sin avisar.
+- **Cada modelo guarda su origen:** la huella de los datos, el commit del código y las versiones de Python y de las librerías, y falla al cargar si las instaladas no coinciden. Sin fecha, porque con ella cada reentreno cambiaba los archivos aunque nada hubiera cambiado.
+- **Test de referencia:** la edad biológica de unas personas inventadas en los cuatro niveles, con un margen de 0,01 años. Avisa de cualquier cambio sin querer en el modelo, el preprocesado o las librerías, que de otro modo moverían edades en silencio.
+
+### Datos y preparación
+- **Población del estudio:** adultos de 18 a 79 años elegibles para mortalidad, sin embarazadas ni personas sin examen físico o sin ningún valor de laboratorio. NHANES agrupa las edades de 80 en adelante y el embarazo altera la analítica.
+- **Ficheros descartados:** ferritina, PSA, TSH y B12/folato/homocisteína/ApoB (solo en subgrupos o en pocos ciclos); fuerza de prensión, bioimpedancia, acelerómetro, DXA y VO2 max (el usuario no los conoce); y la salud autovalorada (subjetiva).
+- **Los cambios de método de laboratorio se corrigen con las ecuaciones oficiales de la CDC** (creatinina, bioquímica y PCR de 2017-2018, insulina y creatinina en orina): sin corregir, el modelo confundiría el cambio de analizador con un cambio real de la población.
+- **Unidades del laboratorio español** desde Silver clean (urea, PCR en mg/L, cociente albúmina/creatinina en mg/g, vitamina D en ng/mL): así no hay que convertir al recibir la analítica.
+- **Los valores imposibles se vacían en Silver clean** con una tabla de rangos posibles por variable, con el criterio de un adulto que va por su pie a una analítica programada; los extremos de una enfermedad conocida se quedan. No son outliers, son errores o emergencias; la app usa la misma tabla.
+- **Hemograma en recuentos absolutos,** no en porcentajes: los porcentajes dependen unos de otros.
+- **LDL fuera, triglicéridos solo con ayuno de 8 horas o más y glucosa en todas las personas:** el LDL de NHANES es calculado, solo existe en ayunas y sale protector por causalidad inversa; el ayuno cambia los triglicéridos pero apenas la glucosa.
+
+### Modelo
+- **Escalera de niveles anidados:** 0, baseline (Cox con edad y sexo, que equivale a decir que la edad biológica es la cronológica); 1, Base; 2, Base + Extras; 3, Base + Cuestionario; 4, todo. Cada salto mide solo lo que aporta el bloque nuevo y responde a una pregunta del producto.
+- **Los bloques responden a qué trae el usuario, no a cuánto predice cada variable:** Base es la analítica básica más edad, sexo e IMC; Extras, lo que se pide a menudo o es opcional; Cuestionario, los hábitos. Las listas y las variables descartadas, con su motivo, viven en `src/config/model_sets.py`.
+- **Cox simple en los cuatro niveles:** compitió en igualdad con Cox elastic net, random survival forest y XGBoost, y XGBoost optimizado con Optuna no llegó al listón fijado de antemano (+0,02 de C-index misma edad); no compensa perder la explicabilidad. Descartado: deep learning, más difícil de explicar y de desplegar en un plan gratuito.
+- **Split 80/20 estratificado por ciclo y muerte, y el test se mira una sola vez:** todas las decisiones se toman con validación cruzada de 5 bloques dentro de train. Descartado: separar por ciclos, dejaría un test con muy pocas muertes.
+- **Métrica principal: C-index de Uno dentro del mismo grupo de edad, a 10 años.** La edad sola ya ordena muy bien, así que es la que dice si la analítica aporta algo; un nivel mejora de verdad si el intervalo por bootstrap de la diferencia no incluye el 0.
+- **Infraestimar la edad biológica es el error peor:** da una falsa tranquilidad, mientras que sobreestimar solo manda al médico. Con métricas parecidas se prefiere el modelo con menos errores grandes.
+- **Sin pesos muestrales de NHANES,** ni al entrenar ni al traducir ni al evaluar: el usuario es español, así que representar exactamente a EE. UU. no es el objetivo. Se declara como limitación.
+- **Una variable con efecto claro contrario al conocido no entra aunque suba el C-index, y las preguntas de un mismo hábito se juzgan juntas:** por eso sale el alcohol, que resulta protector por la causalidad inversa de quienes lo dejaron por enfermedad. Cuesta 0,004 de C-index misma edad.
+- **De cada pareja o combinación lineal entran las variables que vienen escritas en el PDF** (hemoglobina, hematíes y CHCM; los cinco tipos de leucocitos; el IMC en lugar de peso y talla): así la app no tiene que calcular nada. Fuera insulina, HOMA-IR y los cocientes derivados.
+- **RDW fuera de todos los niveles:** el cambio de analizador de 2012, sin corrección oficial, mueve la edad biológica de 1,8 a 2,8 años, por encima del límite de 1 año fijado antes. En la app sería un sesgo de todo un laboratorio que el usuario no puede ver ni corregir.
+- **Traducción del riesgo a edad:** la edad a la que la persona típica del mismo sexo tiene el mismo riesgo a 10 años, con una referencia propia de cada nivel: la mediana del riesgo de train por edad y sexo, en escala log(−log(1 − riesgo)), con una curva de segundo grado por sexo que fuera de 18-79 sigue en línea recta. Descartado: una referencia común (el baseline, como PhenoAge), la persona típica salía hasta 5 años más joven; la media en vez de la mediana, 1-2 años por debajo.
+- **Preprocesado, en este orden:** recorte a los percentiles 0,1 y 99,9; huecos con la mediana (o la respuesta más frecuente) de su sexo y grupo de edad; logaritmo si la asimetría pasa de 2; escalado; una columna 0/1 por categoría; y término al cuadrado en IMC y horas de sueño. Con la mediana general, una persona mayor con un hueco parecería más joven, que es el error peor.
+- **Analíticas incompletas: los cuatro modelos más imputación, sin usar los nulos como información:** en NHANES un hueco suele significar "ciclo sin esa prueba", y un modelo que aprendiera de los nulos aprendería el ciclo.
+- **Evaluación final con los criterios fijados antes de abrir el test:** se cumplen todos menos la infraestimación en los deciles de riesgo bajo (de 3,7 a 9,6 años, sobre todo ruido por las pocas muertes). No se reajusta el modelo: queda como limitación, y por eso el margen ± X es más ancho en jóvenes de riesgo bajo. Las cifras están en `docs/entregas/03_machine_learning.md`.
+
+### App
+- **La app usa el nivel más completo que permitan los datos del usuario:** los cuatro saltos son reales en test. No se promedian modelos, porque promediar con uno peor empeora el resultado.
+- **Si falta una variable del modelo pero viene su pareja, se estima** con una ecuación ajustada sobre Gold (p. ej. hemoglobina desde el hematocrito), solo en parejas con correlación alta: se pierden menos variables sin pedir nada más al usuario.
+- **El filtrado glomerular no es variable del modelo** (es redundante con creatinina, edad y sexo), pero el parser puede usarlo para recuperar la creatinina si falta.
+
+## Restricciones técnicas
+- Hosting en planes gratuitos.
+- Cambios de método entre ciclos sin corrección oficial: fosfatasa alcalina y LDH más altas en 1999-2000, urea algo más alta en 2017-2018, RDW (la mediana pasa de 12,5 a 13,5 en 2013), insulina (salto de un 15 % entre 2007-2008 y 2009-2010) y avisos de la CDC sobre serie roja, plaquetas y leucocitos.
+- Cuestionarios con saltos: la actividad física cambia de cuestionario en 2007; el tabaco de 18-19 años sale de las preguntas juveniles hasta 2012 (hasta 2010 no distingue exfumadores); y no hay alcohol para 18-19 años en 1999-2010.
+- Variables medidas solo en parte de la muestra: triglicéridos e insulina (subgrupo en ayunas), CPK (solo 2011-2018) y PCR (sin 2011-2014).
+- Los últimos ciclos tienen pocas defunciones por su seguimiento corto.
+
+## Trampas
+- **Reentrenar los modelos** (unos 6,5 minutos): hay que commitear antes el código. Por qué: cada modelo guarda el commit y lo marca como `-dirty` si `src/` tiene cambios sin commitear. Después, los modelos se commitean aparte.
+- **`src/models/s2_preprocessing` no se puede mover ni renombrar** sin reentrenar. Por qué: los modelos guardados apuntan a su ruta.
+- **Los modelos de `models/` no sirven para evaluar.** Por qué: están entrenados con toda Gold, test incluido.
+- **La referencia de edades de los tests** se rehace solo tras cambiar el modelo a propósito, con `write_reference` de `tests/test_models.py`, y se revisa el diff. Por qué: rehacerla tras un cambio involuntario escondería justo lo que el test tiene que detectar.
+- **Ejecutar un notebook desde la terminal** arranca el Python global, que no tiene scikit-survival. Por qué: el kernel `python3` está registrado dentro de `.venv`. Hay que lanzarlo desde `notebooks/` con `JUPYTER_PATH=../.venv/share/jupyter` y el `jupyter` de `.venv`.

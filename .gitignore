@@ -22,3 +22,6 @@ desktop.ini
 
 #Otros
 enunciado*
+
+# Respaldo de la estructura antigua de .claude/
+.claude-old/

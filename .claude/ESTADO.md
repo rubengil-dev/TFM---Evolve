@@ -1,79 +1,38 @@
-# Qué hay en este archivo y cómo usarlo
-- **Contiene:** en qué punto estamos respecto a las fases del proyecto, por dónde empezar la próxima sesión y lo pendiente para más adelante.
-- **No contiene:** cifras, nombres de archivos, detalles de lo hecho ni decisiones ya cerradas.
-- **Se actualiza:** al cerrar cada sesión.
+# Metadatos
 
-## Próxima sesión
-1. Empezar la fase de app pensando en la Entrega 04 (solución UX): cerrar las decisiones abiertas de App y Resultado, empezando por el stack y el flujo de pantallas. El punto 2.1 del plan va dentro.
+## Qué contiene
+Lo que frena el avance y lo que me toca a mí, más el contador para saber cuándo toca revisión integral. En qué fase estamos y qué falta no se repite aquí: lo dice `PLAN.md`.
 
-## Fases
-- [x] Datos
-- [x] Preparación
-- [x] Modelo
-- [ ] App: lectura del PDF, pantalla de revisión, cuestionario, resultado y front.
-- [ ] Despliegue
-- [ ] MLOps (requisito nuevo del máster): tests, historial, versionado de datos y de modelos. Hechos los tests, la CI y la trazabilidad de los modelos; faltan los puntos 2.3 y 2.4 del plan.
+Lo que no encaje en esta descripción no va aquí.
 
-## Entregas
-- [x] Entrega 01: ideas de producto.
-- [x] Entrega 02: datos y preparación.
-- [x] Entrega 03: diseñar, desarrollar y evaluar una primera solución de Machine Learning.
-- [ ] Entrega 04: solución UX [29 noviembre 2026].
-- [ ] Entrega final: 13 diciembre de 2026.
+## Actualización
+- Se actualiza al cerrar cada sesión y cuando aparece o se resuelve un bloqueo o una tarea mía.
+- Solo guarda lo vigente: lo resuelto se borra. El historial está en git.
+- Cada bloqueo dice qué frena, por qué y qué lo desbloquea, y la casilla de `PLAN.md` afectada se marca con `[/]`. Al resolverlo, esa casilla vuelve a `[ ]` o `[*]`.
+- Un bloqueo puede ser una decisión pendiente que impide avanzar. Si no impide nada, va a `NOTAS.md`.
+- Aquí va lo que me toca a mí y no puedes hacer tú: crear cuentas, darte claves o permisos, contratar un servicio, y lo que he dicho que no pruebo ahora (ver `PROTOCOLOS.md`).
 
-## Plan de mejoras
-Sale de la revisión completa del 12 de noviembre de 2026. Cada punto dice qué, por qué y cómo. Dentro de cada bloque, el orden es el de ejecución. Del bloque 2, el 2.1 va con la app y el resto después de la Entrega 04, salvo que el profesor pida MLOps antes.
 
-### Bloque 1: quick wins (fácil y aporta)
-- [x] Hecho del 1.1 al 1.5. Lo que queda: al elegir el stack, añadir sus librerías a los requisitos de la app y completar el README.
+# Contenido
 
-### Bloque 2: hard wins (difícil y aporta mucho)
-- [ ] **2.1 Validar lo que entra al modelo.**
-  - Por qué: una columna ausente, una categoría mal escrita o un número como texto dan un error técnico, y un valor imposible devuelve una edad sin avisar.
-  - Cómo: una validación en el módulo de predicción (columnas, tipos, categorías, rangos posibles y edad), con errores con código que el front traduce. Depende de cerrar el mínimo viable de variables.
-- [x] **2.2 Batería completa de tests.** Hecho.
-- [ ] **2.3 DVC para datos y pipeline.**
-  - Por qué: es el versionado de datos que piden; liga cada modelo a sus datos y detecta cambios en los ficheros de la CDC.
-  - Cómo: una etapa por paso del pipeline, llamando al código actual; los modelos siguen en git y DVC solo anota su huella; la descarga no se borra al repetir. Antes, elegir el almacén remoto.
-- [ ] **2.4 MLflow y notebooks al día.**
-  - Por qué: los resultados solo viven en las salidas de los notebooks, y los de los niveles 1 a 4 quedaron desfasados al quitar el RDW.
-  - Cómo: una función de registro llamada desde los notebooks y desde el paso del modelo, sin tocar la evaluación. Reejecutar los notebooks nivel a nivel y revisando juntos, porque las cifras pueden moverse respecto a las ya escritas.
+## Revisión integral
+Sesiones desde la última: 1
 
-### Bloque 3: quick fixes (aporta poco, pero hay que hacerlo)
-- [x] Hecho entero. Los notebooks de trabajo importan ya las funciones comunes, pero sus salidas no se han reejecutado: se hará en el 2.4.
+## Bloqueos
+Todos son decisiones pendientes. Los de la fase 4 se cierran al empezarla, pensando en la Entrega 04 y empezando por el stack y el flujo de pantallas.
 
-## Pendiente para más adelante
+- **Stack de front y backend.** Frena todas las casillas de la fase 4: sin él no se puede escribir la app. Lo desbloquea: elegirlo.
+- **Cómo elige el usuario el modo.** Frena el flujo de pantallas. Idea: dos pestañas, "solo analítica" por defecto y "analítica + cuestionario". Lo desbloquea: decidirlo con el flujo.
+- **Diseño del parser y de la normalización de nombres y unidades.** Frena el parser. Lo desbloquea: decidirlo, y antes decidir cómo anonimizar los PDFs de `private/` para que Claude pueda leerlos (la app sí puede leerlos sin anonimizar, en local).
+- **Mínimo viable de variables:** con qué datos faltantes se deja de calcular. Frena la validación de lo que entra al modelo. Lo desbloquea: decidirlo.
+- **Resultado.** Frena la pantalla de resultado. Lo desbloquea: decidir estos cinco puntos.
+  - Cómo calcular y mostrar el margen ± X años.
+  - Cómo mostrar las edades biológicas fuera de 18-79 y la cola de personas muy por encima de su edad.
+  - Cómo agrupar las variables ligadas (serie roja, transaminasas) en los mejores y peores parámetros, para que los signos se entiendan.
+  - Cuántos parámetros mejores y peores se muestran.
+  - Umbral de años por encima para remitir al médico.
+- **Qué pide el profesor de MLOps** (registro de modelos, CI, monitorización). Frena DVC y MLflow, en la fase 6. Lo desbloquea: preguntárselo (me toca a mí).
 
-### Tareas
-- Preguntar al profesor qué hay que demostrar de MLOps (registro de modelos, CI, monitorización), antes del 2.3 y el 2.4.
+## Me toca a mí
+- Preguntar al profesor qué hay que demostrar de MLOps.
 - Conseguir analíticas de ejemplo de distintos laboratorios españoles para probar el parser (tengo PDFs propios).
-- Decidir cómo anonimizar los PDFs de `private/` antes de que Claude los lea; la app puede leerlos sin anonimizar en local.
-- Mirar el histograma de la diferencia entre edad biológica y real del notebook de edad biológica.
-
-### Decisiones abiertas
-Modelo:
-- Mínimo viable de variables: con qué datos faltantes se deja de calcular.
-
-Resultado:
-- Cómo calcular y mostrar el margen ± X años. En test, la edad biológica es menos precisa con riesgo bajo (jóvenes): el margen tiene que ser más ancho ahí.
-- Cómo mostrar las edades biológicas fuera de 18-79 y la cola de personas muy por encima de su edad.
-- Definición de "mejor/peor parámetro". Propuesta para el MVP: cuánto empuja cada parámetro la edad frente a una persona media de la misma edad y sexo, agrupando las variables ligadas (serie roja, transaminasas) para que los signos se entiendan.
-- Cuántos parámetros mejores/peores se muestran.
-- Umbral de años por encima para remitir al médico.
-
-App:
-- Cómo elige el usuario el modo. Idea: dos pestañas, "solo analítica" por defecto y "analítica + cuestionario".
-- Diseño visual.
-- Diseño del parser y de la normalización de nombres y unidades.
-- Stack de front y backend.
-
-Despliegue:
-- Hosting.
-
-MLOps:
-- Almacén remoto de DVC: DagsHub o una carpeta local.
-- Versión del modelo: registro de MLflow, o etiqueta de git con las huellas de datos y modelo.
-- Monitorización: si se hace, qué se puede contar sin almacenar datos de salud.
-
-### Mejoras futuras
-- Triglicéridos sin ayuno: usarlos corrigiéndolos, además de los de ayunas.

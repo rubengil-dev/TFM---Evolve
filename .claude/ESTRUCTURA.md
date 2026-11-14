@@ -1,0 +1,103 @@
+# Metadatos
+
+## Qué contiene
+Mapa de carpetas y archivos del proyecto, con una o dos palabras que dicen para qué sirve cada uno. Sin funciones ni código.
+
+Lo que no encaje en esta descripción no va aquí. El contenido de `.claude/` no se lista: lo indexa `CLAUDE.md`.
+
+## Actualización
+- Se actualiza cuando se crea, mueve, renombra o borra una carpeta o un archivo, en el mismo cambio.
+- Van todas las carpetas y todos los archivos, aunque git los ignore (p. ej. los datos). Solo se omite lo que se regenera (entornos virtuales, dependencias, cachés), el contenido de `.claude/`, los `README.md` de cada carpeta y los archivos de `tests/`, que se lista solo como carpeta con la nota `# replica src/`. De una carpeta con miles de archivos basta la carpeta.
+- Cada línea: nombre y una o dos palabras. Si algo necesita más explicación, va en el `README.md` de su carpeta.
+
+
+# Contenido
+
+## Mapa
+```
+TFM/
+├── .claude/                          # Archivos de Claude
+├── .github/
+│   └── workflows/
+│       └── tests.yml                 # CI: tests
+├── data/                             # Datos (fuera de git)
+│   ├── 01_bronze/                    # NHANES crudo
+│   │   ├── 1999_2000/ … 2017_2018/   # Ficheros de la CDC, por ciclo
+│   │   └── manifest.csv              # Registro de descarga
+│   ├── 02_silver/
+│   │   ├── silver_raw.parquet        # Ciclos unidos
+│   │   └── silver_clean.parquet      # Población limpia
+│   └── 03_gold/
+│       └── gold.parquet              # Tabla del modelo
+├── docs/
+│   └── entregas/                     # Entregas del máster
+│       ├── 01_ideas_producto.md      # Entrega 01
+│       ├── 02_datos_y_preparacion.md # Entrega 02
+│       ├── 02_gold_sample.csv        # Muestra de Gold
+│       ├── 03_machine_learning.md    # Entrega 03
+│       └── enunciado3.pdf            # Enunciado (fuera de git)
+├── models/                           # Modelos entrenados
+│   ├── base.joblib                   # Nivel 1
+│   ├── extras.joblib                 # Nivel 2
+│   ├── questionnaire.joblib          # Nivel 3
+│   └── full.joblib                   # Nivel 4
+├── notebooks/
+│   ├── 01_exploration_raw.ipynb      # Exploración (entregable)
+│   ├── 02_gold_sample.ipynb          # Muestra Entrega 02 (entregable)
+│   ├── base_correlations.ipynb       # Correlaciones de Base
+│   ├── models_lvl1.ipynb             # Nivel 1
+│   ├── models_lvl2.ipynb             # Nivel 2
+│   ├── models_lvl3.ipynb             # Nivel 3
+│   ├── models_lvl4.ipynb             # Nivel 4
+│   ├── biological_age.ipynb          # Riesgo a edad
+│   ├── phenoage.ipynb                # Comparación PhenoAge
+│   └── final_evaluation.ipynb        # Evaluación en test
+├── private/                          # Analíticas reales en PDF (fuera de git)
+├── src/
+│   ├── __init__.py
+│   ├── main.py                       # Punto de entrada
+│   ├── config/
+│   │   ├── __init__.py
+│   │   ├── column_roles.py           # Papel de cada columna
+│   │   ├── corrections.py            # Correcciones CDC
+│   │   ├── model_sets.py             # Variables por nivel
+│   │   ├── nhanes_codes.py           # Códigos de cuestionarios
+│   │   ├── paths.py                  # Rutas
+│   │   ├── plausible_ranges.py       # Rangos posibles
+│   │   ├── renames.py                # Renombres
+│   │   ├── sources.py                # Fuentes externas
+│   │   ├── study.py                  # Parámetros del estudio
+│   │   └── validation_rules.py       # Umbrales de validación
+│   ├── models/
+│   │   ├── __init__.py
+│   │   ├── predict.py                # Predicción (app)
+│   │   ├── s1_split.py               # Split
+│   │   ├── s2_preprocessing.py       # Preprocesado
+│   │   ├── s3_algorithms.py          # Algoritmos
+│   │   ├── s4_biological_age.py      # Riesgo a edad
+│   │   └── s5_evaluation.py          # Evaluación
+│   ├── pipeline/
+│   │   ├── __init__.py
+│   │   ├── s1_download_bronze.py     # Descarga
+│   │   ├── s2_build_raw_silver.py    # Silver raw
+│   │   ├── s3_build_clean_silver.py  # Silver clean
+│   │   ├── s4_build_gold.py          # Gold
+│   │   └── s5_build_model.py         # Modelo final
+│   └── utils/
+│       ├── __init__.py
+│       ├── data_download.py          # Descarga
+│       ├── features.py               # Features derivadas
+│       ├── nhanes.py                 # Lectura de NHANES
+│       ├── notebook_helpers.py       # Apoyo a notebooks
+│       ├── phenoage.py               # Fórmula PhenoAge
+│       ├── provenance.py             # Origen del modelo
+│       ├── summary.py                # Resumen de capas
+│       └── validation.py             # Validación de Gold
+├── tests/                            # Tests con pytest
+├── .gitattributes                    # Saltos de línea
+├── .gitignore                        # Archivos fuera de git
+├── pyproject.toml                    # Configuración de pytest
+├── README.md                         # Presentación del proyecto
+├── requirements-dev.txt              # Dependencias del análisis
+└── requirements.txt                  # Dependencias de la app
+```

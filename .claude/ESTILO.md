@@ -1,87 +1,86 @@
-# Qué hay en este archivo y cómo usarlo
-- **Contiene:** cómo me gusta el código a nivel general
-- **No contiene:** cómo trabajamos ni la estructura concreta del proyecto.
-- **Se actualiza:** cuando cambio una preferencia de estilo.
+# Metadatos
 
-## Idioma
-- Código, variables, docstrings y comentarios en inglés.
+## Qué contiene
+Cómo se escribe, se organiza y se versiona el proyecto: las convenciones que seguimos (Estándares) y mis gustos personales dentro de ellas (Estilo).
 
-## Docstrings
-- Siempre al principio de cada archivo y de cada función.
-- Docstring del archivo: las comillas `"""` siempre en su propia línea.
-- Docstring de función: si cabe en una línea, comillas y texto en la misma línea; si necesita más, las comillas en su propia línea y el texto entre ellas.
-- Una frase corta de título; si hace falta detalle, termina en dos puntos y debajo van líneas sangradas, con guiones si hay varias cosas.
-- Nada de párrafos ni explicaciones largas: qué hace, no cómo ni por qué.
-- Para indicar transformaciones o flujos, flechas: `→`. Solo en docstrings y comentarios: en los `print`, la consola de Windows no la muestra.
+Lo que no encaje en esta descripción no va aquí. Las decisiones propias del proyecto van en `TECNICO.md`; cómo trabajamos, en `PROTOCOLOS.md`.
 
-```python
-"""
-Helpers to download files:
-    - Retries
-    - No half-written files
-"""
-
-def cycle_label(year):
-    """
-    Cycle name creator:
-        Example: 1999 → '1999_2000'
-    """
+## Actualización
+- Casi inmutable: cambia cuando yo cambio de criterio o adoptamos una convención nueva.
+- La configuración de las herramientas (ruff, pytest…) vive en `pyproject.toml`. Si cambia una regla de aquí, cambia allí también, y al revés.
+- Si crece demasiado, avísame para dividirlo en dos archivos: estándares y estilo.
 
 
-def run():
-    """Bronze step, called from main."""
-```
+# Contenido
 
-## Comentarios
-- Títulos de bloque de una o pocas palabras: `# Imports`, `# Root`, `# Data layers`.
-- Sin comentarios al final de la línea, salvo para aclarar algo no evidente: unidades (`# seconds`), ejemplos o el significado de cada fila de una tabla de configuración.
-- Si el código necesita un comentario largo para entenderse, mejor un nombre de función más claro.
+## Estándares
 
-## Imports
-- Bajo un único título `# Imports`, sin subclasificar.
-- Una línea en blanco entre librerías externas e imports del propio proyecto.
-- Cada archivo importa solo lo que usa. Nada de archivos comunes de imports.
+### Git
+- **Commits:** Conventional Commits, en inglés. Cabecera `tipo(ámbito): descripción` en imperativo, de unos 72 caracteres como máximo, y cuerpo en viñetas con qué incluye y por qué. Tipos: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `build`, `ci`.
+  ```
+  feat(db): add habits table
 
-## Funciones y archivos
-- Cada archivo hace una sola cosa y su docstring lo dice.
-- La función principal del archivo va arriba del todo y se lee como un índice: pocas líneas, solo llamadas a funciones con nombre claro.
-- Las funciones de apoyo van debajo, en el orden en que se llaman. Se crean aunque se usen una sola vez, para darle nombre a cada paso.
-- Nombres descriptivos en `snake_case`.
+  - Columns: id, name, frequency, created_at
+  - Unique constraint on name per user
+  ```
+- **Ramas (Git Flow adaptado):** `main` es lo estable.
+  - Fase 0: directo en `main`. Fase 1: cada feature sale de `main` como `feat/nombre-corto` y vuelve a `main` cuando está acabada y funciona.
+  - Desde la fase 2: cada fase tiene su rama `phase-N`. Las features salen de ella y vuelven a ella. `phase-N` entra en `main` solo cuando la fase está terminada y todo funciona.
+  - Si algo se rompe en `main`, se arregla en `fix/nombre-corto` desde `main`.
+- **Merges:** siempre merge commit con `--no-ff`. Nada de squash ni rebase, para conservar los commits de cada rama. Sin Pull Requests.
+- **Etiquetas de versión:** ninguna hasta terminar el MVP; entonces `v1.0.0`. Cada versión posterior sale de `FUTURO.md`.
 
-Ejemplo (paso de descarga de este proyecto; los cuerpos de las funciones de apoyo, docstrings incluidos, se omiten con `...`):
+### Estructura del proyecto
+- **Nombres de archivos y carpetas:** sin acentos ni ñ.
+- **Sin código:** sin estructura base fija; la decide la entrevista de cada proyecto. Archivos `categoria_nombre-variante.ext` (prefijo = categoría, sufijo = variante) y una carpeta por familia cuando un grupo de archivos se repite.
+- **En la raíz:** `.gitignore`, `.gitattributes`, `LICENSE` y `README.md`.
+- **LICENSE:** en todos los proyectos, MIT por defecto.
 
-```python
-def run():
-    """Bronze step, called from main."""
-    BRONZE.mkdir(parents=True, exist_ok=True)
-    jobs = build_jobs()
-    failed = download_all(jobs)
-    write_manifest(jobs)
-    print_summary(jobs, failed)
+### README
+- En inglés. El de la raíz: qué es, para quién y cómo se instala y ejecuta. Cada carpeta lleva el suyo, mínimo.
+- Se actualiza el de una carpeta cuando cambia lo que contiene, y el de la raíz cuando cambia cómo se instala o se usa.
 
+### Estructura del código (Python)
+- **Carpetas:** `src/<paquete>/` (paquete en `snake_case`, repo en `kebab-case`), `tests/` replicando `src/` con archivos `test_<archivo>.py`, `scripts/` para tareas puntuales y `notebooks/`. Lo que usa la app vive en `src/`, no en `scripts/`.
+- **Datos:** `data/` con capas numeradas: `01_bronze` (crudo, nunca se toca a mano), `02_silver` (limpio y validado), `03_gold` (listo para consumir).
+- **En la raíz,** además de lo común: `pyproject.toml`, `uv.lock` y `.env.example`. `.env` no se sube a git.
 
-def build_jobs():
-    ...
+### Herramientas (Python)
+- **uv** para entorno y dependencias; `uv.lock` se sube a git. Los proyectos con `.venv` y `requirements.txt` se migran a uv.
+- **`pyproject.toml`** en todos: metadatos, dependencias y configuración de las herramientas.
+- **Type hints** siempre y en todo.
+- **ruff** revisa y formatea. También comprueba que existen docstrings y su forma (convención Google), salvo en `tests/`.
+- **pytest** para los tests.
+- **pre-commit** ejecuta ruff y los tests rápidos antes de cada commit.
+- **CI:** GitHub Actions (`.github/workflows/`) ejecuta ruff y pytest en cada push. Se crea cuando el proyecto ya tiene tests.
+- **Usar un proyecto desde otro equipo:** `uv add git+<url del repo>`. PyPI solo si se decide en `TECNICO.md`.
 
+### Código (Python)
+- **PEP 8.** `snake_case` (variables, funciones, módulos, archivos), `PascalCase` (clases), `MAYUSCULAS` (constantes), `_guion_bajo` (interno). Booleanos con `is_` / `has_`, funciones con verbo, sin abreviaturas raras. Tests: `test_<qué>_<condición>()`.
+- **Idioma:** inglés en identificadores, docstrings y comentarios.
+- **Docstrings Google** en módulos, clases y funciones, siempre. La primera línea dice qué hace, no cómo ni por qué. `Args:` si hay parámetros, `Returns:` si devuelve algo, `Raises:` si lanza excepciones. La brevedad manda. Excepción: los tests (`tests/`) no llevan docstring, porque su nombre `test_<qué>_<condición>` ya lo dice.
+- **Imports:** bajo un único título `# Imports`, en tres bloques separados por una línea en blanco (librería estándar, externas, propias). Cada archivo importa solo lo que usa.
+- **Errores:** se capturan excepciones concretas (`ValueError`, `KeyError`…), nunca un `except:` genérico.
+- **`print` o `logging`:** `print` solo para lo que el usuario debe leer (el resumen de un script). Lo demás, `logging` con su nivel.
+- **Rutas y configuración:** `pathlib` (`ROOT / "data" / "file.csv"`) en `paths.py`; fuentes externas y ajustes en `config.py`. Sin números ni rutas sueltos por el código.
+- **`.env`** solo para secretos y lo que cambia según la máquina.
 
-def download_all(jobs):
-    ...
+## Estilo
 
+### Global
+- **Simplicidad:** cada complicación responde a un problema real; si no, fuera.
+- **Nombres descriptivos.** Si el código necesita un comentario largo para entenderse, mejor un nombre más claro.
+- **Configuración separada de la lógica.**
+- Las tablas de configuración escritas a mano se alinean en columnas.
+- Carpetas de etapas numeradas (`01_`, `02_`) para que el orden alfabético sea el del proceso.
 
-def write_manifest(jobs):
-    ...
+### Python
+- **Comentarios:** títulos de bloque de una o pocas palabras (`# Imports`, `# Root`). Sin comentarios al final de la línea, salvo para aclarar algo no evidente (unidades, ejemplos, qué significa cada fila de una tabla).
+- **Flechas `→`** para transformaciones o flujos, solo en docstrings y comentarios: la consola de Windows no las muestra en un `print`.
+- **Archivos:** cada archivo hace una sola cosa y su docstring lo dice. La función principal va arriba y se lee como un índice (solo llamadas con nombre claro). Las de apoyo, debajo, en el orden en que se llaman, aunque se usen una sola vez.
+- **Un único punto de entrada** por programa (`main`), el único con `if __name__ == "__main__":`.
+- **Utilidades compartidas** en una carpeta, un archivo por tema. Una función sale ahí cuando no es específica del archivo que la usa.
 
-
-def print_summary(jobs, failed):
-    ...
-```
-
-## Organización
-- Configuración separada de la lógica: rutas internas en un archivo, fuentes externas (URLs, listas de ficheros, ajustes) en otro.
-- Funciones compartidas en una carpeta de utilidades, un archivo por tema. Una función sale ahí cuando no es específica del archivo que la usa.
-- Un único punto de entrada por programa (un `main`), y es el único con `if __name__ == "__main__":`. El resto de archivos solo definen funciones.
-- Carpetas de etapas numeradas para que el orden alfabético sea el del proceso: `01_bronze`, `02_silver`…
-- Las tablas de configuración escritas a mano se alinean en columnas para que se lean como una tabla.
-
-## Simplicidad
-- Cada complicación tiene que responder a un problema real. Si no, fuera.
+### Propio de este proyecto
+- **Notebooks entregables:** llevan prefijo numérico (`01_`, `02_`) y son independientes: no importan nada de `src/`. Las funciones que comparten con el código se duplican y, si cambian, se actualizan en los dos sitios.
+- **Notebooks de trabajo** (experimentos, pruebas): sin prefijo numérico, y sí importan de `src/`.
