@@ -49,6 +49,7 @@ Dos modos, a elección del usuario: solo con la analítica, o con la analítica 
 3. **Modelo:** no existe una etiqueta de "edad biológica real", así que no se predice directamente. Un **modelo de supervivencia** estima el riesgo de mortalidad a partir de los biomarcadores, y ese riesgo se traduce a una **edad equivalente** (la edad a la que la población media tiene ese mismo riesgo), al estilo de **PhenoAge** (Levine et al., 2018), que es también la referencia con la que compararse.
 4. **App:** lee el PDF y normaliza nombres de parámetros (glucosa / gluc / GLU…) y unidades antes de la pantalla de revisión.
 5. **Despliegue:** web pública.
+6. **MLOps:** como pide el máster, tests automáticos, historial en git y versionado de datos y de modelos, para que cada modelo se pueda reproducir y saber de dónde sale.
 
 ## Experiencia de usuario (parte evaluada)
 - Prioridad de la UX sobre afinar el modelo: el modelo es fácil de iterar, una UX mal planteada obliga a rehacerla.

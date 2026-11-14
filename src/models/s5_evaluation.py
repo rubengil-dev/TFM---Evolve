@@ -135,26 +135,8 @@ def compare_risks(risk_new, risk_old, data, samples=BOOTSTRAP_SAMPLES):
         - Difference in C-index, overall and within age group, with 95% interval
         - The improvement is real if the interval excludes 0
     """
-    rng = np.random.default_rng(SPLIT_SEED)
-    differences = []
-    for _ in range(samples):
-        rows = rng.integers(0, len(data), len(data))
-        sample = data.iloc[rows].reset_index(drop=True)
-        new, old = pd.Series(risk_new.to_numpy()[rows]), pd.Series(risk_old.to_numpy()[rows])
-        groups = age_groups(sample)
-        differences.append({
-            "c_index": c_index(new, sample, data) - c_index(old, sample, data),
-            "c_index_same_age": (
-                same_age_c_index(c_index_by_group(new, sample, groups, data))
-                - same_age_c_index(c_index_by_group(old, sample, groups, data))
-            ),
-        })
-    differences = pd.DataFrame(differences)
-    return pd.DataFrame({
-        "difference": differences.mean(),
-        "low": differences.quantile(0.025),
-        "high": differences.quantile(0.975),
-    }).round(4)
+    values = bootstrap_c_indexes({"new": risk_new, "old": risk_old}, data, samples)
+    return confidence_interval(values["new"] - values["old"]).rename(columns={"value": "difference"})
 
 
 def bootstrap_c_indexes(risks, data, samples=BOOTSTRAP_SAMPLES):
@@ -236,12 +218,7 @@ def suggest_settings(trial, name):
 
 def same_age_score(name, columns, train, folds, settings):
     """Same-age C-index of some settings, on people left out of each fit."""
-    risk = pd.Series(index=train.index, dtype=float)
-    for fit_rows, validation_rows in folds:
-        fit, validation = train.iloc[fit_rows], train.iloc[validation_rows]
-        pipeline = build_pipeline(name, columns, settings).fit(fit, survival_target(fit))
-        risk.loc[validation.index] = risk_at_horizon(pipeline, validation)
-    return same_age_c_index(c_index_by_group(risk, train, age_groups(train)))
+    return same_age_c_index(cross_validate(name, columns, train, folds, settings)["by_age"])
 
 
 def plot_calibration(details):

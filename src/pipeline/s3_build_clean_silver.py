@@ -9,7 +9,7 @@ Silver clean step, the study population with clean variables and readable names:
         - Triglycerides only with fasting ≥ FASTING_HOURS_MIN
         - Blood pressure: mean of readings
         - Questionnaires → form answers (skipped questions: never drinkers, never smokers)
-        - Survey weights for the 10 cycles combined
+        - Exam survey weight for the 10 cycles combined
     - Values outside PLAUSIBLE_RANGES (data or unit errors) → missing
     - Saved to data/02_silver/silver_clean.parquet
 """
@@ -133,16 +133,13 @@ def sex(raw):
 
 def survey_weights(raw):
     """
-    Weights for the cycles combined (CDC rule):
+    Exam weight for the cycles combined (CDC rule):
         - 1999-2002: 4-year weight × 2 / number of cycles
         - 2003-2018: 2-year weight × 1 / number of cycles
     """
     early = raw["cycle"].isin([cycle_label(1999), cycle_label(2001)])
-    cycles = len(CYCLES)
-    return pd.DataFrame({
-        "weight_exam":    np.where(early, raw["WTMEC4YR"] * 2, raw["WTMEC2YR"]) / cycles,
-        "weight_fasting": np.where(early, raw["WTSAF4YR"] * 2, raw["WTSAF2YR"]) / cycles,
-    }, index=raw.index)
+    weight = np.where(early, raw["WTMEC4YR"] * 2, raw["WTMEC2YR"]) / len(CYCLES)
+    return pd.Series(weight, index=raw.index, name="weight_exam")
 
 
 def lab_derived(raw):
@@ -162,7 +159,6 @@ def lab_derived(raw):
         "crp":               (raw["LBXCRP"] * 10).fillna(raw["LBXHSCRP"]),
         "triglycerides":     raw["LBXTR"].fillna(raw["LBXSTR"]).where(fasted),
         "urine_acr":         raw["URXUMA"] / raw["URXUCR"] * 100,
-        "fasting_hours":     fasting_hours,
     }, index=raw.index)
 
 

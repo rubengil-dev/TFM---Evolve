@@ -68,8 +68,10 @@ class GroupImputer(BaseEstimator, TransformerMixin):
 
     def fit(self, data, y=None):
         keys = group_keys(data)
-        self.by_group_ = {column: data[column].groupby(keys).agg(fill_value) for column in self.columns}
-        self.overall_ = {column: fill_value(data[column]) for column in self.columns}
+        self.by_group_ = {
+            column: data[column].groupby(keys).agg(lambda values: fill_value(values, column)) for column in self.columns
+        }
+        self.overall_ = {column: fill_value(data[column], column) for column in self.columns}
         return self
 
     def transform(self, data):
@@ -86,9 +88,9 @@ def group_keys(data):
     return data["sex"].astype(str) + "|" + age_groups(data).astype(str)
 
 
-def fill_value(values):
+def fill_value(values, column):
     """Median of a numeric column or most frequent answer of a categorical one; missing if empty."""
-    if values.name not in CATEGORICAL_LEVELS:
+    if column not in CATEGORICAL_LEVELS:
         return values.median()
     modes = values.mode()
     return modes.iloc[0] if len(modes) else np.nan

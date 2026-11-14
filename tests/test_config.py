@@ -12,7 +12,6 @@ from src.config.model_sets import DISCARDED, LEVEL_COLUMNS, LEVEL_MODELS
 from src.config.paths import ROOT, TRAINED_MODELS
 from src.config.plausible_ranges import PLAUSIBLE_RANGES
 from src.config.study import CATEGORICAL_LEVELS
-from src.config.validation_rules import CATEGORIES
 from src.models.predict import LIBRARIES
 
 GOLD_PREDICTORS = SILVER_PREDICTORS + DERIVED_FEATURES
@@ -38,13 +37,6 @@ def test_numeric_model_variables_have_plausible_range():
     """The app can check every numeric value it receives (age has its own limits)."""
     numeric = MODEL_VARIABLES - set(CATEGORICAL_LEVELS) - {"age"}
     assert numeric - set(PLAUSIBLE_RANGES) == set()
-
-
-def test_same_categories_in_validation_and_preprocessing():
-    """Gold validation and the model accept the same answers."""
-    assert {name: set(answers) for name, answers in CATEGORIES.items()} == {
-        name: set(levels) for name, levels in CATEGORICAL_LEVELS.items()
-    }
 
 
 def test_every_level_has_algorithm_and_saved_model():

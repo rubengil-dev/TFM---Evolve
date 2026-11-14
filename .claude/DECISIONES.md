@@ -10,7 +10,7 @@
 - **Por qué:** es lo estándar, lo reproduce cualquiera y las plataformas de hosting leen el archivo de requisitos directamente. La 3.11 tiene soporte hasta 2027 y todas las librerías la soportan; la 3.14 es demasiado nueva. Separarlos evita que el hosting gratuito instale las librerías de entrenamiento, y las versiones tienen que ser idénticas porque el modelo guardado solo se carga bien con las mismas.
 
 ### ¿Cómo se prueba el código?
-- **Decisión:** con pytest y GitHub Actions en cada push. La pieza central es un test de referencia: la edad biológica de unas personas inventadas en los cuatro niveles, con un margen de 0,01 años. La CI instala solo los requisitos de la app y no tiene los datos: los tests que los necesitan se saltan.
+- **Decisión:** con pytest y GitHub Actions en cada push. La pieza central es un test de referencia: la edad biológica de unas personas inventadas en los cuatro niveles, con un margen de 0,01 años. Las reglas delicadas (correcciones de la CDC, cuestionarios, validación de Gold, preprocesado y edad biológica) se prueban con datos inventados pequeños, incluida una Gold inventada, para que corran sin `data/`. La CI instala solo los requisitos de la app y no tiene los datos: los tests que los necesitan se saltan.
 - **Por qué:** el test de referencia avisa de cualquier cambio sin querer en el modelo, el preprocesado o las librerías, que de otro modo moverían edades en silencio. Instalar solo lo de la app demuestra que esos requisitos bastan para predecir. Los datos no están en git.
 
 ### ¿Cómo se organizan los datos?
