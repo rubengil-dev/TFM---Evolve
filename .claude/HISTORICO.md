@@ -3,6 +3,11 @@
 - **No contiene:** cifras, decisiones con su porqué ni el estado actual.
 - **Se actualiza:** al cerrar cada sesión, después del commit del trabajo.
 
+## 2026-11-13 a 2026-11-14: bloque 3 de mejoras y batería de tests
+- Bloque 3 entero y punto 2.2, en la rama `mejoras-bloque-3`: una sola lista de categorías, Silver sin columnas que nadie usa, imputador con la columna explícita, remuestreo y validación cruzada unificados, funciones comunes de los notebooks llevadas al código, MLOps en CONTEXTO y tests con datos inventados (Silver clean, validación de Gold, preprocesado y edad biológica) sobre una Gold inventada (`2d1f4c7`, merge `06d13ec`).
+- Comprobado que Gold y las edades de los modelos no cambian y que la evaluación final reejecutada da las mismas salidas; la Entrega 03 solo cambia en la descripción de los tests.
+- Etiqueta `entrega-03`, en local.
+
 ## 2026-11-12 a 2026-11-13: revisión completa y bloque 1 de mejoras
 - Revisión completa del proyecto (la última, el 2026-10-19) con mejoras de código, de estructura y una propuesta de MLOps (tests, DVC y MLflow), ordenadas en un plan de tres bloques en ESTADO (`a0fa2c0`).
 - Bloque 1, en la rama `mejoras-bloque-1`:
