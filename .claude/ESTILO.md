@@ -29,6 +29,7 @@ Lo que no encaje en esta descripción no va aquí. Las decisiones propias del pr
   - Si algo se rompe en `main`, se arregla en `fix/nombre-corto` desde `main`.
 - **Merges:** siempre merge commit con `--no-ff`. Nada de squash ni rebase, para conservar los commits de cada rama. Sin Pull Requests.
 - **Etiquetas de versión:** ninguna hasta terminar el MVP; entonces `v1.0.0`. Cada versión posterior sale de `FUTURO.md`.
+- No añadas la nota de co-autoría de claude.
 
 ### Estructura del proyecto
 - **Nombres de archivos y carpetas:** sin acentos ni ñ.
