@@ -1,8 +1,11 @@
-"""Pipeline:
+"""Pipeline.
+
 - Bronze → Silver raw → Silver clean → Gold → model
 """
 
 # Imports
+import logging
+
 from bioage.pipeline import (
     s1_download_bronze,
     s2_build_raw_silver,
@@ -12,8 +15,9 @@ from bioage.pipeline import (
 )
 
 
-def main():
+def main() -> None:
     """Run every pipeline step in order."""
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
     s1_download_bronze.run()
     s2_build_raw_silver.run()
     s3_build_clean_silver.run()

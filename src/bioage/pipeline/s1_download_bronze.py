@@ -1,4 +1,5 @@
-"""Bronze step, source files downloaded unchanged (only those not on disk yet):
+"""Bronze step, source files downloaded unchanged (only those not on disk yet).
+
 - NHANES 1999-2018: participant data (.xpt) and codebook (.htm/.pdf) per dataset and cycle
 - NCHS linked mortality (follow-up to 2019): one .dat per cycle
 - Saved to data/01_bronze/<cycle>/ with their original names
@@ -7,6 +8,7 @@
 
 # Imports
 import csv
+import logging
 from datetime import datetime
 
 from bioage.config.paths import BRONZE, BRONZE_MANIFEST
@@ -14,8 +16,10 @@ from bioage.config.sources import CYCLES, DATASETS, MORTALITY_FILE, MORTALITY_UR
 from bioage.utils.data_download import download
 from bioage.utils.nhanes import cycle_label
 
+logger = logging.getLogger(__name__)
 
-def run():
+
+def run() -> None:
     """Bronze step, called from main."""
     BRONZE.mkdir(parents=True, exist_ok=True)
     jobs = build_jobs()
@@ -24,13 +28,17 @@ def run():
     print_summary(jobs, failed)
 
 
-def build_jobs():
-    """List of files to download: dataset, cycle, url, dest."""
+def build_jobs() -> list[dict]:
+    """List of files to download.
+
+    Returns:
+        One job per file: dataset, cycle, url and dest.
+    """
     jobs = []
 
     # NHANES: data + codebook
     for dataset, names in DATASETS.items():
-        for year, name in zip(CYCLES, names):
+        for year, name in zip(CYCLES, names, strict=True):
             if name is None:
                 continue
             doc_ext = "pdf" if name in PDF_DOCS else "htm"
@@ -58,24 +66,35 @@ def build_jobs():
     return jobs
 
 
-def download_all(jobs):
-    """Download files not yet on disk. Returns the ones that failed."""
+def download_all(jobs: list[dict]) -> list[dict]:
+    """Download the files not yet on disk.
+
+    Args:
+        jobs: Files to download.
+
+    Returns:
+        The jobs that failed.
+    """
     failed = []
     for i, job in enumerate(jobs, 1):
         if job["dest"].exists():
             continue
-        print(f"[{i}/{len(jobs)}] {job['dest'].relative_to(BRONZE).as_posix()}", flush=True)
+        logger.info("[%d/%d] %s", i, len(jobs), job["dest"].relative_to(BRONZE).as_posix())
         try:
             download(job["url"], job["dest"])
         except RuntimeError as error:
-            print(f"    FAILED: {error}", flush=True)
+            logger.warning("    FAILED: %s", error)
             failed.append(job)
     return failed
 
 
-def write_manifest(jobs):
-    """One row per file on disk. Download date = file modification date."""
-    with open(BRONZE_MANIFEST, "w", newline="", encoding="utf-8") as f:
+def write_manifest(jobs: list[dict]) -> None:
+    """Write one row per file on disk; download date = file modification date.
+
+    Args:
+        jobs: Files of the Bronze layer.
+    """
+    with BRONZE_MANIFEST.open("w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(["dataset", "cycle", "path", "url", "bytes", "downloaded_at"])
         for job in jobs:
@@ -95,8 +114,13 @@ def write_manifest(jobs):
             )
 
 
-def print_summary(jobs, failed):
-    """Files on disk, total size and failed URLs."""
+def print_summary(jobs: list[dict], failed: list[dict]) -> None:
+    """Print the files on disk, the total size and the failed URLs.
+
+    Args:
+        jobs: Files of the Bronze layer.
+        failed: Jobs that could not be downloaded.
+    """
     on_disk = [job for job in jobs if job["dest"].exists()]
     total_mb = sum(job["dest"].stat().st_size for job in on_disk) / 1e6
     print(f"\n{len(on_disk)}/{len(jobs)} files in bronze ({total_mb:.1f} MB)")

@@ -1,5 +1,4 @@
-"""Study design parameters.
-"""
+"""Study design parameters."""
 
 # Population
 AGE_MIN = 18  # mortality follow-up only for adults

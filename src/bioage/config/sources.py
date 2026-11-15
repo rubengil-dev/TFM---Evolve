@@ -1,4 +1,5 @@
-"""External data sources:
+"""External data sources.
+
 - URLs and files to download per cycle
 - Mortality file layout
 - Download settings

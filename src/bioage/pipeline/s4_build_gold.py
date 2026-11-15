@@ -1,4 +1,5 @@
-"""Gold step, the only table the model and the app read (one row per person):
+"""Gold step, the only table the model and the app read (one row per person).
+
 - Derived features (utils/features.py)
 - Columns: identification, outcome, candidate predictors (config/column_roles.py) and derived features
 - Follow-up of 0 months → FOLLOW_UP_MIN
@@ -17,7 +18,7 @@ from bioage.utils.summary import print_layer_summary
 from bioage.utils.validation import validate_gold
 
 
-def run():
+def run() -> None:
     """Gold step, called from main."""
     clean = pd.read_parquet(SILVER_CLEAN)
     gold = pd.concat(
@@ -34,13 +35,24 @@ def run():
     print_layer_summary(gold, GOLD_TABLE)
 
 
-def fix_zero_follow_up(gold):
-    """Follow-up of 0 months → FOLLOW_UP_MIN."""
+def fix_zero_follow_up(gold: pd.DataFrame) -> pd.DataFrame:
+    """Follow-up of 0 months → FOLLOW_UP_MIN.
+
+    Args:
+        gold: Gold table.
+
+    Returns:
+        The same table with the follow-up fixed.
+    """
     gold["follow_up_months"] = gold["follow_up_months"].clip(lower=FOLLOW_UP_MIN)
     return gold
 
 
-def save(gold):
-    """Gold → parquet."""
+def save(gold: pd.DataFrame) -> None:
+    """Gold → parquet.
+
+    Args:
+        gold: Gold table.
+    """
     GOLD.mkdir(parents=True, exist_ok=True)
     gold.to_parquet(GOLD_TABLE, index=False)

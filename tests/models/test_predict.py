@@ -1,8 +1,8 @@
-"""
-Saved models, as the app uses them:
-    - Same biological age as the reference for a few made-up people (REFERENCE_AGES)
-    - Prediction without the training libraries
-    - After a deliberate retrain or preprocessing change: write_reference() and review the diff
+"""Saved models, as the app uses them.
+
+- Same biological age as the reference for a few made-up people (REFERENCE_AGES)
+- Prediction without the training libraries
+- After a deliberate retrain or preprocessing change: write_reference() and review the diff
 """
 
 # Imports
@@ -63,16 +63,14 @@ PEOPLE = pd.DataFrame({
 
 
 @pytest.mark.parametrize("level", LEVEL_COLUMNS)
-def test_ages_match_reference(level):
-    """Biological age of each made-up person within TOLERANCE of the reference."""
+def test_ages_match_reference(level: str) -> None:
     expected = json.loads(REFERENCE_AGES.read_text())[level]
     ages = pd.Series(predict_age(load_bundle(level), PEOPLE), index=PEOPLE.index)
     assert np.isfinite(ages).all()
     assert ages.to_dict() == pytest.approx(expected, abs=TOLERANCE)
 
 
-def test_prediction_without_training_libraries():
-    """Loading a model and predicting does not import xgboost, optuna or matplotlib."""
+def test_prediction_without_training_libraries() -> None:
     code = (
         "import sys; from bioage.models.predict import load_bundle; load_bundle('full'); "
         "print([name for name in ('xgboost', 'optuna', 'matplotlib') if name in sys.modules])"
@@ -81,11 +79,12 @@ def test_prediction_without_training_libraries():
     assert result.stdout.strip() == "[]"
 
 
-def write_reference():
+def write_reference() -> None:
     """Current biological age of each made-up person and level → REFERENCE_AGES."""
     reference = {
         level: {
-            person: round(float(age), 4) for person, age in zip(PEOPLE.index, predict_age(load_bundle(level), PEOPLE))
+            person: round(float(age), 4)
+            for person, age in zip(PEOPLE.index, predict_age(load_bundle(level), PEOPLE), strict=True)
         }
         for level in LEVEL_COLUMNS
     }

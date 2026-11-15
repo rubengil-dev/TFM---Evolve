@@ -1,4 +1,5 @@
-"""PhenoAge (Levine et al., 2018), the external reference of the model:
+"""PhenoAge (Levine et al., 2018), the external reference of the model.
+
 - Fixed formula from NHANES III, nothing to train
 - Our Spanish lab units → the units of the paper before applying it
 """
@@ -39,26 +40,56 @@ PHENOAGE_INTERCEPT = -19.9067
 GOMPERTZ_GAMMA = 0.0076927
 
 
-def phenoage_score(data):
-    """Risk score; orders people like the risk, without rounding it to 1."""
+def phenoage_score(data: pd.DataFrame) -> pd.Series:
+    """Risk score; orders people like the risk, without rounding it to 1.
+
+    Args:
+        data: People with PHENOAGE_VARIABLES and age, in Gold units.
+
+    Returns:
+        Score of each person.
+    """
     return PHENOAGE_INTERCEPT + phenoage_inputs(data).mul(PHENOAGE_WEIGHTS).sum(axis=1)
 
 
-def phenoage_risk(score):
-    """Score → probability of dying within the horizon."""
+def phenoage_risk(score: pd.Series) -> pd.Series:
+    """Score → probability of dying within the horizon.
+
+    Args:
+        score: PhenoAge risk score.
+
+    Returns:
+        Risk of each person.
+    """
     return 1 - np.exp(-np.exp(score) * (np.exp(HORIZON_MONTHS * GOMPERTZ_GAMMA) - 1) / GOMPERTZ_GAMMA)
 
 
-def phenoage(score):
-    """Score → age at which the NHANES III population has that risk:
-    Same as 141.50225 + log(-0.00553 * log(1 - risk)) / 0.090165, without rounding the risk to 1
+def phenoage(score: pd.Series) -> pd.Series:
+    """Score → age at which the NHANES III population has that risk.
+
+    Same as 141.50225 + log(-0.00553 * log(1 - risk)) / 0.090165, without rounding the risk to 1.
+
+    Args:
+        score: PhenoAge risk score.
+
+    Returns:
+        PhenoAge of each person, in years.
     """
     log_hazard = score + np.log((np.exp(HORIZON_MONTHS * GOMPERTZ_GAMMA) - 1) / GOMPERTZ_GAMMA)
     return 141.50225 + (np.log(0.00553) + log_hazard) / 0.090165
 
 
-def phenoage_inputs(data):
-    """Our units → the units of the paper (albumin g/L, creatinine µmol/L, glucose mmol/L, log CRP mg/dL, lymphocyte %)."""
+def phenoage_inputs(data: pd.DataFrame) -> pd.DataFrame:
+    """Our units → the units of the paper.
+
+    Albumin g/L, creatinine µmol/L, glucose mmol/L, log CRP mg/dL and lymphocyte %.
+
+    Args:
+        data: People with PHENOAGE_VARIABLES and age, in Gold units.
+
+    Returns:
+        One column per PhenoAge weight.
+    """
     return pd.DataFrame(
         {
             "albumin": data["albumin"] * 10,

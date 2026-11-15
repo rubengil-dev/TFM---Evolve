@@ -1,9 +1,9 @@
-"""
-Configuration consistency, without data:
-    - Every Gold predictor used by a model or discarded with its reason
-    - Model variables with what the app needs to check them
-    - One algorithm and one saved model per level
-    - App dependencies: the libraries of a saved model, each pinned to one version
+"""Configuration consistency, without data.
+
+- Every Gold predictor used by a model or discarded with its reason
+- Model variables with what the app needs to check them
+- One algorithm and one saved model per level
+- App dependencies: the libraries of a saved model, each pinned to one version
 """
 
 # Imports
@@ -20,39 +20,33 @@ GOLD_PREDICTORS = SILVER_PREDICTORS + DERIVED_FEATURES
 MODEL_VARIABLES = set().union(*LEVEL_COLUMNS.values())
 
 
-def test_model_variables_in_gold():
-    """Every model variable is a Gold predictor."""
+def test_model_variables_in_gold() -> None:
     assert MODEL_VARIABLES - set(GOLD_PREDICTORS) == set()
 
 
-def test_every_gold_predictor_used_or_discarded():
-    """No Gold predictor forgotten: each one is in a model or in DISCARDED."""
+def test_every_gold_predictor_used_or_discarded() -> None:
     assert set(GOLD_PREDICTORS) - MODEL_VARIABLES - set(DISCARDED) == set()
 
 
-def test_no_variable_used_and_discarded():
-    """A variable is either in a model or discarded, never both."""
+def test_no_variable_used_and_discarded() -> None:
     assert MODEL_VARIABLES & set(DISCARDED) == set()
 
 
-def test_numeric_model_variables_have_plausible_range():
-    """The app can check every numeric value it receives (age has its own limits)."""
+def test_numeric_model_variables_have_plausible_range() -> None:
     numeric = MODEL_VARIABLES - set(CATEGORICAL_LEVELS) - {"age"}
     assert numeric - set(PLAUSIBLE_RANGES) == set()
 
 
-def test_every_level_has_algorithm_and_saved_model():
-    """Same levels in LEVEL_COLUMNS and LEVEL_MODELS, each with its file in models/."""
+def test_every_level_has_algorithm_and_saved_model() -> None:
     assert set(LEVEL_COLUMNS) == set(LEVEL_MODELS)
     assert all((TRAINED_MODELS / f"{level}.joblib").exists() for level in LEVEL_COLUMNS)
 
 
-def test_app_dependencies_are_the_model_libraries():
-    """pyproject.toml pins, as app dependencies, exactly the libraries checked when loading a model."""
+def test_app_dependencies_are_the_model_libraries() -> None:
     assert set(app_dependencies()) == set(LIBRARIES)
 
 
-def app_dependencies():
+def app_dependencies() -> dict[str, str]:
     """Library → pinned version of the project dependencies in pyproject.toml (the app ones)."""
     project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]
     return dict(dependency.split("==") for dependency in project["dependencies"])

@@ -1,4 +1,5 @@
-"""Step 5, evaluation at 10 years, out of training:
+"""Step 5, evaluation at 10 years, out of training.
+
 - evaluate_level: summary of every model of a level
 - compare_risks: whether one model really beats another
 - bootstrap_c_indexes, confidence_interval: C-index of several models with its interval
@@ -14,6 +15,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import optuna
 import pandas as pd
+from matplotlib.figure import Figure
 from scipy.optimize import brentq
 from sksurv.metrics import concordance_index_ipcw
 from sksurv.nonparametric import kaplan_meier_estimator
@@ -34,11 +36,24 @@ from bioage.utils.features import age_groups
 YEARS_SEARCHED = 50  # largest shift tried when telling a calibration gap in years
 
 
-def evaluate_level(columns, train, folds, models=MODELS, settings=None):
-    """Every model of a level, cross-validated:
-    - settings: tuned values of each model, if any
-    - summary: one row per model
-    - details: each model's risk, groups and calibration
+def evaluate_level(
+    columns: list[str],
+    train: pd.DataFrame,
+    folds: list[tuple[np.ndarray, np.ndarray]],
+    models: dict[str, type] = MODELS,
+    settings: dict[str, dict] | None = None,
+) -> tuple[pd.DataFrame, dict[str, dict]]:
+    """Every model of a level, cross-validated.
+
+    Args:
+        columns: Gold columns of the level.
+        train: Train part of Gold.
+        folds: Cross-validation folds of train.
+        models: Algorithms to compare, name → class.
+        settings: Tuned values of each model, if any.
+
+    Returns:
+        Summary with one row per model, and the detail of each one: risk, groups and calibration.
     """
     settings = settings or {}
     details = {name: cross_validate(name, columns, train, folds, settings.get(name)) for name in models}
@@ -46,8 +61,25 @@ def evaluate_level(columns, train, folds, models=MODELS, settings=None):
     return summary.round(4), details
 
 
-def cross_validate(name, columns, train, folds, settings=None):
-    """One model over the folds → out-of-fold risk and metrics."""
+def cross_validate(
+    name: str,
+    columns: list[str],
+    train: pd.DataFrame,
+    folds: list[tuple[np.ndarray, np.ndarray]],
+    settings: dict | None = None,
+) -> dict:
+    """One model over the folds → out-of-fold risk and metrics.
+
+    Args:
+        name: Algorithm key in MODELS.
+        columns: Gold columns of the level.
+        train: Train part of Gold.
+        folds: Cross-validation folds of train.
+        settings: Values that replace the fixed ones.
+
+    Returns:
+        Metrics per fold, out-of-fold risk, C-index by age and by sex, and calibration table.
+    """
     risk = pd.Series(index=train.index, dtype=float)
     rows = []
     for fit_rows, validation_rows in folds:
@@ -72,15 +104,36 @@ def cross_validate(name, columns, train, folds, settings=None):
     }
 
 
-def c_index(risk, data, reference):
-    """C-index of Uno up to the horizon; reference: data for the censoring distribution."""
+def c_index(risk: np.ndarray | pd.Series, data: pd.DataFrame, reference: pd.DataFrame) -> float:
+    """C-index of Uno up to the horizon.
+
+    Args:
+        risk: Risk of each person in data.
+        data: People to evaluate.
+        reference: People that give the censoring distribution.
+
+    Returns:
+        The C-index.
+    """
     return concordance_index_ipcw(
         survival_target(reference), survival_target(data), np.asarray(risk), tau=HORIZON_MONTHS
     )[0]
 
 
-def c_index_by_group(risk, data, groups, reference=None):
-    """C-index and deaths within the horizon of each group."""
+def c_index_by_group(
+    risk: pd.Series, data: pd.DataFrame, groups: pd.Series, reference: pd.DataFrame | None = None
+) -> pd.DataFrame:
+    """C-index and deaths within the horizon of each group.
+
+    Args:
+        risk: Risk of each person in data.
+        data: People to evaluate.
+        groups: Group of each person.
+        reference: People that give the censoring distribution; data if None.
+
+    Returns:
+        One row per group.
+    """
     rows = {}
     for group, members in data.groupby(groups, observed=True):
         deaths = ((members["death"] == 1) & (members["follow_up_months"] <= HORIZON_MONTHS)).sum()
@@ -91,13 +144,28 @@ def c_index_by_group(risk, data, groups, reference=None):
     return pd.DataFrame(rows).T
 
 
-def same_age_c_index(by_age):
-    """C-index among people of the same age group, weighted by deaths."""
+def same_age_c_index(by_age: pd.DataFrame) -> float:
+    """C-index among people of the same age group, weighted by deaths.
+
+    Args:
+        by_age: C-index and deaths of each age group.
+
+    Returns:
+        The weighted C-index.
+    """
     return np.average(by_age["c_index"], weights=by_age["deaths"])
 
 
-def calibration_table(risk, data):
-    """Predicted and observed risk of each risk group; gap above 0 = risk underestimated."""
+def calibration_table(risk: pd.Series, data: pd.DataFrame) -> pd.DataFrame:
+    """Predicted and observed risk of each risk group; gap above 0 = risk underestimated.
+
+    Args:
+        risk: Risk of each person in data.
+        data: People to evaluate.
+
+    Returns:
+        One row per risk group.
+    """
     groups = pd.qcut(risk, CALIBRATION_GROUPS, labels=False, duplicates="drop")
     table = pd.DataFrame(
         {
@@ -109,14 +177,28 @@ def calibration_table(risk, data):
     return table
 
 
-def observed_risk(data):
-    """Share of people dead at the horizon, allowing for incomplete follow-up (Kaplan-Meier)."""
+def observed_risk(data: pd.DataFrame) -> float:
+    """Share of people dead at the horizon, allowing for incomplete follow-up (Kaplan-Meier).
+
+    Args:
+        data: People of a group.
+
+    Returns:
+        Observed risk of the group.
+    """
     times, survival = kaplan_meier_estimator(data["death"] == 1, data["follow_up_months"])
     return 1 - survival[np.searchsorted(times, HORIZON_MONTHS, side="right") - 1]
 
 
-def summarize(detail):
-    """One row of the level summary."""
+def summarize(detail: dict) -> dict[str, float]:
+    """One row of the level summary.
+
+    Args:
+        detail: Detail of a model, from cross_validate.
+
+    Returns:
+        Metric → value.
+    """
     folds, calibration = detail["folds"], detail["calibration"]
     # fmt: off
     return {
@@ -133,20 +215,41 @@ def summarize(detail):
     # fmt: on
 
 
-def compare_risks(risk_new, risk_old, data, samples=BOOTSTRAP_SAMPLES):
-    """Improvement of one risk over another, resampling the same people for both:
+def compare_risks(
+    risk_new: pd.Series, risk_old: pd.Series, data: pd.DataFrame, samples: int = BOOTSTRAP_SAMPLES
+) -> pd.DataFrame:
+    """Improvement of one risk over another, resampling the same people for both.
+
     - Difference in C-index, overall and within age group, with 95% interval
     - The improvement is real if the interval excludes 0
+
+    Args:
+        risk_new: Risk of the model that should improve.
+        risk_old: Risk of the model it is compared with.
+        data: People both risks belong to.
+        samples: Number of bootstrap samples.
+
+    Returns:
+        Difference with its interval, one row per metric.
     """
     values = bootstrap_c_indexes({"new": risk_new, "old": risk_old}, data, samples)
     return confidence_interval(values["new"] - values["old"]).rename(columns={"value": "difference"})
 
 
-def bootstrap_c_indexes(risks, data, samples=BOOTSTRAP_SAMPLES):
-    """C-index of several models on the same resampled people:
-    - risks: model name → risk of each person in data
-    - One row per sample; columns (model, 'c_index' / 'c_index_same_age')
-    - Differences between columns give the interval of an improvement
+def bootstrap_c_indexes(
+    risks: dict[str, pd.Series], data: pd.DataFrame, samples: int = BOOTSTRAP_SAMPLES
+) -> pd.DataFrame:
+    """C-index of several models on the same resampled people.
+
+    Differences between columns give the interval of an improvement.
+
+    Args:
+        risks: Model name → risk of each person in data.
+        data: People the risks belong to.
+        samples: Number of bootstrap samples.
+
+    Returns:
+        One row per sample; columns (model, 'c_index' / 'c_index_same_age').
     """
     rng = np.random.default_rng(SPLIT_SEED)
     rows = []
@@ -165,8 +268,15 @@ def bootstrap_c_indexes(risks, data, samples=BOOTSTRAP_SAMPLES):
     return table
 
 
-def confidence_interval(values):
-    """Mean and 95% interval of each column of bootstrap values."""
+def confidence_interval(values: pd.DataFrame) -> pd.DataFrame:
+    """Mean and 95% interval of each column of bootstrap values.
+
+    Args:
+        values: One row per bootstrap sample.
+
+    Returns:
+        Value, low and high of each column.
+    """
     return pd.DataFrame(
         {
             "value": values.mean(),
@@ -176,11 +286,20 @@ def confidence_interval(values):
     ).round(4)
 
 
-def calibration_in_years(risk, age, data, reference):
-    """Calibration table with each gap told in years:
-    - age: biological age of each person from this risk
-    - years: shift of the group's biological ages that makes its predicted risk match the observed one
-    - years above 0 = biological age underestimated
+def calibration_in_years(
+    risk: pd.Series, age: np.ndarray, data: pd.DataFrame, reference: dict[str, np.ndarray]
+) -> pd.DataFrame:
+    """Calibration table with each gap told in years; years above 0 = biological age underestimated.
+
+    Args:
+        risk: Risk of each person in data.
+        age: Biological age of each person from this risk.
+        data: People to evaluate.
+        reference: Reference curves of the level.
+
+    Returns:
+        Calibration table plus the mean age of each group and the years that make its
+        predicted risk match the observed one.
     """
     table = calibration_table(risk, data)
     groups = pd.qcut(risk, CALIBRATION_GROUPS, labels=False, duplicates="drop")
@@ -194,16 +313,46 @@ def calibration_in_years(risk, age, data, reference):
     return table
 
 
-def years_to_observed(ages, sex, observed, reference):
-    """Years to add to every age so that the mean typical risk equals the observed risk; NaN if out of reach."""
-    gap = lambda years: reference_risk(ages + years, sex, reference).mean() - observed
+def years_to_observed(ages: np.ndarray, sex: pd.Series, observed: float, reference: dict[str, np.ndarray]) -> float:
+    """Years to add to every age so that the mean typical risk equals the observed risk.
+
+    Args:
+        ages: Biological ages of a group.
+        sex: Sex of the same people.
+        observed: Observed risk of the group.
+        reference: Reference curves of the level.
+
+    Returns:
+        The shift in years; NaN if out of reach.
+    """
+
+    def gap(years: float) -> float:
+        return reference_risk(ages + years, sex, reference).mean() - observed
+
     if gap(-YEARS_SEARCHED) * gap(YEARS_SEARCHED) > 0:
         return np.nan
     return brentq(gap, -YEARS_SEARCHED, YEARS_SEARCHED)
 
 
-def tune_model(name, columns, train, folds, trials=TUNING_TRIALS):
-    """Settings with the best same-age C-index, searched with Optuna."""
+def tune_model(
+    name: str,
+    columns: list[str],
+    train: pd.DataFrame,
+    folds: list[tuple[np.ndarray, np.ndarray]],
+    trials: int = TUNING_TRIALS,
+) -> dict:
+    """Settings with the best same-age C-index, searched with Optuna.
+
+    Args:
+        name: Algorithm key in MODELS.
+        columns: Gold columns of the level.
+        train: Train part of Gold.
+        folds: Cross-validation folds of train.
+        trials: Number of settings tried.
+
+    Returns:
+        The best settings.
+    """
     optuna.logging.set_verbosity(optuna.logging.WARNING)
     study = optuna.create_study(direction="maximize", sampler=optuna.samplers.TPESampler(seed=SPLIT_SEED))
     study.optimize(
@@ -212,8 +361,16 @@ def tune_model(name, columns, train, folds, trials=TUNING_TRIALS):
     return suggest_settings(optuna.trial.FixedTrial(study.best_params), name)
 
 
-def suggest_settings(trial, name):
-    """One set of settings from the search space of a model."""
+def suggest_settings(trial: optuna.trial.BaseTrial, name: str) -> dict:
+    """One set of settings from the search space of a model.
+
+    Args:
+        trial: Optuna trial that proposes the values.
+        name: Algorithm key in TUNING_SPACES.
+
+    Returns:
+        Setting → value.
+    """
     suggest = {
         "int": trial.suggest_int,
         "float": trial.suggest_float,
@@ -223,17 +380,37 @@ def suggest_settings(trial, name):
     return {key: suggest[kind](key, low, high) for key, (kind, low, high) in TUNING_SPACES[name].items()}
 
 
-def same_age_score(name, columns, train, folds, settings):
-    """Same-age C-index of some settings, on people left out of each fit."""
+def same_age_score(
+    name: str, columns: list[str], train: pd.DataFrame, folds: list[tuple[np.ndarray, np.ndarray]], settings: dict
+) -> float:
+    """Same-age C-index of some settings, on people left out of each fit.
+
+    Args:
+        name: Algorithm key in MODELS.
+        columns: Gold columns of the level.
+        train: Train part of Gold.
+        folds: Cross-validation folds of train.
+        settings: Values to try.
+
+    Returns:
+        The same-age C-index.
+    """
     return same_age_c_index(cross_validate(name, columns, train, folds, settings)["by_age"])
 
 
-def plot_calibration(details):
-    """One panel per model: predicted against observed risk, diagonal = perfect."""
+def plot_calibration(details: dict[str, dict]) -> Figure:
+    """One panel per model: predicted against observed risk, diagonal = perfect.
+
+    Args:
+        details: Detail of each model, from evaluate_level.
+
+    Returns:
+        The figure.
+    """
     figure, axes = plt.subplots(
         1, len(details), figsize=(3.2 * len(details), 3.4), sharex=True, sharey=True, squeeze=False
     )
-    for axis, (name, detail) in zip(axes[0], details.items()):
+    for axis, (name, detail) in zip(axes[0], details.items(), strict=True):
         table = detail["calibration"]
         limit = max(table["predicted"].max(), table["observed"].max()) * 1.05
         axis.plot([0, limit], [0, limit], color="#b0b0b0", linewidth=1)

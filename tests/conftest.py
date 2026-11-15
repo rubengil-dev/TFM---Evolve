@@ -1,6 +1,6 @@
-"""
-Shared test data, without data/:
-    - made_up_gold: small Gold with every column, valid values and a few gaps
+"""Shared test data, without data/.
+
+- made_up_gold: small Gold with every column, valid values and a few gaps
 """
 
 # Imports
@@ -22,7 +22,7 @@ OWN_VALUES = {"age", "weight", "height", "bmi", "waist", "sedentary_hours", "fas
 
 
 @pytest.fixture
-def made_up_gold():
+def made_up_gold() -> pd.DataFrame:
     """Gold of PEOPLE made-up people that passes every check but size."""
     rng = np.random.default_rng(0)
     # fmt: off
@@ -54,7 +54,7 @@ def made_up_gold():
     return gold[ID_COLUMNS + OUTCOME_COLUMNS + SILVER_PREDICTORS + DERIVED_FEATURES]
 
 
-def with_gaps(gold, rng):
+def with_gaps(gold: pd.DataFrame, rng: np.random.Generator) -> pd.DataFrame:
     """GAPS of each optional column → missing."""
     for column in gold.columns.difference(REQUIRED):
         gold[column] = gold[column].mask(rng.random(len(gold)) < GAPS)

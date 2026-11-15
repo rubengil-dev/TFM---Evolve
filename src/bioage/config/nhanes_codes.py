@@ -1,5 +1,4 @@
-"""NHANES questionnaire answer codes, from the codebooks.
-"""
+"""NHANES questionnaire answer codes, from the codebooks."""
 
 # Alcohol frequency
 ALCOHOL_UNIT_DAYS = {1: 52, 2: 12, 3: 1}    # ALQ120U (until 2016): week, month, year

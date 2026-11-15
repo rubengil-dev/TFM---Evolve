@@ -1,5 +1,4 @@
-"""Variables of each model block, and the Gold predictors left out with their reason.
-"""
+"""Variables of each model block, and the Gold predictors left out with their reason."""
 
 # Level 0: baseline
 BASELINE = ["age", "sex"]

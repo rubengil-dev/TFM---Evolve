@@ -1,7 +1,7 @@
-"""
-Local data, skipped without data/ (not in git):
-    - Same test people as in the final evaluation (the split follows row order, so a new Gold can move people)
-    - Saved models trained on the current Gold
+"""Local data, skipped without data/ (not in git).
+
+- Same test people as in the final evaluation (the split follows row order, so a new Gold can move people)
+- Saved models trained on the current Gold
 """
 
 # Imports
@@ -25,24 +25,22 @@ pytestmark = pytest.mark.skipif(not GOLD_TABLE.exists(), reason="needs data/, no
 
 
 @pytest.fixture(scope="module")
-def gold():
+def gold() -> pd.DataFrame:
     """Gold table, read once for every test of the file."""
     return pd.read_parquet(GOLD_TABLE)
 
 
-def test_same_test_people(gold):
-    """The split still gives the test people of the final evaluation."""
+def test_same_test_people(gold: pd.DataFrame) -> None:
     _, test = split_train_test(gold)
     assert (len(test), int(test["death"].sum())) == (TEST_PEOPLE, TEST_DEATHS)
     assert seqn_fingerprint(test) == TEST_FINGERPRINT
 
 
 @pytest.mark.parametrize("level", LEVEL_COLUMNS)
-def test_models_trained_on_current_gold(gold, level):
-    """Each saved model was trained on exactly the Gold on disk."""
+def test_models_trained_on_current_gold(gold: pd.DataFrame, level: str) -> None:
     assert load_bundle(level)["trained_on"]["data_fingerprint"] == data_fingerprint(gold)
 
 
-def seqn_fingerprint(data):
+def seqn_fingerprint(data: pd.DataFrame) -> str:
     """Short hash of the sorted seqn of data."""
     return hashlib.sha256(",".join(map(str, sorted(data["seqn"]))).encode()).hexdigest()[:16]

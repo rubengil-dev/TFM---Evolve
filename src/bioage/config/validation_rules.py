@@ -1,5 +1,4 @@
-"""Gold validation thresholds (plausible ranges in config/plausible_ranges.py, answers in config/study.py).
-"""
+"""Gold validation thresholds (plausible ranges in config/plausible_ranges.py, answers in config/study.py)."""
 
 # Size
 MIN_PERSONS = 45000            # one lost cycle drops 4000-5600 persons

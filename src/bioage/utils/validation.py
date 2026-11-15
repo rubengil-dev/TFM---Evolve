@@ -1,6 +1,7 @@
-"""Gold validation before saving:
+"""Gold validation before saving.
+
 - Blocking (error → Gold not saved): structure, size, coverage, required columns, outcome,
-population, answers and plausible ranges
+  population, answers and plausible ranges
 - Warning only: consistency between variables
 """
 
@@ -26,8 +27,15 @@ from bioage.config.validation_rules import (
 from bioage.utils.nhanes import cycle_label
 
 
-def validate_gold(gold):
-    """Every check on Gold: errors → ValueError, warnings → printed."""
+def validate_gold(gold: pd.DataFrame) -> None:
+    """Run every check on Gold: errors → ValueError, warnings → printed.
+
+    Args:
+        gold: Gold table about to be saved.
+
+    Raises:
+        ValueError: If any blocking check fails.
+    """
     errors = check_structure(gold)
     if not errors:
         errors = (
@@ -45,8 +53,15 @@ def validate_gold(gold):
         raise ValueError(f"Gold validation failed with {len(errors)} errors, Gold not saved")
 
 
-def check_structure(gold):
-    """Exactly the expected columns; text columns as text, the rest as numbers."""
+def check_structure(gold: pd.DataFrame) -> list[str]:
+    """Exactly the expected columns; text columns as text, the rest as numbers.
+
+    Args:
+        gold: Gold table.
+
+    Returns:
+        One error line per problem.
+    """
     expected = ID_COLUMNS + OUTCOME_COLUMNS + SILVER_PREDICTORS + DERIVED_FEATURES
     errors = [f"missing column: {column}" for column in expected if column not in gold]
     errors += [f"unexpected column: {column}" for column in gold if column not in expected]
@@ -58,8 +73,15 @@ def check_structure(gold):
     return errors
 
 
-def check_size(gold):
-    """At least MIN_PERSONS persons, MIN_PERSONS_PER_CYCLE in each cycle and MIN_DEATHS deaths."""
+def check_size(gold: pd.DataFrame) -> list[str]:
+    """At least MIN_PERSONS persons, MIN_PERSONS_PER_CYCLE in each cycle and MIN_DEATHS deaths.
+
+    Args:
+        gold: Gold table.
+
+    Returns:
+        One error line per problem.
+    """
     errors = []
     if len(gold) < MIN_PERSONS:
         errors.append(f"{len(gold)} persons, minimum {MIN_PERSONS}")
@@ -74,8 +96,15 @@ def check_size(gold):
     return errors
 
 
-def check_coverage(gold):
-    """% with value ≥ MIN_COVERAGE (MIN_COVERAGE_PARTIAL for PARTIAL_COVERAGE)."""
+def check_coverage(gold: pd.DataFrame) -> list[str]:
+    """% with value ≥ MIN_COVERAGE (MIN_COVERAGE_PARTIAL for PARTIAL_COVERAGE).
+
+    Args:
+        gold: Gold table.
+
+    Returns:
+        One error line per problem.
+    """
     coverage = gold.notna().mean() * 100
     errors = []
     for column, percent in coverage.items():
@@ -85,16 +114,30 @@ def check_coverage(gold):
     return errors
 
 
-def check_required(gold):
-    """No missing values in REQUIRED; one row per person."""
+def check_required(gold: pd.DataFrame) -> list[str]:
+    """No missing values in REQUIRED; one row per person.
+
+    Args:
+        gold: Gold table.
+
+    Returns:
+        One error line per problem.
+    """
     errors = [f"{column}: {n} missing" for column, n in gold[REQUIRED].isna().sum().items() if n]
     if gold["seqn"].duplicated().any():
         errors.append(f"seqn: {gold['seqn'].duplicated().sum()} repeated")
     return errors
 
 
-def check_outcome(gold):
-    """Death only 0 / 1; follow-up between FOLLOW_UP_MIN and MAX_FOLLOW_UP; survey weight > 0."""
+def check_outcome(gold: pd.DataFrame) -> list[str]:
+    """Death only 0 / 1; follow-up between FOLLOW_UP_MIN and MAX_FOLLOW_UP; survey weight > 0.
+
+    Args:
+        gold: Gold table.
+
+    Returns:
+        One error line per problem.
+    """
     errors = []
     if not gold["death"].isin([0, 1]).all():
         errors.append("death: values other than 0 / 1")
@@ -104,8 +147,15 @@ def check_outcome(gold):
     return errors
 
 
-def check_population(gold):
-    """Age between AGE_MIN and AGE_MAX; cycle one of CYCLES."""
+def check_population(gold: pd.DataFrame) -> list[str]:
+    """Age between AGE_MIN and AGE_MAX; cycle one of CYCLES.
+
+    Args:
+        gold: Gold table.
+
+    Returns:
+        One error line per problem.
+    """
     errors = out_of_bounds(gold, "age", AGE_MIN, AGE_MAX)
     unknown = ~gold["cycle"].isin([cycle_label(year) for year in CYCLES])
     if unknown.any():
@@ -113,8 +163,15 @@ def check_population(gold):
     return errors
 
 
-def check_categories(gold):
-    """Text answers only from CATEGORICAL_LEVELS (or missing)."""
+def check_categories(gold: pd.DataFrame) -> list[str]:
+    """Text answers only from CATEGORICAL_LEVELS (or missing).
+
+    Args:
+        gold: Gold table.
+
+    Returns:
+        One error line per problem.
+    """
     errors = []
     for column, allowed in CATEGORICAL_LEVELS.items():
         unknown = gold[column].dropna()
@@ -124,16 +181,30 @@ def check_categories(gold):
     return errors
 
 
-def check_ranges(gold):
-    """Every value inside the PLAUSIBLE_RANGES limits (Silver clean blanks the rest)."""
+def check_ranges(gold: pd.DataFrame) -> list[str]:
+    """Every value inside the PLAUSIBLE_RANGES limits (Silver clean blanks the rest).
+
+    Args:
+        gold: Gold table.
+
+    Returns:
+        One error line per problem.
+    """
     errors = []
     for variable, (_, _, (low, high), _) in PLAUSIBLE_RANGES.items():
         errors += out_of_bounds(gold, variable, low, high)
     return errors
 
 
-def check_consistency(gold):
-    """Each LOWER_THAN pair in order; bmi matching weight / height² (± BMI_TOLERANCE)."""
+def check_consistency(gold: pd.DataFrame) -> list[str]:
+    """Each LOWER_THAN pair in order; bmi matching weight / height² (± BMI_TOLERANCE).
+
+    Args:
+        gold: Gold table.
+
+    Returns:
+        One warning line per problem.
+    """
     warnings = []
     for lower, higher in LOWER_THAN:
         wrong = (gold[lower] >= gold[higher]).sum()
@@ -146,14 +217,29 @@ def check_consistency(gold):
     return warnings
 
 
-def out_of_bounds(gold, column, low, high):
-    """Error line if any value of column is outside [low, high] (missing values ignored)."""
+def out_of_bounds(gold: pd.DataFrame, column: str, low: float, high: float) -> list[str]:
+    """Error line if any value of column is outside [low, high] (missing values ignored).
+
+    Args:
+        gold: Gold table.
+        column: Column to check.
+        low: Lowest value allowed.
+        high: Highest value allowed.
+
+    Returns:
+        The error line, or an empty list.
+    """
     outside = gold[column].notna() & ~gold[column].between(low, high)
     return [f"{column}: {outside.sum()} values outside {low}-{high}"] if outside.any() else []
 
 
-def print_report(errors, warnings):
-    """Errors and warnings, or OK."""
+def print_report(errors: list[str], warnings: list[str]) -> None:
+    """Print the errors and warnings, or OK.
+
+    Args:
+        errors: Lines of the blocking checks.
+        warnings: Lines of the consistency check.
+    """
     print("Gold validation:")
     for line in errors:
         print(f"    ERROR   {line}")

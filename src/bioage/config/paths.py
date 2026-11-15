@@ -1,5 +1,4 @@
-"""Internal project paths.
-"""
+"""Internal project paths."""
 
 # Imports
 from pathlib import Path
