@@ -1,8 +1,10 @@
 # Datos de NHANES (se descargan con script)
-data/
+data/*
+!data/README.md
 
 # Analíticas reales
-private/
+private/*
+!private/README.md
 
 # Python
 .venv/
@@ -22,6 +24,3 @@ desktop.ini
 
 #Otros
 enunciado*
-
-# Respaldo de la estructura antigua de .claude/
-.claude-old/

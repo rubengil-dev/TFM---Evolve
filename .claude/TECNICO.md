@@ -17,12 +17,13 @@ Lo que no encaje en esta descripción no va aquí. Librerías y versiones, coman
 # Contenido
 
 ## Stack
-- **Python 3.11** en `.venv`: la soportan todas las librerías y tiene soporte hasta 2027. Descartado: 3.14, demasiado nueva.
-- **Dos archivos de requisitos:** el del análisis, congelado con `pip freeze`, y el de la app, escrito a mano solo con lo que necesita un modelo guardado para predecir. El hosting gratuito lee el de la app y no instala las librerías de entrenamiento; las versiones son idénticas en los dos (un test lo comprueba) porque un modelo guardado solo se carga bien con las mismas.
+- **Python 3.11:** la soportan todas las librerías y tiene soporte hasta 2027. Descartado: 3.14, demasiado nueva.
+- **uv:** entorno y dependencias, con `uv.lock` en git. Las dependencias del proyecto son solo las de la app (lo que necesita un modelo guardado para predecir) y el análisis va en el grupo `dev`, para que el hosting gratuito no instale las librerías de entrenamiento. Todo fijado con `==`, porque un modelo guardado solo se carga bien con las mismas versiones. Antes había dos `requirements` mantenidos a mano y un test que comparaba sus versiones; con un solo lock ya no pueden divergir. (Rubén, de acuerdo)
 - **NHANES continuo 1999-2018** con la mortalidad pública enlazada hasta 2019: los datos de entrenamiento, descargados como una lista cerrada de ficheros verificada contra el catálogo de la CDC. Descartado: NHANES III, con métodos de laboratorio y formato distintos; mortalidad hasta 2022, de acceso restringido.
 - **scikit-survival y XGBoost:** los modelos de supervivencia. Descartado: el gradient boosting de scikit-survival, unos 46 minutos por entrenamiento frente a segundos.
 - **`Pipeline` de scikit-learn:** el preprocesado se ajusta solo con train, se guarda entero con el modelo y la app aplica exactamente el mismo objeto.
-- **pytest y GitHub Actions:** tests en cada push. La CI instala solo los requisitos de la app, lo que demuestra que bastan para predecir, y no tiene `data/`: los tests que la necesitan se saltan.
+- **pytest y GitHub Actions:** ruff y tests en cada push. El trabajo de tests instala solo las dependencias de la app más pytest (grupo `test`), lo que demuestra que bastan para predecir, y no tiene `data/`: los tests que la necesitan se saltan.
+- **ruff y pre-commit:** ruff revisa y formatea, con líneas de 120 caracteres; pre-commit lo ejecuta junto con los tests antes de cada commit, con las versiones de `uv.lock` (hooks locales, sin repetir la versión de ruff en otro archivo). Los archivos de `config/` quedan fuera del formateo y las tablas alineadas del resto van entre `# fmt: off` y `# fmt: on`, porque el formateador deshace las columnas. Los notebooks quedan fuera de ruff para no reescribir celdas con salidas guardadas. (Claude, autónomo)
 - **GitHub:** `rubengil-dev/TFM---Evolve`, rama principal `main`.
 - [pendiente: stack de front y backend y hosting; son bloqueos de `ESTADO.md`.]
 
@@ -52,7 +53,7 @@ Lo que no encaje en esta descripción no va aquí. Librerías y versiones, coman
 
 ### Modelo
 - **Escalera de niveles anidados:** 0, baseline (Cox con edad y sexo, que equivale a decir que la edad biológica es la cronológica); 1, Base; 2, Base + Extras; 3, Base + Cuestionario; 4, todo. Cada salto mide solo lo que aporta el bloque nuevo y responde a una pregunta del producto.
-- **Los bloques responden a qué trae el usuario, no a cuánto predice cada variable:** Base es la analítica básica más edad, sexo e IMC; Extras, lo que se pide a menudo o es opcional; Cuestionario, los hábitos. Las listas y las variables descartadas, con su motivo, viven en `src/config/model_sets.py`.
+- **Los bloques responden a qué trae el usuario, no a cuánto predice cada variable:** Base es la analítica básica más edad, sexo e IMC; Extras, lo que se pide a menudo o es opcional; Cuestionario, los hábitos. Las listas y las variables descartadas, con su motivo, viven en `src/bioage/config/model_sets.py`.
 - **Cox simple en los cuatro niveles:** compitió en igualdad con Cox elastic net, random survival forest y XGBoost, y XGBoost optimizado con Optuna no llegó al listón fijado de antemano (+0,02 de C-index misma edad); no compensa perder la explicabilidad. Descartado: deep learning, más difícil de explicar y de desplegar en un plan gratuito.
 - **Split 80/20 estratificado por ciclo y muerte, y el test se mira una sola vez:** todas las decisiones se toman con validación cruzada de 5 bloques dentro de train. Descartado: separar por ciclos, dejaría un test con muy pocas muertes.
 - **Métrica principal: C-index de Uno dentro del mismo grupo de edad, a 10 años.** La edad sola ya ordena muy bien, así que es la que dice si la analítica aporta algo; un nivel mejora de verdad si el intervalo por bootstrap de la diferencia no incluye el 0.
@@ -79,8 +80,8 @@ Lo que no encaje en esta descripción no va aquí. Librerías y versiones, coman
 - Los últimos ciclos tienen pocas defunciones por su seguimiento corto.
 
 ## Trampas
-- **Reentrenar los modelos** (unos 6,5 minutos): hay que commitear antes el código. Por qué: cada modelo guarda el commit y lo marca como `-dirty` si `src/` tiene cambios sin commitear. Después, los modelos se commitean aparte.
-- **`src/models/s2_preprocessing` no se puede mover ni renombrar** sin reentrenar. Por qué: los modelos guardados apuntan a su ruta.
+- **Reentrenar los modelos** (entre 5 y 27 minutos, según cómo ande el disco): hay que commitear antes el código y no tocar `src/` mientras entrena. Por qué: cada modelo guarda el commit y lo marca como `-dirty` si `src/` tiene cambios sin commitear, y la marca se calcula al guardar cada modelo, no al empezar. Después, los modelos se commitean aparte.
+- **`src/bioage/models/s2_preprocessing` no se puede mover ni renombrar** sin reentrenar, y el paquete `bioage` tampoco. Por qué: los modelos guardados apuntan a su ruta de import.
 - **Los modelos de `models/` no sirven para evaluar.** Por qué: están entrenados con toda Gold, test incluido.
-- **La referencia de edades de los tests** se rehace solo tras cambiar el modelo a propósito, con `write_reference` de `tests/test_models.py`, y se revisa el diff. Por qué: rehacerla tras un cambio involuntario escondería justo lo que el test tiene que detectar.
-- **Ejecutar un notebook desde la terminal** arranca el Python global, que no tiene scikit-survival. Por qué: el kernel `python3` está registrado dentro de `.venv`. Hay que lanzarlo desde `notebooks/` con `JUPYTER_PATH=../.venv/share/jupyter` y el `jupyter` de `.venv`.
+- **La referencia de edades de los tests** se rehace solo tras cambiar el modelo a propósito, con `write_reference` de `tests/models/test_predict.py`, y se revisa el diff. Por qué: rehacerla tras un cambio involuntario escondería justo lo que el test tiene que detectar.
+- **Ejecutar un notebook desde la terminal:** siempre con `uv run jupyter nbconvert`. Por qué: el `jupyter` global arranca el Python global, que no tiene scikit-survival; antes hacía falta un `JUPYTER_PATH` porque `nbconvert` no estaba en el entorno.

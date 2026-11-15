@@ -1,3 +1,83 @@
+[project]
+name = "bioage"
+version = "0.1.0"
+description = "Biological age calculator from a routine blood test (EVOLVE master's thesis)"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Rubén Gil" }]
+requires-python = "==3.11.*"
+# App: only what a saved model needs to load and predict (tests/test_config.py checks it)
+dependencies = [
+    "joblib==1.6.0",
+    "numpy==2.4.6",
+    "pandas==2.3.3",
+    "scikit-learn==1.9.1",
+    "scikit-survival==0.28.0",
+    "scipy==1.17.1",
+]
+
+[dependency-groups]
+# Tests: what CI installs on top of the app dependencies
+test = ["pytest==9.2.0"]
+# Lint: what the CI lint job installs, without the project
+lint = ["ruff==0.17.5"]
+# Analysis: data pipeline, training and notebooks
+dev = [
+    { include-group = "test" },
+    { include-group = "lint" },
+    "ipykernel==7.4.0",
+    "lifelines==0.30.3",
+    "matplotlib==3.11.2",
+    "nbconvert==7.17.2",
+    "optuna==5.0.0",
+    "pre-commit==4.7.0",
+    "pyarrow==26.0.0",
+    "requests==2.34.2",
+    "xgboost==3.2.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.13.5,<0.14.0"]
+build-backend = "uv_build"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
+
+[tool.ruff]
+line-length = 120
+src = ["src"]
+extend-exclude = ["notebooks"]
+force-exclude = true  # pre-commit passes file names: exclusions must still apply
+
+[tool.ruff.format]
+# Config files are hand-aligned tables: the formatter would undo the columns
+exclude = ["src/bioage/config/*.py"]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors (PEP 8)
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # import blocks
+    "N",    # naming
+    "D",    # docstrings
+    "ANN",  # type hints
+    "UP",   # modern syntax
+    "B",    # likely bugs
+    "BLE",  # no blind except
+    "PTH",  # pathlib instead of os.path
+    "SIM",  # simplifications
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["D"]
+"src/bioage/config/*.py" = ["E501"]  # hand-aligned tables, some rows are long
+"src/bioage/models/s3_algorithms.py" = ["N803"]  # X: argument name of the scikit-learn interface
+
+[tool.ruff.lint.flake8-annotations]
+allow-star-arg-any = true

@@ -1,0 +1,74 @@
+"""NHANES helpers.
+
+- Cycle names
+- File readers (.xpt, mortality .dat)
+- DXA multiple imputation
+"""
+
+# Imports
+from pathlib import Path
+
+import pandas as pd
+
+from bioage.config.sources import MORTALITY_COLUMNS
+
+
+def cycle_label(year: int) -> str:
+    """Name of a cycle from its start year: 1999 → '1999_2000'.
+
+    Args:
+        year: Start year of the cycle.
+
+    Returns:
+        Cycle name.
+    """
+    return f"{year}_{year + 1}"
+
+
+def read_xpt(path: Path) -> pd.DataFrame:
+    """SAS transport file → DataFrame.
+
+    - SEQN as integer
+    - SAS zero artifact (5.4e-79) → 0
+
+    Args:
+        path: Path of the .xpt file.
+
+    Returns:
+        Table of the file.
+    """
+    table = pd.read_sas(path, format="xport", encoding="latin-1")
+    numeric = table.select_dtypes("number").columns
+    table[numeric] = table[numeric].mask(table[numeric].abs() < 1e-70, 0)
+    table["SEQN"] = table["SEQN"].astype(int)
+    return table.copy()  # defragment
+
+
+def read_mortality(path: Path) -> pd.DataFrame:
+    """Fixed-width mortality file → DataFrame.
+
+    - Columns and positions from MORTALITY_COLUMNS
+    - '.' → missing
+
+    Args:
+        path: Path of the .dat file.
+
+    Returns:
+        Table of the file.
+    """
+    colspecs = [(start - 1, end) for start, end in MORTALITY_COLUMNS.values()]
+    return pd.read_fwf(path, colspecs=colspecs, names=list(MORTALITY_COLUMNS), na_values=".")
+
+
+def dxa_average_imputations(table: pd.DataFrame) -> pd.DataFrame:
+    """DXA 1999-2006: 5 imputed rows per person → 1 row (mean).
+
+    Args:
+        table: DXA table, with or without the imputation column.
+
+    Returns:
+        One row per person.
+    """
+    if "_MULT_" not in table.columns:
+        return table
+    return table.drop(columns="_MULT_").groupby("SEQN", as_index=False).mean(numeric_only=True)

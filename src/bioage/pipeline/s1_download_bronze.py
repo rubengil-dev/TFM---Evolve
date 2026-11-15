@@ -1,0 +1,130 @@
+"""Bronze step, source files downloaded unchanged (only those not on disk yet).
+
+- NHANES 1999-2018: participant data (.xpt) and codebook (.htm/.pdf) per dataset and cycle
+- NCHS linked mortality (follow-up to 2019): one .dat per cycle
+- Saved to data/01_bronze/<cycle>/ with their original names
+- manifest.csv: file, URL, size and download date
+"""
+
+# Imports
+import csv
+import logging
+from datetime import datetime
+
+from bioage.config.paths import BRONZE, BRONZE_MANIFEST
+from bioage.config.sources import CYCLES, DATASETS, MORTALITY_FILE, MORTALITY_URL, NHANES_URL, PDF_DOCS
+from bioage.utils.data_download import download
+from bioage.utils.nhanes import cycle_label
+
+logger = logging.getLogger(__name__)
+
+
+def run() -> None:
+    """Bronze step, called from main."""
+    BRONZE.mkdir(parents=True, exist_ok=True)
+    jobs = build_jobs()
+    failed = download_all(jobs)
+    write_manifest(jobs)
+    print_summary(jobs, failed)
+
+
+def build_jobs() -> list[dict]:
+    """List of files to download.
+
+    Returns:
+        One job per file: dataset, cycle, url and dest.
+    """
+    jobs = []
+
+    # NHANES: data + codebook
+    for dataset, names in DATASETS.items():
+        for year, name in zip(CYCLES, names, strict=True):
+            if name is None:
+                continue
+            doc_ext = "pdf" if name in PDF_DOCS else "htm"
+            for ext in ("xpt", doc_ext):
+                jobs.append(
+                    {
+                        "dataset": dataset,
+                        "cycle": cycle_label(year),
+                        "url": NHANES_URL.format(year=year, name=name, ext=ext),
+                        "dest": BRONZE / cycle_label(year) / f"{name}.{ext}",
+                    }
+                )
+
+    # Mortality
+    for year in CYCLES:
+        jobs.append(
+            {
+                "dataset": "MORT",
+                "cycle": cycle_label(year),
+                "url": MORTALITY_URL.format(cycle=cycle_label(year)),
+                "dest": BRONZE / cycle_label(year) / MORTALITY_FILE.format(cycle=cycle_label(year)),
+            }
+        )
+
+    return jobs
+
+
+def download_all(jobs: list[dict]) -> list[dict]:
+    """Download the files not yet on disk.
+
+    Args:
+        jobs: Files to download.
+
+    Returns:
+        The jobs that failed.
+    """
+    failed = []
+    for i, job in enumerate(jobs, 1):
+        if job["dest"].exists():
+            continue
+        logger.info("[%d/%d] %s", i, len(jobs), job["dest"].relative_to(BRONZE).as_posix())
+        try:
+            download(job["url"], job["dest"])
+        except RuntimeError as error:
+            logger.warning("    FAILED: %s", error)
+            failed.append(job)
+    return failed
+
+
+def write_manifest(jobs: list[dict]) -> None:
+    """Write one row per file on disk; download date = file modification date.
+
+    Args:
+        jobs: Files of the Bronze layer.
+    """
+    with BRONZE_MANIFEST.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(["dataset", "cycle", "path", "url", "bytes", "downloaded_at"])
+        for job in jobs:
+            dest = job["dest"]
+            if not dest.exists():
+                continue
+            stat = dest.stat()
+            writer.writerow(
+                [
+                    job["dataset"],
+                    job["cycle"],
+                    dest.relative_to(BRONZE).as_posix(),
+                    job["url"],
+                    stat.st_size,
+                    datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d %H:%M"),
+                ]
+            )
+
+
+def print_summary(jobs: list[dict], failed: list[dict]) -> None:
+    """Print the files on disk, the total size and the failed URLs.
+
+    Args:
+        jobs: Files of the Bronze layer.
+        failed: Jobs that could not be downloaded.
+    """
+    on_disk = [job for job in jobs if job["dest"].exists()]
+    total_mb = sum(job["dest"].stat().st_size for job in on_disk) / 1e6
+    print(f"\n{len(on_disk)}/{len(jobs)} files in bronze ({total_mb:.1f} MB)")
+    if failed:
+        print(f"{len(failed)} failed, re-run to retry:")
+        for job in failed:
+            print(f"  - {job['url']}")
