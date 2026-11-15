@@ -8,13 +8,13 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from src.config.column_roles import DERIVED_FEATURES, ID_COLUMNS, OUTCOME_COLUMNS, SILVER_PREDICTORS
-from src.config.plausible_ranges import PLAUSIBLE_RANGES
-from src.config.sources import CYCLES
-from src.config.study import CATEGORICAL_LEVELS
-from src.config.validation_rules import REQUIRED
-from src.utils.features import derived_features
-from src.utils.nhanes import cycle_label
+from bioage.config.column_roles import DERIVED_FEATURES, ID_COLUMNS, OUTCOME_COLUMNS, SILVER_PREDICTORS
+from bioage.config.plausible_ranges import PLAUSIBLE_RANGES
+from bioage.config.sources import CYCLES
+from bioage.config.study import CATEGORICAL_LEVELS
+from bioage.config.validation_rules import REQUIRED
+from bioage.utils.features import derived_features
+from bioage.utils.nhanes import cycle_label
 
 PEOPLE = 600
 GAPS = 0.03  # share of missing values in each optional column

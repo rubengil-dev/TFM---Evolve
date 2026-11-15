@@ -54,46 +54,47 @@ TFM/
 │   └── final_evaluation.ipynb        # Evaluación en test
 ├── private/                          # Analíticas reales en PDF (fuera de git)
 ├── src/
-│   ├── __init__.py
-│   ├── main.py                       # Punto de entrada
-│   ├── config/
-│   │   ├── __init__.py
-│   │   ├── column_roles.py           # Papel de cada columna
-│   │   ├── corrections.py            # Correcciones CDC
-│   │   ├── model_sets.py             # Variables por nivel
-│   │   ├── nhanes_codes.py           # Códigos de cuestionarios
-│   │   ├── paths.py                  # Rutas
-│   │   ├── plausible_ranges.py       # Rangos posibles
-│   │   ├── renames.py                # Renombres
-│   │   ├── sources.py                # Fuentes externas
-│   │   ├── study.py                  # Parámetros del estudio
-│   │   └── validation_rules.py       # Umbrales de validación
-│   ├── models/
-│   │   ├── __init__.py
-│   │   ├── predict.py                # Predicción (app)
-│   │   ├── s1_split.py               # Split
-│   │   ├── s2_preprocessing.py       # Preprocesado
-│   │   ├── s3_algorithms.py          # Algoritmos
-│   │   ├── s4_biological_age.py      # Riesgo a edad
-│   │   └── s5_evaluation.py          # Evaluación
-│   ├── pipeline/
-│   │   ├── __init__.py
-│   │   ├── s1_download_bronze.py     # Descarga
-│   │   ├── s2_build_raw_silver.py    # Silver raw
-│   │   ├── s3_build_clean_silver.py  # Silver clean
-│   │   ├── s4_build_gold.py          # Gold
-│   │   └── s5_build_model.py         # Modelo final
-│   └── utils/
+│   └── bioage/                       # Paquete del proyecto
 │       ├── __init__.py
-│       ├── data_download.py          # Descarga
-│       ├── features.py               # Features derivadas
-│       ├── nhanes.py                 # Lectura de NHANES
-│       ├── notebook_helpers.py       # Apoyo a notebooks
-│       ├── phenoage.py               # Fórmula PhenoAge
-│       ├── provenance.py             # Origen del modelo
-│       ├── summary.py                # Resumen de capas
-│       └── validation.py             # Validación de Gold
-├── tests/                            # Tests con pytest
+│       ├── main.py                   # Punto de entrada
+│       ├── config/
+│       │   ├── __init__.py
+│       │   ├── column_roles.py       # Papel de cada columna
+│       │   ├── corrections.py        # Correcciones CDC
+│       │   ├── model_sets.py         # Variables por nivel
+│       │   ├── nhanes_codes.py       # Códigos de cuestionarios
+│       │   ├── paths.py              # Rutas
+│       │   ├── plausible_ranges.py   # Rangos posibles
+│       │   ├── renames.py            # Renombres
+│       │   ├── sources.py            # Fuentes externas
+│       │   ├── study.py              # Parámetros del estudio
+│       │   └── validation_rules.py   # Umbrales de validación
+│       ├── models/
+│       │   ├── __init__.py
+│       │   ├── predict.py            # Predicción (app)
+│       │   ├── s1_split.py           # Split
+│       │   ├── s2_preprocessing.py   # Preprocesado
+│       │   ├── s3_algorithms.py      # Algoritmos
+│       │   ├── s4_biological_age.py  # Riesgo a edad
+│       │   └── s5_evaluation.py      # Evaluación
+│       ├── pipeline/
+│       │   ├── __init__.py
+│       │   ├── s1_download_bronze.py # Descarga
+│       │   ├── s2_build_raw_silver.py # Silver raw
+│       │   ├── s3_build_clean_silver.py # Silver clean
+│       │   ├── s4_build_gold.py      # Gold
+│       │   └── s5_build_model.py     # Modelo final
+│       └── utils/
+│           ├── __init__.py
+│           ├── data_download.py      # Descarga
+│           ├── features.py           # Features derivadas
+│           ├── nhanes.py             # Lectura de NHANES
+│           ├── notebook_helpers.py   # Apoyo a notebooks
+│           ├── phenoage.py           # Fórmula PhenoAge
+│           ├── provenance.py         # Origen del modelo
+│           ├── summary.py            # Resumen de capas
+│           └── validation.py         # Validación de Gold
+├── tests/                            # replica src/
 ├── .gitattributes                    # Saltos de línea
 ├── .gitignore                        # Archivos fuera de git
 ├── LICENSE                           # Licencia MIT

@@ -52,7 +52,7 @@ Lo que no encaje en esta descripción no va aquí. Librerías y versiones, coman
 
 ### Modelo
 - **Escalera de niveles anidados:** 0, baseline (Cox con edad y sexo, que equivale a decir que la edad biológica es la cronológica); 1, Base; 2, Base + Extras; 3, Base + Cuestionario; 4, todo. Cada salto mide solo lo que aporta el bloque nuevo y responde a una pregunta del producto.
-- **Los bloques responden a qué trae el usuario, no a cuánto predice cada variable:** Base es la analítica básica más edad, sexo e IMC; Extras, lo que se pide a menudo o es opcional; Cuestionario, los hábitos. Las listas y las variables descartadas, con su motivo, viven en `src/config/model_sets.py`.
+- **Los bloques responden a qué trae el usuario, no a cuánto predice cada variable:** Base es la analítica básica más edad, sexo e IMC; Extras, lo que se pide a menudo o es opcional; Cuestionario, los hábitos. Las listas y las variables descartadas, con su motivo, viven en `src/bioage/config/model_sets.py`.
 - **Cox simple en los cuatro niveles:** compitió en igualdad con Cox elastic net, random survival forest y XGBoost, y XGBoost optimizado con Optuna no llegó al listón fijado de antemano (+0,02 de C-index misma edad); no compensa perder la explicabilidad. Descartado: deep learning, más difícil de explicar y de desplegar en un plan gratuito.
 - **Split 80/20 estratificado por ciclo y muerte, y el test se mira una sola vez:** todas las decisiones se toman con validación cruzada de 5 bloques dentro de train. Descartado: separar por ciclos, dejaría un test con muy pocas muertes.
 - **Métrica principal: C-index de Uno dentro del mismo grupo de edad, a 10 años.** La edad sola ya ordena muy bien, así que es la que dice si la analítica aporta algo; un nivel mejora de verdad si el intervalo por bootstrap de la diferencia no incluye el 0.
@@ -80,7 +80,7 @@ Lo que no encaje en esta descripción no va aquí. Librerías y versiones, coman
 
 ## Trampas
 - **Reentrenar los modelos** (unos 6,5 minutos): hay que commitear antes el código. Por qué: cada modelo guarda el commit y lo marca como `-dirty` si `src/` tiene cambios sin commitear. Después, los modelos se commitean aparte.
-- **`src/models/s2_preprocessing` no se puede mover ni renombrar** sin reentrenar. Por qué: los modelos guardados apuntan a su ruta.
+- **`src/bioage/models/s2_preprocessing` no se puede mover ni renombrar** sin reentrenar, y el paquete `bioage` tampoco. Por qué: los modelos guardados apuntan a su ruta de import.
 - **Los modelos de `models/` no sirven para evaluar.** Por qué: están entrenados con toda Gold, test incluido.
-- **La referencia de edades de los tests** se rehace solo tras cambiar el modelo a propósito, con `write_reference` de `tests/test_models.py`, y se revisa el diff. Por qué: rehacerla tras un cambio involuntario escondería justo lo que el test tiene que detectar.
+- **La referencia de edades de los tests** se rehace solo tras cambiar el modelo a propósito, con `write_reference` de `tests/models/test_predict.py`, y se revisa el diff. Por qué: rehacerla tras un cambio involuntario escondería justo lo que el test tiene que detectar.
 - **Ejecutar un notebook desde la terminal:** siempre con `uv run jupyter nbconvert`. Por qué: el `jupyter` global arranca el Python global, que no tiene scikit-survival; antes hacía falta un `JUPYTER_PATH` porque `nbconvert` no estaba en el entorno.

@@ -22,3 +22,4 @@ Lo que no encaje en esta descripción no va aquí.
 
 ## Ideas y dudas
 - Mirar el histograma de la diferencia entre edad biológica y real del notebook de edad biológica.
+- Al desplegar: `ROOT` se calcula desde la ruta de `paths.py`, así que `models/` solo se encuentra si el hosting ejecuta desde el repo (instalación editable), no desde un paquete construido.
