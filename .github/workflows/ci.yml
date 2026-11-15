@@ -1,0 +1,28 @@
+# Checks on every push and pull request:
+#   - lint: ruff check and format, with the version of uv.lock
+#   - tests: only the app dependencies plus pytest, which proves they are enough to load the
+#     models and predict; without data/ (not in git) its tests are skipped, models/ is in git
+name: ci
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          enable-cache: true
+      - run: uv run --locked --only-group lint ruff check .
+      - run: uv run --locked --only-group lint ruff format --check .
+
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          enable-cache: true
+      - run: uv sync --locked --no-default-groups --group test
+      - run: uv run --no-sync pytest

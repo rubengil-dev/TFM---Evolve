@@ -1,0 +1,22 @@
+# Checks before every commit, with the tools of the project environment (versions in uv.lock):
+#   - ruff: lint with safe fixes, then format
+#   - pytest: the whole suite (tests that need data/ are skipped if it is missing)
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: ruff check
+        entry: uv run --no-sync ruff check --fix
+        language: system
+        types: [python]
+      - id: ruff-format
+        name: ruff format
+        entry: uv run --no-sync ruff format
+        language: system
+        types: [python]
+      - id: pytest
+        name: pytest
+        entry: uv run --no-sync pytest -q
+        language: system
+        pass_filenames: false
+        always_run: true

@@ -20,17 +20,20 @@ dependencies = [
 [dependency-groups]
 # Tests: what CI installs on top of the app dependencies
 test = ["pytest==9.2.0"]
+# Lint: what the CI lint job installs, without the project
+lint = ["ruff==0.17.5"]
 # Analysis: data pipeline, training and notebooks
 dev = [
     { include-group = "test" },
+    { include-group = "lint" },
     "ipykernel==7.4.0",
     "lifelines==0.30.3",
     "matplotlib==3.11.2",
     "nbconvert==7.17.2",
     "optuna==5.0.0",
+    "pre-commit==4.7.0",
     "pyarrow==26.0.0",
     "requests==2.34.2",
-    "ruff==0.17.5",
     "xgboost==3.2.0",
 ]
 
@@ -46,6 +49,7 @@ pythonpath = ["."]
 line-length = 120
 src = ["src"]
 extend-exclude = ["notebooks"]
+force-exclude = true  # pre-commit passes file names: exclusions must still apply
 
 [tool.ruff.format]
 # Config files are hand-aligned tables: the formatter would undo the columns
