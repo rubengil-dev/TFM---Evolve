@@ -23,6 +23,7 @@ REFERENCE_AGES = Path(__file__).parent / "reference_ages.json"
 TOLERANCE = 0.01  # years
 
 # Made-up people: every column of the full model; missing values on purpose
+# fmt: off
 PEOPLE = pd.DataFrame({
     # variable               healthy_young  typical_middle  unhealthy_old  partial_data   age_sex_only   older_than_79
     "age":                   [25,           45,             70,            60,            50,            85],
@@ -58,6 +59,7 @@ PEOPLE = pd.DataFrame({
     "sedentary_hours":       [5,            7,              11,            np.nan,        np.nan,        8],
     "sleep_hours":           [8,            7,              5,             np.nan,        np.nan,        7],
 }, index=["healthy_young", "typical_middle", "unhealthy_old", "partial_data", "age_sex_only", "older_than_79"])
+# fmt: on
 
 
 @pytest.mark.parametrize("level", LEVEL_COLUMNS)
@@ -82,7 +84,9 @@ def test_prediction_without_training_libraries():
 def write_reference():
     """Current biological age of each made-up person and level → REFERENCE_AGES."""
     reference = {
-        level: {person: round(float(age), 4) for person, age in zip(PEOPLE.index, predict_age(load_bundle(level), PEOPLE))}
+        level: {
+            person: round(float(age), 4) for person, age in zip(PEOPLE.index, predict_age(load_bundle(level), PEOPLE))
+        }
         for level in LEVEL_COLUMNS
     }
     REFERENCE_AGES.write_text(json.dumps(reference, indent=4) + "\n", newline="\n")

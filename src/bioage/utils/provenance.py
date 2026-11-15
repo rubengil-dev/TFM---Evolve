@@ -1,7 +1,6 @@
-"""
-Where a saved model comes from:
-    - Fingerprint of the data it was trained on
-    - Git commit of the code that trained it
+"""Where a saved model comes from:
+- Fingerprint of the data it was trained on
+- Git commit of the code that trained it
 """
 
 # Imports

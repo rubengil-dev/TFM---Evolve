@@ -1,8 +1,7 @@
-"""
-Gold validation before saving:
-    - Blocking (error → Gold not saved): structure, size, coverage, required columns, outcome,
-      population, answers and plausible ranges
-    - Warning only: consistency between variables
+"""Gold validation before saving:
+- Blocking (error → Gold not saved): structure, size, coverage, required columns, outcome,
+population, answers and plausible ranges
+- Warning only: consistency between variables
 """
 
 # Imports
@@ -13,8 +12,16 @@ from bioage.config.plausible_ranges import PLAUSIBLE_RANGES
 from bioage.config.sources import CYCLES
 from bioage.config.study import AGE_MAX, AGE_MIN, CATEGORICAL_LEVELS, FOLLOW_UP_MIN
 from bioage.config.validation_rules import (
-    BMI_TOLERANCE, LOWER_THAN, MAX_FOLLOW_UP, MIN_COVERAGE, MIN_COVERAGE_PARTIAL, MIN_DEATHS,
-    MIN_PERSONS, MIN_PERSONS_PER_CYCLE, PARTIAL_COVERAGE, REQUIRED,
+    BMI_TOLERANCE,
+    LOWER_THAN,
+    MAX_FOLLOW_UP,
+    MIN_COVERAGE,
+    MIN_COVERAGE_PARTIAL,
+    MIN_DEATHS,
+    MIN_PERSONS,
+    MIN_PERSONS_PER_CYCLE,
+    PARTIAL_COVERAGE,
+    REQUIRED,
 )
 from bioage.utils.nhanes import cycle_label
 
@@ -24,8 +31,13 @@ def validate_gold(gold):
     errors = check_structure(gold)
     if not errors:
         errors = (
-            check_size(gold) + check_coverage(gold) + check_required(gold) + check_outcome(gold)
-            + check_population(gold) + check_categories(gold) + check_ranges(gold)
+            check_size(gold)
+            + check_coverage(gold)
+            + check_required(gold)
+            + check_outcome(gold)
+            + check_population(gold)
+            + check_categories(gold)
+            + check_ranges(gold)
         )
     warnings = [] if errors else check_consistency(gold)
     print_report(errors, warnings)
@@ -82,7 +94,7 @@ def check_required(gold):
 
 
 def check_outcome(gold):
-    """death only 0 / 1; follow-up between FOLLOW_UP_MIN and MAX_FOLLOW_UP; survey weight > 0."""
+    """Death only 0 / 1; follow-up between FOLLOW_UP_MIN and MAX_FOLLOW_UP; survey weight > 0."""
     errors = []
     if not gold["death"].isin([0, 1]).all():
         errors.append("death: values other than 0 / 1")

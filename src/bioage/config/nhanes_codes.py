@@ -1,5 +1,4 @@
-"""
-NHANES questionnaire answer codes, from the codebooks.
+"""NHANES questionnaire answer codes, from the codebooks.
 """
 
 # Alcohol frequency

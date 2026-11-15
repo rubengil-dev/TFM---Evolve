@@ -1,8 +1,7 @@
-"""
-External data sources:
-    - URLs and files to download per cycle
-    - Mortality file layout
-    - Download settings
+"""External data sources:
+- URLs and files to download per cycle
+- Mortality file layout
+- Download settings
 """
 
 # NHANES cycles (start years)

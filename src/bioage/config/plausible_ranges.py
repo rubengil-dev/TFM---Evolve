@@ -1,11 +1,10 @@
-"""
-Plausible range of each numeric variable, in Gold units:
-    - Context: an adult who walks in for a scheduled test (NHANES exam, app user at home)
-    - Outside the limits → vital emergency or measurement artifact, not a real everyday value
-    - Extreme values from a known disease (diabetes, dialysis, iron deficiency…) stay inside
-    - Silver clean blanks values outside; Gold validation checks none is left
-    - App: a value outside → no biological age, warning to see a doctor right away
-    - Outlier clipping is part of the model preprocessing, not this table
+"""Plausible range of each numeric variable, in Gold units:
+- Context: an adult who walks in for a scheduled test (NHANES exam, app user at home)
+- Outside the limits → vital emergency or measurement artifact, not a real everyday value
+- Extreme values from a known disease (diabetes, dialysis, iron deficiency…) stay inside
+- Silver clean blanks values outside; Gold validation checks none is left
+- App: a value outside → no biological age, warning to see a doctor right away
+- Outlier clipping is part of the model preprocessing, not this table
 """
 
 PLAUSIBLE_RANGES = {

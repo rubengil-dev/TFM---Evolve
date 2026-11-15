@@ -1,10 +1,9 @@
-"""
-Gold step, the only table the model and the app read (one row per person):
-    - Derived features (utils/features.py)
-    - Columns: identification, outcome, candidate predictors (config/column_roles.py) and derived features
-    - Follow-up of 0 months → FOLLOW_UP_MIN
-    - Validation (utils/validation.py): any error → not saved
-    - Saved to data/03_gold/gold.parquet
+"""Gold step, the only table the model and the app read (one row per person):
+- Derived features (utils/features.py)
+- Columns: identification, outcome, candidate predictors (config/column_roles.py) and derived features
+- Follow-up of 0 months → FOLLOW_UP_MIN
+- Validation (utils/validation.py): any error → not saved
+- Saved to data/03_gold/gold.parquet
 """
 
 # Imports
@@ -21,10 +20,13 @@ from bioage.utils.validation import validate_gold
 def run():
     """Gold step, called from main."""
     clean = pd.read_parquet(SILVER_CLEAN)
-    gold = pd.concat([
-        clean[ID_COLUMNS + OUTCOME_COLUMNS + SILVER_PREDICTORS],
-        derived_features(clean),
-    ], axis=1)
+    gold = pd.concat(
+        [
+            clean[ID_COLUMNS + OUTCOME_COLUMNS + SILVER_PREDICTORS],
+            derived_features(clean),
+        ],
+        axis=1,
+    )
     gold = fix_zero_follow_up(gold)
     validate_gold(gold)
 

@@ -1,12 +1,11 @@
-"""
-Builds derived features from lab values and measures:
-    - Inflammation: NLR, PLR, SII
-    - Lipids: non-HDL cholesterol, TG/HDL
-    - Liver and proteins: AST/ALT, globulin, albumin/globulin
-    - Kidney: urea/creatinine, eGFR (CKD-EPI 2021)
-    - Glucose: HOMA-IR
-    - Blood pressure: pulse pressure
-    - Age groups, for the preprocessing and the evaluation
+"""Builds derived features from lab values and measures:
+- Inflammation: NLR, PLR, SII
+- Lipids: non-HDL cholesterol, TG/HDL
+- Liver and proteins: AST/ALT, globulin, albumin/globulin
+- Kidney: urea/creatinine, eGFR (CKD-EPI 2021)
+- Glucose: HOMA-IR
+- Blood pressure: pulse pressure
+- Age groups, for the preprocessing and the evaluation
 """
 
 # Imports
@@ -17,10 +16,10 @@ from bioage.config.study import AGE_GROUP_EDGES
 
 
 def derived_features(data):
+    """Every derived feature from Silver clean columns:
+    - Any input missing → output missing
     """
-    Every derived feature from Silver clean columns:
-        - Any input missing → output missing
-    """
+    # fmt: off
     return pd.DataFrame({
         "nlr":               data["neutrophils"] / data["lymphocytes"],
         "plr":               data["platelets"] / data["lymphocytes"],
@@ -35,19 +34,19 @@ def derived_features(data):
         "homa_ir":           data["glucose"] * data["insulin"] / 405,
         "pulse_pressure":    data["systolic_bp"] - data["diastolic_bp"],
     }, index=data.index)
+    # fmt: on
 
 
 def egfr_ckd_epi_2021(creatinine, age, sex):
-    """
-    Glomerular filtration rate (mL/min/1.73 m2), CKD-EPI 2021 without race:
-        - 142 × min(Scr/κ, 1)^α × max(Scr/κ, 1)^-1.200 × 0.9938^age × 1.012 (female)
-        - Sex missing (not male or female) → missing
+    """Glomerular filtration rate (mL/min/1.73 m2), CKD-EPI 2021 without race:
+    - 142 × min(Scr/κ, 1)^α × max(Scr/κ, 1)^-1.200 × 0.9938^age × 1.012 (female)
+    - Sex missing (not male or female) → missing
     """
     female = sex == "female"
     kappa = np.where(female, 0.7, 0.9)
     alpha = np.where(female, -0.241, -0.302)
     ratio = creatinine / kappa
-    egfr = 142 * np.minimum(ratio, 1) ** alpha * np.maximum(ratio, 1) ** -1.200 * 0.9938 ** age
+    egfr = 142 * np.minimum(ratio, 1) ** alpha * np.maximum(ratio, 1) ** -1.200 * 0.9938**age
     return (egfr * np.where(female, 1.012, 1)).where(sex.isin(["male", "female"]))
 
 

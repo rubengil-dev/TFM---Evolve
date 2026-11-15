@@ -1,10 +1,9 @@
-"""
-CDC correction equations for laboratory method changes:
-    - One row per equation, applied to the cycles between the first and the last start year
-    - Rows of the same variable and cycle chain in order: each one takes the previous result
-    - Equation: slope * x + intercept + square * x², written on its scale (x = value, log10 or √value)
-    - Original values: (low, high) of the uncorrected value the row applies to, both included (None = no limit)
-    - Minimum: lowest corrected value allowed (None = no minimum)
+"""CDC correction equations for laboratory method changes:
+- One row per equation, applied to the cycles between the first and the last start year
+- Rows of the same variable and cycle chain in order: each one takes the previous result
+- Equation: slope * x + intercept + square * x², written on its scale (x = value, log10 or √value)
+- Original values: (low, high) of the uncorrected value the row applies to, both included (None = no limit)
+- Minimum: lowest corrected value allowed (None = no minimum)
 """
 
 CORRECTIONS = [

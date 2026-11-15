@@ -1,6 +1,5 @@
-"""
-Step 2, preprocessing pipeline, fitted only on train and reused by the app:
-    - Clip extremes → fill gaps → log, scale and encode → squared terms
+"""Step 2, preprocessing pipeline, fitted only on train and reused by the app:
+- Clip extremes → fill gaps → log, scale and encode → squared terms
 """
 
 # Imports
@@ -19,10 +18,12 @@ def build_preprocessor(columns):
     categorical = [column for column in columns if column in CATEGORICAL_LEVELS]
     numeric = [column for column in columns if column not in CATEGORICAL_LEVELS]
 
-    numeric_steps = Pipeline([
-        ("log", FunctionTransformer(log_skewed, feature_names_out="one-to-one")),
-        ("scale", StandardScaler()),
-    ])
+    numeric_steps = Pipeline(
+        [
+            ("log", FunctionTransformer(log_skewed, feature_names_out="one-to-one")),
+            ("scale", StandardScaler()),
+        ]
+    )
     encoder = OneHotEncoder(
         categories=[CATEGORICAL_LEVELS[column] for column in categorical],
         drop="first",
@@ -33,12 +34,14 @@ def build_preprocessor(columns):
         verbose_feature_names_out=False,
     ).set_output(transform="pandas")
 
-    return Pipeline([
-        ("clip", QuantileClipper(numeric)),
-        ("fill_gaps", GroupImputer(columns)),
-        ("features", features),
-        ("squares", FunctionTransformer(add_squares)),
-    ])
+    return Pipeline(
+        [
+            ("clip", QuantileClipper(numeric)),
+            ("fill_gaps", GroupImputer(columns)),
+            ("features", features),
+            ("squares", FunctionTransformer(add_squares)),
+        ]
+    )
 
 
 class QuantileClipper(BaseEstimator, TransformerMixin):
@@ -57,10 +60,9 @@ class QuantileClipper(BaseEstimator, TransformerMixin):
 
 
 class GroupImputer(BaseEstimator, TransformerMixin):
-    """
-    Fills gaps with the value of the person's sex and age group in train:
-        - Median for numeric columns, most frequent answer for categorical ones
-        - Overall value for groups without data
+    """Fills gaps with the value of the person's sex and age group in train:
+    - Median for numeric columns, most frequent answer for categorical ones
+    - Overall value for groups without data
     """
 
     def __init__(self, columns):
@@ -110,4 +112,6 @@ def log_skewed(numeric):
 
 def add_squares(features):
     """Squares of the scaled U-shaped variables present in the data."""
-    return features.assign(**{f"{column}_squared": features[column] ** 2 for column in SQUARED_VARIABLES if column in features})
+    return features.assign(
+        **{f"{column}_squared": features[column] ** 2 for column in SQUARED_VARIABLES if column in features}
+    )

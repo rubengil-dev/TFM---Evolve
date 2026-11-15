@@ -1,27 +1,31 @@
-"""
-Silver clean step, the study population with clean variables and readable names:
-    - Population: exam done, not pregnant and at least one lab value
-    - CDC corrections for laboratory method changes (CORRECTIONS)
-    - Variables:
-        - Kept as they are, renamed (CLEAN_NAMES)
-        - Same test from two files → one column (cholesterol, triglycerides, CRP)
-        - Spanish lab units (urea, urine albumin/creatinine ratio, vitamin D)
-        - Triglycerides only with fasting ≥ FASTING_HOURS_MIN
-        - Blood pressure: mean of readings
-        - Questionnaires → form answers (skipped questions: never drinkers, never smokers)
-        - Exam survey weight for the 10 cycles combined
-    - Values outside PLAUSIBLE_RANGES (data or unit errors) → missing
-    - Saved to data/02_silver/silver_clean.parquet
+"""Silver clean step, the study population with clean variables and readable names:
+- Population: exam done, not pregnant and at least one lab value
+- CDC corrections for laboratory method changes (CORRECTIONS)
+- Variables:
+- Kept as they are, renamed (CLEAN_NAMES)
+- Same test from two files → one column (cholesterol, triglycerides, CRP)
+- Spanish lab units (urea, urine albumin/creatinine ratio, vitamin D)
+- Triglycerides only with fasting ≥ FASTING_HOURS_MIN
+- Blood pressure: mean of readings
+- Questionnaires → form answers (skipped questions: never drinkers, never smokers)
+- Exam survey weight for the 10 cycles combined
+- Values outside PLAUSIBLE_RANGES (data or unit errors) → missing
+- Saved to data/02_silver/silver_clean.parquet
 """
 
 # Imports
 import numpy as np
 import pandas as pd
 
-from bioage.config.nhanes_codes import (
-    ALCOHOL_DAYS_2017, ALCOHOL_UNIT_DAYS, LIFETIME_100_PLUS, MISSING_CODES, MORE_THAN_21_MEALS, NEVER_WHOLE_CIGARETTE,
-)
 from bioage.config.corrections import CORRECTIONS
+from bioage.config.nhanes_codes import (
+    ALCOHOL_DAYS_2017,
+    ALCOHOL_UNIT_DAYS,
+    LIFETIME_100_PLUS,
+    MISSING_CODES,
+    MORE_THAN_21_MEALS,
+    NEVER_WHOLE_CIGARETTE,
+)
 from bioage.config.paths import SILVER_CLEAN, SILVER_RAW
 from bioage.config.plausible_ranges import PLAUSIBLE_RANGES
 from bioage.config.renames import CLEAN_NAMES
@@ -38,14 +42,17 @@ def run():
     raw = apply_corrections(raw)
     raw = remove_missing_codes(raw)
 
-    clean = pd.concat([
-        kept_variables(raw),
-        sex(raw),
-        survey_weights(raw),
-        lab_derived(raw),
-        blood_pressure(raw),
-        questionnaire(raw),
-    ], axis=1)
+    clean = pd.concat(
+        [
+            kept_variables(raw),
+            sex(raw),
+            survey_weights(raw),
+            lab_derived(raw),
+            blood_pressure(raw),
+            questionnaire(raw),
+        ],
+        axis=1,
+    )
     clean = vitamin_d_to_ng_ml(clean)
     clean = remove_implausible_values(clean)
 
@@ -61,10 +68,9 @@ def filter_population(raw):
 
 
 def apply_corrections(raw):
-    """
-    CDC equations (CORRECTIONS) applied in order:
-        - Same variable and cycle: each equation takes the previous result
-        - Limits of each row checked on the original value
+    """CDC equations (CORRECTIONS) applied in order:
+    - Same variable and cycle: each equation takes the previous result
+    - Limits of each row checked on the original value
     """
     original = raw[list(dict.fromkeys(row[0] for row in CORRECTIONS))].copy()
     for variable, cycles, scale, slope, intercept, square, limits, minimum in CORRECTIONS:
@@ -90,7 +96,7 @@ def within(values, limits):
 def corrected(value, scale, slope, intercept, square, minimum):
     """One CDC equation on its scale, back to the original units and not below minimum."""
     x = to_scale(value, scale)
-    result = from_scale(slope * x + intercept + square * x ** 2, scale)
+    result = from_scale(slope * x + intercept + square * x**2, scale)
     return result if minimum is None else result.clip(lower=minimum)
 
 
@@ -106,9 +112,9 @@ def to_scale(value, scale):
 def from_scale(value, scale):
     """Scale of the equation → original units."""
     if scale == "log10":
-        return 10 ** value
+        return 10**value
     if scale == "sqrt":
-        return value ** 2
+        return value**2
     return value
 
 
@@ -127,15 +133,14 @@ def kept_variables(raw):
 
 
 def sex(raw):
-    """male / female."""
+    """Male / female."""
     return raw["RIAGENDR"].map({1: "male", 2: "female"}).rename("sex")
 
 
 def survey_weights(raw):
-    """
-    Exam weight for the cycles combined (CDC rule):
-        - 1999-2002: 4-year weight × 2 / number of cycles
-        - 2003-2018: 2-year weight × 1 / number of cycles
+    """Exam weight for the cycles combined (CDC rule):
+    - 1999-2002: 4-year weight × 2 / number of cycles
+    - 2003-2018: 2-year weight × 1 / number of cycles
     """
     early = raw["cycle"].isin([cycle_label(1999), cycle_label(2001)])
     weight = np.where(early, raw["WTMEC4YR"] * 2, raw["WTMEC2YR"]) / len(CYCLES)
@@ -143,16 +148,16 @@ def survey_weights(raw):
 
 
 def lab_derived(raw):
-    """
-    Lab variables built from NHANES ones:
-        - Total cholesterol: lipid file, biochemistry profile if missing
-        - Urea = BUN × 2.14
-        - CRP (mg/L): standard until 2010 (mg/dL × 10), high sensitivity from 2015
-        - Triglycerides: lipid file, biochemistry profile if missing; only if fasting ≥ FASTING_HOURS_MIN
-        - Urine albumin/creatinine ratio (mg/g)
+    """Lab variables built from NHANES ones:
+    - Total cholesterol: lipid file, biochemistry profile if missing
+    - Urea = BUN × 2.14
+    - CRP (mg/L): standard until 2010 (mg/dL × 10), high sensitivity from 2015
+    - Triglycerides: lipid file, biochemistry profile if missing; only if fasting ≥ FASTING_HOURS_MIN
+    - Urine albumin/creatinine ratio (mg/g)
     """
     fasting_hours = raw["PHAFSTHR"] + raw["PHAFSTMN"] / 60
     fasted = fasting_hours >= FASTING_HOURS_MIN
+    # fmt: off
     return pd.DataFrame({
         "total_cholesterol": raw["LBXTC"].fillna(raw["LBXSCH"]),
         "urea":              raw["LBXSBU"] * 2.14,
@@ -160,21 +165,25 @@ def lab_derived(raw):
         "triglycerides":     raw["LBXTR"].fillna(raw["LBXSTR"]).where(fasted),
         "urine_acr":         raw["URXUMA"] / raw["URXUCR"] * 100,
     }, index=raw.index)
+    # fmt: on
 
 
 def blood_pressure(raw):
     """Mean of available readings (up to 4). Diastolic 0 (not measurable) → missing."""
     systolic = raw[["BPXSY1", "BPXSY2", "BPXSY3", "BPXSY4"]]
     diastolic = raw[["BPXDI1", "BPXDI2", "BPXDI3", "BPXDI4"]].replace(0, np.nan)
+    # fmt: off
     return pd.DataFrame({
         "systolic_bp":  systolic.mean(axis=1),
         "diastolic_bp": diastolic.mean(axis=1),
     }, index=raw.index)
+    # fmt: on
 
 
 def questionnaire(raw):
     """Questionnaires → form answers."""
     frequency, drinks = alcohol(raw)
+    # fmt: off
     return pd.DataFrame({
         "smoking":           smoking(raw),
         "alcohol_frequency": frequency,
@@ -184,13 +193,13 @@ def questionnaire(raw):
         "fast_food_meals":   raw["DBD900"].replace(MORE_THAN_21_MEALS, 22),
         "sleep_hours":       raw["SLD012"].fillna(raw["SLD010H"]),
     }, index=raw.index)
+    # fmt: on
 
 
 def smoking(raw):
-    """
-    never (< 100 cigarettes in life) / former / current:
-        - Adult questions (SMQ020, SMQ040)
-        - Youth questions for 18-19 year olds until 2012 (youth_smoking)
+    """Never (< 100 cigarettes in life) / former / current:
+    - Adult questions (SMQ020, SMQ040)
+    - Youth questions for 18-19 year olds until 2012 (youth_smoking)
     """
     ever = raw["SMQ020"]
     now = raw["SMQ040"]
@@ -199,11 +208,10 @@ def smoking(raw):
 
 
 def youth_smoking(raw):
-    """
-    Youth questions → adult answers:
-        - 2011-2012: cigarettes in life (SMQ621); 100 or more → current if smoked in the past 30 days, else former
-        - Until 2010: never tried (SMQ620) or never a whole cigarette (SMD630) → never;
-          smoked on ≥ YOUTH_CURRENT_SMOKER_DAYS of the past 30 (SMQ640, SMD641) → current; fewer → never
+    """Youth questions → adult answers:
+    - 2011-2012: cigarettes in life (SMQ621); 100 or more → current if smoked in the past 30 days, else former
+    - Until 2010: never tried (SMQ620) or never a whole cigarette (SMD630) → never;
+      smoked on ≥ YOUTH_CURRENT_SMOKER_DAYS of the past 30 (SMQ640, SMD641) → current; fewer → never
     """
     lifetime = raw["SMQ621"]
     days = raw["SMQ640"].fillna(raw["SMD641"])
@@ -226,11 +234,10 @@ def youth_smoking(raw):
 
 
 def alcohol(raw):
-    """
-    Drinking frequency (ALCOHOL_FREQUENCY answers) and drinks per drinking day:
-        - Until 2016: quantity × unit (ALQ120Q/U); lifetime abstainers (ALQ110 = 2) → never
-        - 2017: ALQ121 answer; never had a drink (ALQ111 = 2) → never
-        - Never → 0 drinks
+    """Drinking frequency (ALCOHOL_FREQUENCY answers) and drinks per drinking day:
+    - Until 2016: quantity × unit (ALQ120Q/U); lifetime abstainers (ALQ110 = 2) → never
+    - 2017: ALQ121 answer; never had a drink (ALQ111 = 2) → never
+    - Never → 0 drinks
     """
     quantity = raw["ALQ120Q"]
     days = (quantity * raw["ALQ120U"].map(ALCOHOL_UNIT_DAYS)).mask(quantity == 0, 0)
@@ -246,11 +253,10 @@ def alcohol(raw):
 
 
 def physical_activity(raw):
-    """
-    sedentary / moderate / intense:
-        - Until 2006: vigorous or moderate activity in the past 30 days (PAD200, PAD320)
-        - From 2007: vigorous or moderate recreational activity (PAQ650, PAQ665)
-        - "Unable to do activity" (3) → no
+    """Sedentary / moderate / intense:
+    - Until 2006: vigorous or moderate activity in the past 30 days (PAD200, PAD320)
+    - From 2007: vigorous or moderate recreational activity (PAQ650, PAQ665)
+    - "Unable to do activity" (3) → no
     """
     vigorous = raw["PAD200"].fillna(raw["PAQ650"])
     moderate = raw["PAD320"].fillna(raw["PAQ665"])

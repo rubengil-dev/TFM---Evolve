@@ -1,5 +1,4 @@
-"""
-Gold validation thresholds (plausible ranges in config/plausible_ranges.py, answers in config/study.py).
+"""Gold validation thresholds (plausible ranges in config/plausible_ranges.py, answers in config/study.py).
 """
 
 # Size

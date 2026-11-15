@@ -1,6 +1,4 @@
-"""
-Summary printed after saving a data layer.
-"""
+"""Summary printed after saving a data layer."""
 
 
 def print_layer_summary(table, path):

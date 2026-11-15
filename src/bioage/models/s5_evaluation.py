@@ -1,11 +1,10 @@
-"""
-Step 5, evaluation at 10 years, out of training:
-    - evaluate_level: summary of every model of a level
-    - compare_risks: whether one model really beats another
-    - bootstrap_c_indexes, confidence_interval: C-index of several models with its interval
-    - calibration_in_years: calibration gap told in years of biological age
-    - plot_calibration: predicted against observed risk
-    - tune_model: best settings of a model
+"""Step 5, evaluation at 10 years, out of training:
+- evaluate_level: summary of every model of a level
+- compare_risks: whether one model really beats another
+- bootstrap_c_indexes, confidence_interval: C-index of several models with its interval
+- calibration_in_years: calibration gap told in years of biological age
+- plot_calibration: predicted against observed risk
+- tune_model: best settings of a model
 """
 
 # Imports
@@ -36,11 +35,10 @@ YEARS_SEARCHED = 50  # largest shift tried when telling a calibration gap in yea
 
 
 def evaluate_level(columns, train, folds, models=MODELS, settings=None):
-    """
-    Every model of a level, cross-validated:
-        - settings: tuned values of each model, if any
-        - summary: one row per model
-        - details: each model's risk, groups and calibration
+    """Every model of a level, cross-validated:
+    - settings: tuned values of each model, if any
+    - summary: one row per model
+    - details: each model's risk, groups and calibration
     """
     settings = settings or {}
     details = {name: cross_validate(name, columns, train, folds, settings.get(name)) for name in models}
@@ -58,11 +56,13 @@ def cross_validate(name, columns, train, folds, settings=None):
         pipeline = build_pipeline(name, columns, settings).fit(fit, survival_target(fit))
         seconds = time.time() - start
         risk.loc[validation.index] = risk_at_horizon(pipeline, validation)
-        rows.append({
-            "c_index": c_index(risk.loc[validation.index], validation, fit),
-            "c_index_fit": c_index(risk_at_horizon(pipeline, fit), fit, fit),
-            "seconds": seconds,
-        })
+        rows.append(
+            {
+                "c_index": c_index(risk.loc[validation.index], validation, fit),
+                "c_index_fit": c_index(risk_at_horizon(pipeline, fit), fit, fit),
+                "seconds": seconds,
+            }
+        )
     return {
         "folds": pd.DataFrame(rows),
         "risk": risk,
@@ -99,10 +99,12 @@ def same_age_c_index(by_age):
 def calibration_table(risk, data):
     """Predicted and observed risk of each risk group; gap above 0 = risk underestimated."""
     groups = pd.qcut(risk, CALIBRATION_GROUPS, labels=False, duplicates="drop")
-    table = pd.DataFrame({
-        "predicted": risk.groupby(groups).mean(),
-        "observed": data.groupby(groups).apply(observed_risk, include_groups=False),
-    })
+    table = pd.DataFrame(
+        {
+            "predicted": risk.groupby(groups).mean(),
+            "observed": data.groupby(groups).apply(observed_risk, include_groups=False),
+        }
+    )
     table["gap"] = table["observed"] - table["predicted"]
     return table
 
@@ -116,6 +118,7 @@ def observed_risk(data):
 def summarize(detail):
     """One row of the level summary."""
     folds, calibration = detail["folds"], detail["calibration"]
+    # fmt: off
     return {
         "c_index":             folds["c_index"].mean(),
         "c_index_std":         folds["c_index"].std(),
@@ -127,24 +130,23 @@ def summarize(detail):
         "worst_underestimate": calibration["gap"].max(),
         "seconds_per_fit":     folds["seconds"].mean(),
     }
+    # fmt: on
 
 
 def compare_risks(risk_new, risk_old, data, samples=BOOTSTRAP_SAMPLES):
-    """
-    Improvement of one risk over another, resampling the same people for both:
-        - Difference in C-index, overall and within age group, with 95% interval
-        - The improvement is real if the interval excludes 0
+    """Improvement of one risk over another, resampling the same people for both:
+    - Difference in C-index, overall and within age group, with 95% interval
+    - The improvement is real if the interval excludes 0
     """
     values = bootstrap_c_indexes({"new": risk_new, "old": risk_old}, data, samples)
     return confidence_interval(values["new"] - values["old"]).rename(columns={"value": "difference"})
 
 
 def bootstrap_c_indexes(risks, data, samples=BOOTSTRAP_SAMPLES):
-    """
-    C-index of several models on the same resampled people:
-        - risks: model name → risk of each person in data
-        - One row per sample; columns (model, 'c_index' / 'c_index_same_age')
-        - Differences between columns give the interval of an improvement
+    """C-index of several models on the same resampled people:
+    - risks: model name → risk of each person in data
+    - One row per sample; columns (model, 'c_index' / 'c_index_same_age')
+    - Differences between columns give the interval of an improvement
     """
     rng = np.random.default_rng(SPLIT_SEED)
     rows = []
@@ -165,25 +167,28 @@ def bootstrap_c_indexes(risks, data, samples=BOOTSTRAP_SAMPLES):
 
 def confidence_interval(values):
     """Mean and 95% interval of each column of bootstrap values."""
-    return pd.DataFrame({
-        "value": values.mean(),
-        "low": values.quantile(0.025),
-        "high": values.quantile(0.975),
-    }).round(4)
+    return pd.DataFrame(
+        {
+            "value": values.mean(),
+            "low": values.quantile(0.025),
+            "high": values.quantile(0.975),
+        }
+    ).round(4)
 
 
 def calibration_in_years(risk, age, data, reference):
-    """
-    Calibration table with each gap told in years:
-        - age: biological age of each person from this risk
-        - years: shift of the group's biological ages that makes its predicted risk match the observed one
-        - years above 0 = biological age underestimated
+    """Calibration table with each gap told in years:
+    - age: biological age of each person from this risk
+    - years: shift of the group's biological ages that makes its predicted risk match the observed one
+    - years above 0 = biological age underestimated
     """
     table = calibration_table(risk, data)
     groups = pd.qcut(risk, CALIBRATION_GROUPS, labels=False, duplicates="drop")
     table["age"] = pd.Series(np.asarray(age), index=data.index).groupby(groups).mean()
     table["years"] = [
-        years_to_observed(np.asarray(age)[np.asarray(groups == group)], data.loc[groups == group, "sex"], observed, reference)
+        years_to_observed(
+            np.asarray(age)[np.asarray(groups == group)], data.loc[groups == group, "sex"], observed, reference
+        )
         for group, observed in table["observed"].items()
     ]
     return table
@@ -201,7 +206,9 @@ def tune_model(name, columns, train, folds, trials=TUNING_TRIALS):
     """Settings with the best same-age C-index, searched with Optuna."""
     optuna.logging.set_verbosity(optuna.logging.WARNING)
     study = optuna.create_study(direction="maximize", sampler=optuna.samplers.TPESampler(seed=SPLIT_SEED))
-    study.optimize(lambda trial: same_age_score(name, columns, train, folds, suggest_settings(trial, name)), n_trials=trials)
+    study.optimize(
+        lambda trial: same_age_score(name, columns, train, folds, suggest_settings(trial, name)), n_trials=trials
+    )
     return suggest_settings(optuna.trial.FixedTrial(study.best_params), name)
 
 
@@ -223,7 +230,9 @@ def same_age_score(name, columns, train, folds, settings):
 
 def plot_calibration(details):
     """One panel per model: predicted against observed risk, diagonal = perfect."""
-    figure, axes = plt.subplots(1, len(details), figsize=(3.2 * len(details), 3.4), sharex=True, sharey=True, squeeze=False)
+    figure, axes = plt.subplots(
+        1, len(details), figsize=(3.2 * len(details), 3.4), sharex=True, sharey=True, squeeze=False
+    )
     for axis, (name, detail) in zip(axes[0], details.items()):
         table = detail["calibration"]
         limit = max(table["predicted"].max(), table["observed"].max()) * 1.05

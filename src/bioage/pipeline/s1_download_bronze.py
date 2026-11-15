@@ -1,9 +1,8 @@
-"""
-Bronze step, source files downloaded unchanged (only those not on disk yet):
-    - NHANES 1999-2018: participant data (.xpt) and codebook (.htm/.pdf) per dataset and cycle
-    - NCHS linked mortality (follow-up to 2019): one .dat per cycle
-    - Saved to data/01_bronze/<cycle>/ with their original names
-    - manifest.csv: file, URL, size and download date
+"""Bronze step, source files downloaded unchanged (only those not on disk yet):
+- NHANES 1999-2018: participant data (.xpt) and codebook (.htm/.pdf) per dataset and cycle
+- NCHS linked mortality (follow-up to 2019): one .dat per cycle
+- Saved to data/01_bronze/<cycle>/ with their original names
+- manifest.csv: file, URL, size and download date
 """
 
 # Imports
@@ -11,7 +10,7 @@ import csv
 from datetime import datetime
 
 from bioage.config.paths import BRONZE, BRONZE_MANIFEST
-from bioage.config.sources import CYCLES, DATASETS, PDF_DOCS, NHANES_URL, MORTALITY_FILE, MORTALITY_URL
+from bioage.config.sources import CYCLES, DATASETS, MORTALITY_FILE, MORTALITY_URL, NHANES_URL, PDF_DOCS
 from bioage.utils.data_download import download
 from bioage.utils.nhanes import cycle_label
 
@@ -36,21 +35,25 @@ def build_jobs():
                 continue
             doc_ext = "pdf" if name in PDF_DOCS else "htm"
             for ext in ("xpt", doc_ext):
-                jobs.append({
-                    "dataset": dataset,
-                    "cycle": cycle_label(year),
-                    "url": NHANES_URL.format(year=year, name=name, ext=ext),
-                    "dest": BRONZE / cycle_label(year) / f"{name}.{ext}",
-                })
+                jobs.append(
+                    {
+                        "dataset": dataset,
+                        "cycle": cycle_label(year),
+                        "url": NHANES_URL.format(year=year, name=name, ext=ext),
+                        "dest": BRONZE / cycle_label(year) / f"{name}.{ext}",
+                    }
+                )
 
     # Mortality
     for year in CYCLES:
-        jobs.append({
-            "dataset": "MORT",
-            "cycle": cycle_label(year),
-            "url": MORTALITY_URL.format(cycle=cycle_label(year)),
-            "dest": BRONZE / cycle_label(year) / MORTALITY_FILE.format(cycle=cycle_label(year)),
-        })
+        jobs.append(
+            {
+                "dataset": "MORT",
+                "cycle": cycle_label(year),
+                "url": MORTALITY_URL.format(cycle=cycle_label(year)),
+                "dest": BRONZE / cycle_label(year) / MORTALITY_FILE.format(cycle=cycle_label(year)),
+            }
+        )
 
     return jobs
 
@@ -80,14 +83,16 @@ def write_manifest(jobs):
             if not dest.exists():
                 continue
             stat = dest.stat()
-            writer.writerow([
-                job["dataset"],
-                job["cycle"],
-                dest.relative_to(BRONZE).as_posix(),
-                job["url"],
-                stat.st_size,
-                datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d %H:%M"),
-            ])
+            writer.writerow(
+                [
+                    job["dataset"],
+                    job["cycle"],
+                    dest.relative_to(BRONZE).as_posix(),
+                    job["url"],
+                    stat.st_size,
+                    datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d %H:%M"),
+                ]
+            )
 
 
 def print_summary(jobs, failed):

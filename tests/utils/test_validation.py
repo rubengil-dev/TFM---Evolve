@@ -13,8 +13,14 @@ from bioage.utils import validation
 def test_valid_gold_passes_every_check_but_size(made_up_gold):
     """No error or warning on valid data; too few people for check_size."""
     checks = [
-        validation.check_structure, validation.check_coverage, validation.check_required, validation.check_outcome,
-        validation.check_population, validation.check_categories, validation.check_ranges, validation.check_consistency,
+        validation.check_structure,
+        validation.check_coverage,
+        validation.check_required,
+        validation.check_outcome,
+        validation.check_population,
+        validation.check_categories,
+        validation.check_ranges,
+        validation.check_consistency,
     ]
     assert {check.__name__: check(made_up_gold) for check in checks} == {check.__name__: [] for check in checks}
     assert validation.check_size(made_up_gold)
@@ -30,7 +36,9 @@ def test_structure_catches_missing_extra_and_wrong_type(made_up_gold):
     """Missing column, unexpected column and a number stored as text."""
     gold = made_up_gold.drop(columns="hdl").assign(extra=1, glucose=made_up_gold["glucose"].astype(str))
     assert sorted(validation.check_structure(gold)) == [
-        "glucose: should be numeric", "missing column: hdl", "unexpected column: extra",
+        "glucose: should be numeric",
+        "missing column: hdl",
+        "unexpected column: extra",
     ]
 
 
@@ -58,7 +66,10 @@ def test_outcome_and_population_catch_impossible_values(made_up_gold):
     made_up_gold.loc[0, "death"] = 2
     made_up_gold.loc[1, "follow_up_months"] = 0
     made_up_gold.loc[2, "age"] = 85
-    assert validation.check_outcome(made_up_gold) == ["death: values other than 0 / 1", "follow_up_months: 1 values outside 0.1-252"]
+    assert validation.check_outcome(made_up_gold) == [
+        "death: values other than 0 / 1",
+        "follow_up_months: 1 values outside 0.1-252",
+    ]
     assert validation.check_population(made_up_gold) == ["age: 1 values outside 18-79"]
 
 

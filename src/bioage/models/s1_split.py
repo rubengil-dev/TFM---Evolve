@@ -1,7 +1,6 @@
-"""
-Step 1, split of Gold:
-    - Random 80/20, stratified by cycle and death
-    - 5 cross-validation folds inside train
+"""Step 1, split of Gold:
+- Random 80/20, stratified by cycle and death
+- 5 cross-validation folds inside train
 """
 
 # Imports
@@ -25,9 +24,8 @@ def split_train_test(gold):
 
 
 def cv_folds(train, seed=SPLIT_SEED):
-    """
-    Folds of train, stratified by cycle and death:
-        - List of (fit positions, validation positions)
+    """Folds of train, stratified by cycle and death:
+    - List of (fit positions, validation positions)
     """
     splitter = StratifiedKFold(n_splits=CV_FOLDS, shuffle=True, random_state=seed)
     return list(splitter.split(train, strata(train)))

@@ -1,7 +1,6 @@
-"""
-Step 4, biological age, the same for every algorithm:
-    - 10-year mortality risk → age at which the typical person of the same sex has that risk
-    - Typical person: the median of what the same model gives to people of each age and sex
+"""Step 4, biological age, the same for every algorithm:
+- 10-year mortality risk → age at which the typical person of the same sex has that risk
+- Typical person: the median of what the same model gives to people of each age and sex
 """
 
 # Imports
@@ -14,10 +13,9 @@ AGE_STEP = 0.01  # years, resolution of the reference curve
 
 
 def fit_reference(risk, data):
-    """
-    Typical person of each sex, from the model's risk in train:
-        - Risk → log of the cumulative hazard, which grows almost in a straight line with age
-        - Median curve of second degree per sex, over the study ages
+    """Typical person of each sex, from the model's risk in train:
+    - Risk → log of the cumulative hazard, which grows almost in a straight line with age
+    - Median curve of second degree per sex, over the study ages
     """
     hazard = log_cumulative_hazard(risk)
     ages = np.arange(AGE_MIN, AGE_MAX + AGE_STEP, AGE_STEP)
@@ -33,10 +31,9 @@ def fit_reference(risk, data):
 
 
 def biological_age(risk, sex, reference):
-    """
-    Risk at the horizon → age at which the typical person of the same sex has it:
-        - Inside the study ages: read from the curve
-        - Outside: the curve goes on in a straight line, so extreme risks give ages below 18 or above 79
+    """Risk at the horizon → age at which the typical person of the same sex has it:
+    - Inside the study ages: read from the curve
+    - Outside: the curve goes on in a straight line, so extreme risks give ages below 18 or above 79
     """
     hazard = log_cumulative_hazard(risk)
     is_male = np.asarray(sex) == "male"
@@ -60,7 +57,7 @@ def log_cumulative_hazard(risk):
 def age_terms(age):
     """Age and age squared, centred at 50 to keep the numbers small."""
     centred = age - 50
-    return np.column_stack([centred, centred ** 2])
+    return np.column_stack([centred, centred**2])
 
 
 def read_age(hazard, reference, sex):

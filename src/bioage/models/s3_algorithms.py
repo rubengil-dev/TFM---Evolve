@@ -1,9 +1,8 @@
-"""
-Step 3, the four contenders of every level:
-    - Cox
-    - Cox elastic net
-    - Random survival forest
-    - Gradient boosting
+"""Step 3, the four contenders of every level:
+- Cox
+- Cox elastic net
+- Random survival forest
+- Gradient boosting
 """
 
 # Imports
@@ -22,9 +21,8 @@ class GradientBoostingCox(XGBRegressor):
     """XGBoost with the outcome format and the survival curves of the other models."""
 
     def fit(self, X, y, **kwargs):
-        """
-        Survival outcome → XGBoost label, then the baseline risk over time:
-            - Label: months of follow-up, negative if the person did not die
+        """Survival outcome → XGBoost label, then the baseline risk over time:
+        - Label: months of follow-up, negative if the person did not die
         """
         super().fit(X, y["time"] * (2 * y["event"] - 1), **kwargs)
         self.baseline_ = BreslowEstimator().fit(self.log_hazard(X), y["event"], y["time"])
@@ -39,20 +37,24 @@ class GradientBoostingCox(XGBRegressor):
         return self.predict(X, output_margin=True)
 
 
+# fmt: off
 MODELS = {
     "cox":                CoxPHSurvivalAnalysis,
     "elastic_net":        CoxnetSurvivalAnalysis,
     "random_forest":      RandomSurvivalForest,
     "gradient_boosting":  GradientBoostingCox,
 }
+# fmt: on
 
 
 def build_pipeline(name, columns, settings=None):
     """Unfitted preprocessing and model for an algorithm and a list of Gold columns; settings replace the fixed ones."""
-    return Pipeline([
-        ("preprocessing", build_preprocessor(columns)),
-        ("model", MODELS[name](**{**MODEL_PARAMS[name], **(settings or {})})),
-    ])
+    return Pipeline(
+        [
+            ("preprocessing", build_preprocessor(columns)),
+            ("model", MODELS[name](**{**MODEL_PARAMS[name], **(settings or {})})),
+        ]
+    )
 
 
 def survival_target(data):

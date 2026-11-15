@@ -1,13 +1,13 @@
-"""
-Helpers to download files:
-    - Retries
-    - No half-written files
-    - No error pages saved as data
+"""Helpers to download files:
+- Retries
+- No half-written files
+- No error pages saved as data
 """
 
 # Imports
-import requests
 import time
+
+import requests
 
 from bioage.config.sources import RETRIES, TIMEOUT
 
@@ -48,4 +48,4 @@ def download(url, dest):
             tmp.unlink(missing_ok=True)
             if attempt == RETRIES:
                 raise RuntimeError(f"{url}: {error}")
-            time.sleep(2 ** attempt)  # 2, 4, 8 s
+            time.sleep(2**attempt)  # 2, 4, 8 s

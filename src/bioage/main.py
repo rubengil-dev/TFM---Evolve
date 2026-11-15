@@ -1,6 +1,5 @@
-"""
-Pipeline:
-    - Bronze → Silver raw → Silver clean → Gold → model
+"""Pipeline:
+- Bronze → Silver raw → Silver clean → Gold → model
 """
 
 # Imports

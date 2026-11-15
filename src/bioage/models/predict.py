@@ -1,7 +1,6 @@
-"""
-Prediction with a saved model, what the app uses (no training libraries):
-    - Saved model of a level, checked against the installed library versions
-    - People → 10-year risk → biological age
+"""Prediction with a saved model, what the app uses (no training libraries):
+- Saved model of a level, checked against the installed library versions
+- People → 10-year risk → biological age
 """
 
 # Imports
@@ -15,7 +14,14 @@ from bioage.config.paths import TRAINED_MODELS
 from bioage.config.study import HORIZON_MONTHS
 from bioage.models.s4_biological_age import biological_age
 
-LIBRARIES = ["numpy", "pandas", "scipy", "scikit-learn", "scikit-survival", "joblib"]  # the ones a saved model depends on
+LIBRARIES = [
+    "numpy",
+    "pandas",
+    "scipy",
+    "scikit-learn",
+    "scikit-survival",
+    "joblib",
+]  # the ones a saved model depends on
 
 
 def load_bundle(level):
@@ -34,7 +40,11 @@ def predict_age(bundle, data):
 def check_versions(saved):
     """Error listing every library whose installed version differs from the saved one."""
     installed = library_versions()
-    different = [f"{name} {saved[name]} saved, {installed.get(name)} installed" for name in saved if saved[name] != installed.get(name)]
+    different = [
+        f"{name} {saved[name]} saved, {installed.get(name)} installed"
+        for name in saved
+        if saved[name] != installed.get(name)
+    ]
     if different:
         raise RuntimeError("Model saved with other library versions: " + "; ".join(different))
 

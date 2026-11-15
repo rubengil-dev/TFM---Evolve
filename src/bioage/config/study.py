@@ -1,5 +1,4 @@
-"""
-Study design parameters.
+"""Study design parameters.
 """
 
 # Population

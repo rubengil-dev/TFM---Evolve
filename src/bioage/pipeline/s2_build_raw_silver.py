@@ -1,9 +1,8 @@
-"""
-Silver raw step, every Bronze file in one table (one row per person, every variable, no cleaning):
-    - Files of each cycle joined by SEQN on DEMO participants (mortality included, DXA averaged)
-    - Adults AGE_MIN-AGE_MAX eligible for mortality follow-up
-    - Variable aliases renamed so each variable has the same name in every cycle
-    - Cycles stacked and saved to data/02_silver/silver_raw.parquet
+"""Silver raw step, every Bronze file in one table (one row per person, every variable, no cleaning):
+- Files of each cycle joined by SEQN on DEMO participants (mortality included, DXA averaged)
+- Adults AGE_MIN-AGE_MAX eligible for mortality follow-up
+- Variable aliases renamed so each variable has the same name in every cycle
+- Cycles stacked and saved to data/02_silver/silver_raw.parquet
 """
 
 # Imports
@@ -13,7 +12,7 @@ import pandas as pd
 from bioage.config.paths import BRONZE, SILVER, SILVER_RAW
 from bioage.config.renames import RENAMES
 from bioage.config.sources import CYCLES, DATASETS, MORTALITY_FILE
-from bioage.config.study import AGE_MIN, AGE_MAX
+from bioage.config.study import AGE_MAX, AGE_MIN
 from bioage.utils.nhanes import cycle_label, dxa_average_imputations, read_mortality, read_xpt
 
 
@@ -32,10 +31,9 @@ def run():
 
 
 def merge_cycle_files(year):
-    """
-    All files of a cycle → one table:
-        - DEMO participants as base, every other file joined by SEQN
-        - 'cycle' column added
+    """All files of a cycle → one table:
+    - DEMO participants as base, every other file joined by SEQN
+    - 'cycle' column added
     """
     print(f"{cycle_label(year)}...", flush=True)
     folder = BRONZE / cycle_label(year)
@@ -62,10 +60,9 @@ def read_dataset(folder, dataset, year):
 
 
 def merge_table(merged, table, dataset):
-    """
-    Left join by SEQN. Columns already in merged:
-        - Same values where both exist → missing values filled, column not repeated
-        - Different values → kept as NAME_DATASET
+    """Left join by SEQN. Columns already in merged:
+    - Same values where both exist → missing values filled, column not repeated
+    - Different values → kept as NAME_DATASET
     """
     merged = merged.set_index("SEQN")
     table = table.set_index("SEQN")
@@ -117,4 +114,6 @@ def print_summary(raw):
     """Persons, deaths and columns per cycle."""
     summary = raw.groupby("cycle").agg(persons=("SEQN", "size"), deaths=("MORTSTAT", "sum")).astype(int)
     print(summary.to_string())
-    print(f"\n{len(raw)} persons, {int(raw['MORTSTAT'].sum())} deaths, {raw.shape[1]} columns, saved to {SILVER_RAW.name}")
+    print(
+        f"\n{len(raw)} persons, {int(raw['MORTSTAT'].sum())} deaths, {raw.shape[1]} columns, saved to {SILVER_RAW.name}"
+    )

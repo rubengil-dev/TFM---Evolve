@@ -25,6 +25,7 @@ OWN_VALUES = {"age", "weight", "height", "bmi", "waist", "sedentary_hours", "fas
 def made_up_gold():
     """Gold of PEOPLE made-up people that passes every check but size."""
     rng = np.random.default_rng(0)
+    # fmt: off
     gold = pd.DataFrame({
         "seqn":              np.arange(1, PEOPLE + 1),
         "cycle":             rng.choice([cycle_label(year) for year in CYCLES], PEOPLE),
@@ -39,6 +40,7 @@ def made_up_gold():
         "sedentary_hours":   rng.integers(1, 13, PEOPLE),
         "fast_food_meals":   rng.integers(0, 6, PEOPLE),
     })
+    # fmt: on
     gold["bmi"] = gold["weight"] / (gold["height"] / 100) ** 2
     for variable, (_, normal, _, _) in PLAUSIBLE_RANGES.items():
         if variable in SILVER_PREDICTORS and variable not in OWN_VALUES:

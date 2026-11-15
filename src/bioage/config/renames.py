@@ -1,7 +1,6 @@
-"""
-Variable names:
-    - RENAMES: NHANES aliases between cycles (Bronze → Silver raw)
-    - CLEAN_NAMES: NHANES names → readable names (Silver raw → Silver clean)
+"""Variable names:
+- RENAMES: NHANES aliases between cycles (Bronze → Silver raw)
+- CLEAN_NAMES: NHANES names → readable names (Silver raw → Silver clean)
 """
 
 # Aliases between cycles

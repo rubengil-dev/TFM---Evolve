@@ -1,8 +1,7 @@
-"""
-NHANES helpers:
-    - Cycle names
-    - File readers (.xpt, mortality .dat)
-    - DXA multiple imputation
+"""NHANES helpers:
+- Cycle names
+- File readers (.xpt, mortality .dat)
+- DXA multiple imputation
 """
 
 # Imports
@@ -17,10 +16,9 @@ def cycle_label(year):
 
 
 def read_xpt(path):
-    """
-    SAS transport file → DataFrame:
-        - SEQN as integer
-        - SAS zero artifact (5.4e-79) → 0
+    """SAS transport file → DataFrame:
+    - SEQN as integer
+    - SAS zero artifact (5.4e-79) → 0
     """
     table = pd.read_sas(path, format="xport", encoding="latin-1")
     numeric = table.select_dtypes("number").columns
@@ -30,10 +28,9 @@ def read_xpt(path):
 
 
 def read_mortality(path):
-    """
-    Fixed-width mortality file → DataFrame:
-        - Columns and positions from MORTALITY_COLUMNS
-        - '.' → missing
+    """Fixed-width mortality file → DataFrame:
+    - Columns and positions from MORTALITY_COLUMNS
+    - '.' → missing
     """
     colspecs = [(start - 1, end) for start, end in MORTALITY_COLUMNS.values()]
     return pd.read_fwf(path, colspecs=colspecs, names=list(MORTALITY_COLUMNS), na_values=".")

@@ -34,7 +34,7 @@ def test_insulin_chains_every_assay_up_to_2013():
     raw = silver.apply_corrections(raw_rows([1999, 2009, 2013], LBXIN=[10.0, 10.0, 10.0]))
     tosoh = 1.0027 * 10 - 2.2934
     mercodia = 0.9501 * tosoh + 1.4890
-    roche = lambda x: 0.8868 * x - 0.0744 + 0.0011 * x ** 2
+    roche = lambda x: 0.8868 * x - 0.0744 + 0.0011 * x**2
     tosoh_aia = lambda x: 10 ** (1.024 * np.log10(x) - 0.0802)
     assert raw["LBXIN"].tolist() == pytest.approx([tosoh_aia(roche(mercodia)), tosoh_aia(roche(10)), 10])
 
@@ -42,7 +42,12 @@ def test_insulin_chains_every_assay_up_to_2013():
 def test_urine_creatinine_piece_chosen_by_original_value():
     """Each value gets only the equation of its own range, even after the previous one moved it."""
     raw = silver.apply_corrections(raw_rows([1999] * 3 + [2007], URXUCR=[74, 75, 250, 100]))
-    expected = [(1.02 * np.sqrt(74) - 0.36) ** 2, (1.05 * np.sqrt(75) - 0.74) ** 2, (1.01 * np.sqrt(250) - 0.10) ** 2, 100]
+    expected = [
+        (1.02 * np.sqrt(74) - 0.36) ** 2,
+        (1.05 * np.sqrt(75) - 0.74) ** 2,
+        (1.01 * np.sqrt(250) - 0.10) ** 2,
+        100,
+    ]
     assert raw["URXUCR"].tolist() == pytest.approx(expected)
 
 
@@ -86,6 +91,7 @@ def test_alcohol_frequency_and_drinks():
         - Until 2016: 1 a week → weekly, 5 a week → daily, 0 → never, lifetime abstainer → never
         - 2017: once a week (code 5) → weekly, 2-3 times a month (code 6) → less than weekly
     """
+    # fmt: off
     raw = pd.DataFrame({
         "ALQ120Q": [1, 5, 0, np.nan, np.nan, np.nan],
         "ALQ120U": [1, 1, np.nan, np.nan, np.nan, np.nan],
@@ -94,6 +100,7 @@ def test_alcohol_frequency_and_drinks():
         "ALQ111":  [np.nan] * 6,
         "ALQ130":  [2, 3, 4, np.nan, 1, 2],
     })
+    # fmt: on
     frequency, drinks = silver.alcohol(raw)
     assert frequency.tolist() == ["weekly", "daily", "never", "never", "weekly", "less_than_weekly"]
     assert drinks.tolist() == [2, 3, 0, 0, 1, 2]
@@ -101,21 +108,32 @@ def test_alcohol_frequency_and_drinks():
 
 def test_physical_activity_answers():
     """Vigorous → intense, else moderate → moderate, no to both (or unable) → sedentary; until 2006 and from 2007."""
-    raw = pd.DataFrame({
-        "PAD200": [1, 2, 2, 3, np.nan, np.nan],
-        "PAD320": [2, 1, 2, 3, np.nan, np.nan],
-        "PAQ650": [np.nan, np.nan, np.nan, np.nan, 1, 2],
-        "PAQ665": [np.nan, np.nan, np.nan, np.nan, 2, 2],
-    })
-    assert silver.physical_activity(raw).tolist() == ["intense", "moderate", "sedentary", "sedentary", "intense", "sedentary"]
+    raw = pd.DataFrame(
+        {
+            "PAD200": [1, 2, 2, 3, np.nan, np.nan],
+            "PAD320": [2, 1, 2, 3, np.nan, np.nan],
+            "PAQ650": [np.nan, np.nan, np.nan, np.nan, 1, 2],
+            "PAQ665": [np.nan, np.nan, np.nan, np.nan, 2, 2],
+        }
+    )
+    assert silver.physical_activity(raw).tolist() == [
+        "intense",
+        "moderate",
+        "sedentary",
+        "sedentary",
+        "intense",
+        "sedentary",
+    ]
 
 
 def test_blood_pressure_mean_without_zero_diastolic():
     """Mean of the readings; diastolic 0 is not measurable and is left out."""
+    # fmt: off
     raw = pd.DataFrame({
         "BPXSY1": [120], "BPXSY2": [130], "BPXSY3": [np.nan], "BPXSY4": [np.nan],
         "BPXDI1": [80], "BPXDI2": [0], "BPXDI3": [70], "BPXDI4": [np.nan],
     })
+    # fmt: on
     pressure = silver.blood_pressure(raw)
     assert pressure.iloc[0].tolist() == [125, 75]
 
@@ -130,4 +148,6 @@ def test_implausible_values_blanked(capsys):
     """Outside the PLAUSIBLE_RANGES limits → missing; limits themselves kept."""
     clean = pd.DataFrame({"glucose": [29, 30, 600, 601]})
     clean = clean.assign(**{variable: np.nan for variable in silver.PLAUSIBLE_RANGES if variable != "glucose"})
-    assert silver.remove_implausible_values(clean)["glucose"].tolist() == pytest.approx([np.nan, 30, 600, np.nan], nan_ok=True)
+    assert silver.remove_implausible_values(clean)["glucose"].tolist() == pytest.approx(
+        [np.nan, 30, 600, np.nan], nan_ok=True
+    )
