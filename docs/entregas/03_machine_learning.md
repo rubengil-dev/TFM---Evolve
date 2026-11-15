@@ -25,9 +25,9 @@ La idea del modelo es obtener un riesgo de mortalidad entre 0 y 1 en comparació
 
 Para ello, el modelo siempre usa los mismos targets, típicos de un análisis de supervivencia: meses de seguimiento y muerte (0/1). Sin embargo, las entradas las he anidado en 4 niveles para poder dar distintas funcionalidades en el producto final:
 
-1. **Biomarcadores base**: Incluye los más frecuentes en las analíticas para asegurar que la mayoría de usuarios puedan obtener un resultado rigoroso. Los biomarcadores concretos se pueden ver en: `src/config/model_sets.py`, línea 9, variable `BASE`.
+1. **Biomarcadores base**: Incluye los más frecuentes en las analíticas para asegurar que la mayoría de usuarios puedan obtener un resultado rigoroso. Los biomarcadores concretos se pueden ver en: `src/bioage/config/model_sets.py`, línea 7, variable `BASE`.
 
-2. **Biomarcadores completos**: Incluye más marcadores para conseguir un modelo más preciso que se pueda usar con aquellos que traigan una analítica más completa. Los biomarcadores concretos se pueden ver en: `src/config/model_sets.py`, línea 18, variable `EXTRAS`.
+2. **Biomarcadores completos**: Incluye más marcadores para conseguir un modelo más preciso que se pueda usar con aquellos que traigan una analítica más completa. Los biomarcadores concretos se pueden ver en: `src/bioage/config/model_sets.py`, línea 16, variable `EXTRAS`.
   - No incluye todos los biomarcadores, ya que por simplificación y mejora de los coeficientes se descataron aquellos sin efecto claro cuya salida no bajaba el C-index.
 
 3. **Cuestionario**: Incluye la analítica base (nivel 1) más algunas preguntas relacionadas con sus hábitos. Se incluyen: tabaco, actividad física, horas sentado y horas de sueño. Se descartó el alcohol porque su efecto salió como rejuvenecedor y la literatura es firme respecto a lo perjudicial que es el alcohol.
@@ -153,7 +153,7 @@ Con las 7.490 personas de test que tienen sus 9 variables:
 Cómo el proyecto empieza a tener infinidad de archivos, te dejo aquí un pequeño resumen del contexto de los archivos:
 
 - **Entrada:** Gold de la Entrega 02 (`data/03_gold/gold.parquet`), generada por el pipeline.
-- **Código del modelo:** `src/models/`, con un archivo por paso: `s1_split`, `s2_preprocessing`, `s3_algorithms`, `s4_biological_age` y `s5_evaluation`. Las variables de cada nivel están en `src/config/model_sets.py`, y el entrenamiento del modelo final, en `src/pipeline/s5_build_model.py`.
+- **Código del modelo:** `src/bioage/models/`, con un archivo por paso: `s1_split`, `s2_preprocessing`, `s3_algorithms`, `s4_biological_age` y `s5_evaluation`. Las variables de cada nivel están en `src/bioage/config/model_sets.py`, y el entrenamiento del modelo final, en `src/bioage/pipeline/s5_build_model.py`.
 - **Experimentos:**
   - `notebooks/models_lvl1.ipynb` a `models_lvl4.ipynb`: comparación de algoritmos y selección de variables de cada nivel, con validación cruzada.
   - `notebooks/biological_age.ipynb`: traducción del riesgo a edad.
@@ -161,19 +161,18 @@ Cómo el proyecto empieza a tener infinidad de archivos, te dejo aquí un peque�
   - **`notebooks/final_evaluation.ipynb`: evaluación final en test, con todas las cifras de los apartados 3 y 4.** Entrena con train sus propios modelos, con la misma función que el pipeline.
 - **Salida para el producto:** `models/{base,extras,questionnaire,full}.joblib`. Cada archivo contiene el pipeline de preprocesado y modelo, la referencia para traducir el riesgo a edad y sus columnas.
   - Además, cada modelo guarda de dónde sale: la huella de los datos con que se entrenó, el commit del código y las versiones de Python y de las librerías. Si al cargarlo las versiones instaladas no coinciden, falla en vez de dar resultados distintos sin avisar.
-- **Predicción para la app:** `src/models/predict.py` carga un modelo (`load_bundle`) y calcula la edad biológica (`predict_age`) sin necesitar las librerías de entrenamiento.
+- **Predicción para la app:** `src/bioage/models/predict.py` carga un modelo (`load_bundle`) y calcula la edad biológica (`predict_age`) sin necesitar las librerías de entrenamiento.
 - **Tests:** `tests/`, con pytest. Comprueban que los cuatro modelos dan la misma edad que la referencia para unas personas inventadas, que la configuración es coherente y que el test sigue siendo exactamente el de la evaluación final. Además, con datos inventados, prueban las reglas más delicadas: las correcciones de la CDC y los cuestionarios de Silver, la validación de Gold, el preprocesado y la traducción del riesgo a edad. Se ejecutan solos en GitHub Actions en cada push.
-- **Requisitos:** `requirements.txt` tiene solo lo que necesita la app para predecir; `requirements-dev.txt`, todo el análisis.
+- **Dependencias:** en `pyproject.toml`, con las versiones exactas en `uv.lock`. Las del proyecto son solo las que necesita la app para predecir; el grupo `dev` añade todo el análisis.
 - **Visión general del proyecto:** `README.md`.
 
 
 **Reproducir**
-Desde la raíz del repo con Python 3.11:
+Desde la raíz del repo, con [uv](https://docs.astral.sh/uv/) instalado (se encarga de Python 3.11 y de las dependencias):
   ```bash
-  py -3.11 -m venv .venv
-  .venv/Scripts/python -m pip install -r requirements-dev.txt
-  .venv/Scripts/python -m src.main
-  .venv/Scripts/python -m pytest
+  uv sync
+  uv run python -m bioage.main
+  uv run pytest
   ```
   Descarga NHANES, construye Gold y entrena el modelo final (unos 7 minutos más la descarga). Después, los tests comprueban que todo cuadra.
   Por último, ejecuta `notebooks/final_evaluation.ipynb`.

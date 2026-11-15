@@ -50,7 +50,7 @@ Una medición por persona más su seguimiento de mortalidad. Son 10 ciclos biena
 | **NHANES continuo 1999-2018** (CDC) | Open data: ficheros `.xpt` (SAS) por módulo y ciclo | Descarga directa por URL |
 | **Linked Mortality Files** (NCHS), versión pública | Open data: un `.dat` de ancho fijo por ciclo, seguimiento hasta el 31/12/2019 | Descarga directa por URL |
 
-- **Acceso reproducible:** `src/pipeline/download_bronze.py` descarga los 406 ficheros (~426 MB). Es reanudable, valida que lo recibido no sea una página de error y guarda un manifiesto con URL, tamaño y fecha.
+- **Acceso reproducible:** `src/bioage/pipeline/s1_download_bronze.py` descarga los 406 ficheros (~426 MB). Es reanudable, valida que lo recibido no sea una página de error y guarda un manifiesto con URL, tamaño y fecha.
 
 - **Cobertura:** población no institucionalizada de EE. UU. Hay 54.809 adultos de 18 a 79 años elegibles para mortalidad y 48.495 entran en el estudio, con 5.425 defunciones. La analítica general está en el ~94% de las personas. El subgrupo en ayunas (triglicéridos, insulina) es ~50% y la CPK solo existe de 2011 a 2018.
 
@@ -132,11 +132,10 @@ Hay variables que no se incluirán en el modelo pero se dejan en gold para permi
 ## Datos y código
 
 - **Muestra:** `docs/entregas/02_gold_sample.csv`, con 100 filas aleatorias de Gold (semilla 5), generada con `notebooks/02_gold_sample.ipynb`.
-- **Reproducir todo el flujo** desde la raíz del repo (Python 3.11):
+- **Reproducir todo el flujo** desde la raíz del repo, con [uv](https://docs.astral.sh/uv/) instalado:
   ```bash
-  py -3.11 -m venv .venv
-  .venv/Scripts/python -m pip install -r requirements.txt
-  .venv/Scripts/python -m src.main
+  uv sync
+  uv run python -m bioage.main
   ```
   Descarga Bronze y construye Silver raw → Silver clean → Gold en `data/` (unos 45 s más la descarga).
-- **Código:** `src/pipeline/` tiene un archivo por paso (`download_bronze`, `build_raw_silver`, `build_clean_silver`, `build_gold`). Las fuentes, renombres, correcciones y roles de las columnas de Gold están en `src/config/`, y las fórmulas de las features en `src/utils/features.py`.
+- **Código:** `src/bioage/pipeline/` tiene un archivo por paso (`s1_download_bronze`, `s2_build_raw_silver`, `s3_build_clean_silver`, `s4_build_gold`). Las fuentes, renombres, correcciones y roles de las columnas de Gold están en `src/bioage/config/`, y las fórmulas de las features en `src/bioage/utils/features.py`.
