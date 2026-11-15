@@ -1,8 +1,10 @@
 # Datos de NHANES (se descargan con script)
-data/
+data/*
+!data/README.md
 
 # Analíticas reales
-private/
+private/*
+!private/README.md
 
 # Python
 .venv/

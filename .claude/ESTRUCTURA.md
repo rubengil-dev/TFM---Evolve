@@ -19,7 +19,7 @@ TFM/
 ├── .claude/                          # Archivos de Claude
 ├── .github/
 │   └── workflows/
-│       └── tests.yml                 # CI: tests
+│       └── ci.yml                    # CI: ruff y tests
 ├── data/                             # Datos (fuera de git)
 │   ├── 01_bronze/                    # NHANES crudo
 │   │   ├── 1999_2000/ … 2017_2018/   # Ficheros de la CDC, por ciclo
@@ -97,6 +97,7 @@ TFM/
 ├── tests/                            # replica src/
 ├── .gitattributes                    # Saltos de línea
 ├── .gitignore                        # Archivos fuera de git
+├── .pre-commit-config.yaml           # Hooks de pre-commit
 ├── LICENSE                           # Licencia MIT
 ├── pyproject.toml                    # Proyecto, dependencias y herramientas
 ├── README.md                         # Presentación del proyecto

@@ -85,3 +85,6 @@ Lo que no encaje en esta descripción no va aquí. Las decisiones propias del pr
 ### Propio de este proyecto
 - **Notebooks entregables:** llevan prefijo numérico (`01_`, `02_`) y son independientes: no importan nada de `src/`. Las funciones que comparten con el código se duplican y, si cambian, se actualizan en los dos sitios.
 - **Notebooks de trabajo** (experimentos, pruebas): sin prefijo numérico, y sí importan de `src/`.
+- **Configuración:** una carpeta `config/` con un archivo por tabla, en vez de un único `config.py`, porque son diez tablas largas. Las rutas siguen en `paths.py`.
+- **Sin `.env.example`:** el proyecto no tiene secretos ni nada que cambie según la máquina. Se crea cuando aparezca el primero.
+- **Pasos numerados con prefijo `s`** (`s1_`, `s2_`) en vez de `01_`: Python no importa módulos que empiezan por número.

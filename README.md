@@ -1,46 +1,57 @@
-# Calculadora de edad biológica
+# Biological age calculator
 
-TFM del máster de Data Science e IA de EVOLVE. Una web gratuita que estima la edad biológica a partir de una analítica de sangre real: el usuario sube el PDF, revisa los valores leídos y, si quiere, responde un cuestionario de hábitos.
+Master's thesis of the EVOLVE Data Science and AI programme. A free website that estimates biological age from a real blood test: the user uploads the PDF, reviews the values that were read and, optionally, answers a short lifestyle questionnaire.
 
-No es consejo médico ni diagnóstico.
+It is not medical advice or a diagnosis.
 
-## Cómo funciona
-- **Datos:** NHANES 1999-2018 (EE. UU.) con su mortalidad enlazada hasta 2019. Adultos de 18 a 79 años.
-- **Modelo:** no existe una etiqueta de "edad biológica real", así que un modelo de supervivencia (Cox) estima el riesgo de morir a 10 años, y ese riesgo se traduce a la edad a la que una persona típica del mismo sexo tiene el mismo riesgo, al estilo de PhenoAge (Levine et al., 2018).
-- **Cuatro niveles**, según lo que traiga el usuario: analítica básica, más analítica ampliada, más cuestionario, o todo junto.
-- **Privacidad:** son datos de salud; la app procesa todo en memoria y no guarda nada.
+## Who it is for and why
+- For people in Spain without medical training, using it from home.
+- No typing values by hand: the app reads them from the PDF.
+- Truly free: it is not a lead magnet or part of a funnel.
+- An understandable result: an age and an explanation, not a table of values.
 
-El detalle de los datos, las decisiones y la evaluación está en [`docs/entregas/`](docs/entregas/).
+## How it works
+- **Data:** NHANES 1999-2018 (United States) with its linked mortality up to 2019. Adults aged 18 to 79.
+- **Model:** there is no "true biological age" label, so a survival model (Cox) estimates the risk of dying within 10 years, and that risk is translated into the age at which a typical person of the same sex has the same risk, in the style of PhenoAge (Levine et al., 2018).
+- **Four levels**, depending on what the user brings: basic blood test, extended blood test, basic plus questionnaire, or everything.
+- **Privacy:** this is health data; the app processes everything in memory and stores nothing.
 
-## Estado
-- Hecho: datos, preparación y modelo.
-- En curso: la app (lectura del PDF, revisión, cuestionario y resultado) y su despliegue.
+The details of the data, the decisions and the evaluation are in [`docs/entregas/`](docs/entregas/) (in Spanish).
 
-## Reproducirlo
-Python 3.11, desde la raíz del repo (Windows):
+## Status
+- Done: data, preparation and model.
+- In progress: the app (PDF reading, review, questionnaire and result) and its deployment.
+
+## How to install and run
+It needs [uv](https://docs.astral.sh/uv/), which installs Python 3.11 and every dependency. From the repository root:
 
 ```bash
-py -3.11 -m venv .venv
-.venv/Scripts/python -m pip install -r requirements-dev.txt
-.venv/Scripts/python -m src.main
-.venv/Scripts/python -m pytest
+uv sync
+uv run python -m bioage.main
+uv run pytest
 ```
 
-- `src.main` descarga NHANES (unos 400 MB, reanudable), construye las capas de datos y entrena los modelos de `models/`.
-- Los tests que necesitan `data/` se saltan si no existe; el resto funciona con lo que hay en git.
-- `requirements.txt` es solo lo que necesita la app para cargar un modelo y predecir; `requirements-dev.txt`, todo el análisis.
+- `uv sync` creates `.venv` with the exact versions of `uv.lock`.
+- `bioage.main` downloads NHANES (about 400 MB, resumable), builds the data layers and trains the models in `models/`.
+- Tests that need `data/` are skipped if it does not exist; the rest run with what is in git.
+- The project dependencies are only what the app needs to load a model and predict; the analysis and training libraries are in the `dev` group.
 
-## Estructura
-| Carpeta      | Qué contiene                                                                                   |
-|--------------|------------------------------------------------------------------------------------------------|
-| `src/`       | Pipeline (`pipeline/`), modelo (`models/`), configuración (`config/`) y utilidades (`utils/`)  |
-| `models/`    | Un modelo entrenado por nivel, con sus datos de origen y las versiones de las librerías        |
-| `notebooks/` | Exploración, comparación de modelos por nivel, edad biológica, PhenoAge y evaluación final     |
-| `tests/`     | Tests con pytest; se ejecutan en GitHub Actions en cada push                                   |
-| `docs/`      | Entregas del máster                                                                            |
-| `data/`      | Capas Bronze → Silver → Gold; no está en git, se regenera con el pipeline                      |
+To check the code before committing, install the hooks once with `uv run pre-commit install`.
 
-## Limitaciones principales
-- Población de referencia de EE. UU.: se asume equivalente a la española.
-- Algunos analitos cambian de método entre ciclos sin corrección oficial (p. ej. RDW, que queda fuera del modelo).
-- La edad biológica es menos precisa en personas jóvenes de riesgo bajo.
+## Structure
+| Folder       | What it contains                                                                       |
+|--------------|----------------------------------------------------------------------------------------|
+| `src/bioage` | The package: pipeline, model steps, configuration and shared functions                 |
+| `models/`    | One trained model per level, with its data fingerprint, code commit and versions       |
+| `notebooks/` | Exploration, model comparison per level, biological age, PhenoAge and final evaluation |
+| `tests/`     | Tests with pytest, mirroring `src/`; they run in GitHub Actions on every push          |
+| `docs/`      | Deliverables of the master's programme                                                 |
+| `data/`      | Bronze → Silver → Gold layers; not in git, rebuilt by the pipeline                     |
+
+## Main limitations
+- Reference population from the United States: it is assumed to be equivalent to the Spanish one.
+- Some analytes change method between cycles with no official correction (for example RDW, which is left out of the model).
+- Biological age is less precise in young people at low risk.
+
+## License
+[MIT](LICENSE).

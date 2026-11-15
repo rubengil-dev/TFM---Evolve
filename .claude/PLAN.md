@@ -38,7 +38,7 @@ Lo que no encaje en esta descripción no va aquí. Las decisiones pendientes no 
   - [/] Validación de lo que entra al modelo, en el módulo de predicción: columnas, tipos, categorías, rangos posibles y edad, con errores con código que el front traduce. Hoy una columna ausente o un número como texto dan un error técnico, y un valor imposible devuelve una edad sin avisar.
   - [/] Cuestionario de hábitos.
   - [/] Pantalla de resultado.
-  - [/] Añadir las librerías del stack a los requisitos de la app y completar el README.
+  - [/] Añadir las librerías del stack a las dependencias del proyecto (`pyproject.toml`) y completar el README.
   - [ ] Entrega 04: solución UX.
 - [ ] **Fase 5, despliegue:** web pública en un hosting gratuito *(se afina al llegar)*
 - [ ] **Fase 6, MLOps:** versionado de datos y de modelos; los tests, la CI y la trazabilidad ya están hechos en la fase 3. Va después de la Entrega 04, salvo que el profesor lo pida antes *(se afina al llegar)*

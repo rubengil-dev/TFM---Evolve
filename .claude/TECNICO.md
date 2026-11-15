@@ -22,7 +22,8 @@ Lo que no encaje en esta descripción no va aquí. Librerías y versiones, coman
 - **NHANES continuo 1999-2018** con la mortalidad pública enlazada hasta 2019: los datos de entrenamiento, descargados como una lista cerrada de ficheros verificada contra el catálogo de la CDC. Descartado: NHANES III, con métodos de laboratorio y formato distintos; mortalidad hasta 2022, de acceso restringido.
 - **scikit-survival y XGBoost:** los modelos de supervivencia. Descartado: el gradient boosting de scikit-survival, unos 46 minutos por entrenamiento frente a segundos.
 - **`Pipeline` de scikit-learn:** el preprocesado se ajusta solo con train, se guarda entero con el modelo y la app aplica exactamente el mismo objeto.
-- **pytest y GitHub Actions:** tests en cada push. La CI instala solo las dependencias de la app más pytest (grupo `test`), lo que demuestra que bastan para predecir, y no tiene `data/`: los tests que la necesitan se saltan.
+- **pytest y GitHub Actions:** ruff y tests en cada push. El trabajo de tests instala solo las dependencias de la app más pytest (grupo `test`), lo que demuestra que bastan para predecir, y no tiene `data/`: los tests que la necesitan se saltan.
+- **ruff y pre-commit:** ruff revisa y formatea, con líneas de 120 caracteres; pre-commit lo ejecuta junto con los tests antes de cada commit, con las versiones de `uv.lock` (hooks locales, sin repetir la versión de ruff en otro archivo). Los archivos de `config/` quedan fuera del formateo y las tablas alineadas del resto van entre `# fmt: off` y `# fmt: on`, porque el formateador deshace las columnas. Los notebooks quedan fuera de ruff para no reescribir celdas con salidas guardadas. (Claude, autónomo)
 - **GitHub:** `rubengil-dev/TFM---Evolve`, rama principal `main`.
 - [pendiente: stack de front y backend y hosting; son bloqueos de `ESTADO.md`.]
 
@@ -79,7 +80,7 @@ Lo que no encaje en esta descripción no va aquí. Librerías y versiones, coman
 - Los últimos ciclos tienen pocas defunciones por su seguimiento corto.
 
 ## Trampas
-- **Reentrenar los modelos** (unos 6,5 minutos): hay que commitear antes el código. Por qué: cada modelo guarda el commit y lo marca como `-dirty` si `src/` tiene cambios sin commitear. Después, los modelos se commitean aparte.
+- **Reentrenar los modelos** (entre 5 y 27 minutos, según cómo ande el disco): hay que commitear antes el código y no tocar `src/` mientras entrena. Por qué: cada modelo guarda el commit y lo marca como `-dirty` si `src/` tiene cambios sin commitear, y la marca se calcula al guardar cada modelo, no al empezar. Después, los modelos se commitean aparte.
 - **`src/bioage/models/s2_preprocessing` no se puede mover ni renombrar** sin reentrenar, y el paquete `bioage` tampoco. Por qué: los modelos guardados apuntan a su ruta de import.
 - **Los modelos de `models/` no sirven para evaluar.** Por qué: están entrenados con toda Gold, test incluido.
 - **La referencia de edades de los tests** se rehace solo tras cambiar el modelo a propósito, con `write_reference` de `tests/models/test_predict.py`, y se revisa el diff. Por qué: rehacerla tras un cambio involuntario escondería justo lo que el test tiene que detectar.
