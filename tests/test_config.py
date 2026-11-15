@@ -3,10 +3,12 @@ Configuration consistency, without data:
     - Every Gold predictor used by a model or discarded with its reason
     - Model variables with what the app needs to check them
     - One algorithm and one saved model per level
-    - App requirements: the libraries of a saved model, at the versions of the analysis
+    - App dependencies: the libraries of a saved model, each pinned to one version
 """
 
 # Imports
+import tomllib
+
 from src.config.column_roles import DERIVED_FEATURES, SILVER_PREDICTORS
 from src.config.model_sets import DISCARDED, LEVEL_COLUMNS, LEVEL_MODELS
 from src.config.paths import ROOT, TRAINED_MODELS
@@ -45,18 +47,12 @@ def test_every_level_has_algorithm_and_saved_model():
     assert all((TRAINED_MODELS / f"{level}.joblib").exists() for level in LEVEL_COLUMNS)
 
 
-def test_app_requirements_are_the_model_libraries():
-    """requirements.txt pins exactly the libraries checked when loading a model."""
-    assert set(pinned("requirements.txt")) == set(LIBRARIES)
+def test_app_dependencies_are_the_model_libraries():
+    """pyproject.toml pins, as app dependencies, exactly the libraries checked when loading a model."""
+    assert set(app_dependencies()) == set(LIBRARIES)
 
 
-def test_app_and_analysis_requirements_match():
-    """Each app library at the same version as in requirements-dev.txt."""
-    analysis = pinned("requirements-dev.txt")
-    assert {name: analysis.get(name) for name in pinned("requirements.txt")} == pinned("requirements.txt")
-
-
-def pinned(file):
-    """Library → version of a requirements file, comments left out."""
-    lines = (ROOT / file).read_text().splitlines()
-    return dict(line.split("==") for line in lines if line and not line.startswith("#"))
+def app_dependencies():
+    """Library → pinned version of the project dependencies in pyproject.toml (the app ones)."""
+    project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]
+    return dict(dependency.split("==") for dependency in project["dependencies"])

@@ -96,8 +96,8 @@ TFM/
 ├── tests/                            # Tests con pytest
 ├── .gitattributes                    # Saltos de línea
 ├── .gitignore                        # Archivos fuera de git
-├── pyproject.toml                    # Configuración de pytest
+├── LICENSE                           # Licencia MIT
+├── pyproject.toml                    # Proyecto, dependencias y herramientas
 ├── README.md                         # Presentación del proyecto
-├── requirements-dev.txt              # Dependencias del análisis
-└── requirements.txt                  # Dependencias de la app
+└── uv.lock                           # Versiones exactas (uv)
 ```

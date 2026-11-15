@@ -1,5 +1,5 @@
 # Tests on every push and pull request:
-#   - Only the app requirements: proves they are enough to load the models and predict
+#   - Only the app dependencies plus pytest: proves they are enough to load the models and predict
 #   - Without data/ (not in git): its tests are skipped; models/ is in git
 name: tests
 
@@ -10,9 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
         with:
-          python-version: "3.11"
-          cache: pip
-      - run: pip install -r requirements.txt pytest==9.2.0
-      - run: pytest
+          enable-cache: true
+      - run: uv sync --locked --no-default-groups --group test
+      - run: uv run --no-sync pytest

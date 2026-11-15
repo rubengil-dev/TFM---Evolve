@@ -1,3 +1,41 @@
+[project]
+name = "bioage"
+version = "0.1.0"
+description = "Biological age calculator from a routine blood test (EVOLVE master's thesis)"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Rubén Gil" }]
+requires-python = "==3.11.*"
+# App: only what a saved model needs to load and predict (tests/test_config.py checks it)
+dependencies = [
+    "joblib==1.6.0",
+    "numpy==2.4.6",
+    "pandas==2.3.3",
+    "scikit-learn==1.9.1",
+    "scikit-survival==0.28.0",
+    "scipy==1.17.1",
+]
+
+[dependency-groups]
+# Tests: what CI installs on top of the app dependencies
+test = ["pytest==9.2.0"]
+# Analysis: data pipeline, training and notebooks
+dev = [
+    { include-group = "test" },
+    "ipykernel==7.4.0",
+    "lifelines==0.30.3",
+    "matplotlib==3.11.2",
+    "nbconvert==7.17.2",
+    "optuna==5.0.0",
+    "pyarrow==26.0.0",
+    "requests==2.34.2",
+    "xgboost==3.2.0",
+]
+
+[tool.uv]
+package = false
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]

@@ -17,12 +17,12 @@ Lo que no encaje en esta descripción no va aquí. Librerías y versiones, coman
 # Contenido
 
 ## Stack
-- **Python 3.11** en `.venv`: la soportan todas las librerías y tiene soporte hasta 2027. Descartado: 3.14, demasiado nueva.
-- **Dos archivos de requisitos:** el del análisis, congelado con `pip freeze`, y el de la app, escrito a mano solo con lo que necesita un modelo guardado para predecir. El hosting gratuito lee el de la app y no instala las librerías de entrenamiento; las versiones son idénticas en los dos (un test lo comprueba) porque un modelo guardado solo se carga bien con las mismas.
+- **Python 3.11:** la soportan todas las librerías y tiene soporte hasta 2027. Descartado: 3.14, demasiado nueva.
+- **uv:** entorno y dependencias, con `uv.lock` en git. Las dependencias del proyecto son solo las de la app (lo que necesita un modelo guardado para predecir) y el análisis va en el grupo `dev`, para que el hosting gratuito no instale las librerías de entrenamiento. Todo fijado con `==`, porque un modelo guardado solo se carga bien con las mismas versiones. Antes había dos `requirements` mantenidos a mano y un test que comparaba sus versiones; con un solo lock ya no pueden divergir. (Rubén, de acuerdo)
 - **NHANES continuo 1999-2018** con la mortalidad pública enlazada hasta 2019: los datos de entrenamiento, descargados como una lista cerrada de ficheros verificada contra el catálogo de la CDC. Descartado: NHANES III, con métodos de laboratorio y formato distintos; mortalidad hasta 2022, de acceso restringido.
 - **scikit-survival y XGBoost:** los modelos de supervivencia. Descartado: el gradient boosting de scikit-survival, unos 46 minutos por entrenamiento frente a segundos.
 - **`Pipeline` de scikit-learn:** el preprocesado se ajusta solo con train, se guarda entero con el modelo y la app aplica exactamente el mismo objeto.
-- **pytest y GitHub Actions:** tests en cada push. La CI instala solo los requisitos de la app, lo que demuestra que bastan para predecir, y no tiene `data/`: los tests que la necesitan se saltan.
+- **pytest y GitHub Actions:** tests en cada push. La CI instala solo las dependencias de la app más pytest (grupo `test`), lo que demuestra que bastan para predecir, y no tiene `data/`: los tests que la necesitan se saltan.
 - **GitHub:** `rubengil-dev/TFM---Evolve`, rama principal `main`.
 - [pendiente: stack de front y backend y hosting; son bloqueos de `ESTADO.md`.]
 
@@ -83,4 +83,4 @@ Lo que no encaje en esta descripción no va aquí. Librerías y versiones, coman
 - **`src/models/s2_preprocessing` no se puede mover ni renombrar** sin reentrenar. Por qué: los modelos guardados apuntan a su ruta.
 - **Los modelos de `models/` no sirven para evaluar.** Por qué: están entrenados con toda Gold, test incluido.
 - **La referencia de edades de los tests** se rehace solo tras cambiar el modelo a propósito, con `write_reference` de `tests/test_models.py`, y se revisa el diff. Por qué: rehacerla tras un cambio involuntario escondería justo lo que el test tiene que detectar.
-- **Ejecutar un notebook desde la terminal** arranca el Python global, que no tiene scikit-survival. Por qué: el kernel `python3` está registrado dentro de `.venv`. Hay que lanzarlo desde `notebooks/` con `JUPYTER_PATH=../.venv/share/jupyter` y el `jupyter` de `.venv`.
+- **Ejecutar un notebook desde la terminal:** siempre con `uv run jupyter nbconvert`. Por qué: el `jupyter` global arranca el Python global, que no tiene scikit-survival; antes hacía falta un `JUPYTER_PATH` porque `nbconvert` no estaba en el entorno.

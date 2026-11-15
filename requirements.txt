@@ -1,7 +1,0 @@
-# App: load a saved model and predict. Same versions as requirements-dev.txt (tests/test_config.py checks it)
-joblib==1.6.0
-numpy==2.4.6
-pandas==2.3.3
-scikit-learn==1.9.1
-scikit-survival==0.28.0
-scipy==1.17.1
