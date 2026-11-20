@@ -1,5 +1,6 @@
 """Step 4, biological age, the same for every algorithm.
 
+- Fitted model → 10-year mortality risk
 - 10-year mortality risk → age at which the typical person of the same sex has that risk
 - Typical person: the median of what the same model gives to people of each age and sex
 """
@@ -8,10 +9,25 @@
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import QuantileRegressor
+from sklearn.pipeline import Pipeline
 
-from bioage.config.study import AGE_MAX, AGE_MIN
+from bioage.config.study import AGE_MAX, AGE_MIN, HORIZON_MONTHS
 
 AGE_STEP = 0.01  # years, resolution of the reference curve
+
+
+def risk_at_horizon(pipeline: Pipeline, data: pd.DataFrame) -> np.ndarray:
+    """Probability of dying within the horizon, for each person.
+
+    Args:
+        pipeline: Fitted preprocessing and model.
+        data: People with the columns of the model.
+
+    Returns:
+        Risk of each person.
+    """
+    curves = pipeline.predict_survival_function(data)
+    return 1 - np.array([curve(HORIZON_MONTHS) for curve in curves])
 
 
 def fit_reference(risk: np.ndarray | pd.Series, data: pd.DataFrame) -> dict[str, np.ndarray]:

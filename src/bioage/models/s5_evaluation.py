@@ -28,9 +28,8 @@ from bioage.config.study import (
     TUNING_SPACES,
     TUNING_TRIALS,
 )
-from bioage.models.predict import risk_at_horizon
 from bioage.models.s3_algorithms import MODELS, build_pipeline, survival_target
-from bioage.models.s4_biological_age import reference_risk
+from bioage.models.s4_biological_age import reference_risk, risk_at_horizon
 from bioage.utils.features import age_groups
 
 YEARS_SEARCHED = 50  # largest shift tried when telling a calibration gap in years

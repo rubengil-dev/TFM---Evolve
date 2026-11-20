@@ -2,15 +2,27 @@
 
 - Fingerprint of the data it was trained on
 - Git commit of the code that trained it
+- Python and library versions it was saved with
 """
 
 # Imports
 import hashlib
 import subprocess
+from importlib.metadata import version
+from platform import python_version_tuple
 
 import pandas as pd
 
 from bioage.config.paths import ROOT
+
+LIBRARIES = [
+    "numpy",
+    "pandas",
+    "scipy",
+    "scikit-learn",
+    "scikit-survival",
+    "joblib",
+]  # the ones a saved model depends on
 
 
 def data_fingerprint(data: pd.DataFrame) -> str:
@@ -36,6 +48,15 @@ def code_version() -> str:
     commit = git("rev-parse", "--short", "HEAD")
     changed = git("status", "--porcelain", "--", "src")
     return commit + ("-dirty" if changed else "")
+
+
+def library_versions() -> dict[str, str]:
+    """Python (major.minor) and the version of each library in LIBRARIES.
+
+    Returns:
+        Name → version.
+    """
+    return {"python": ".".join(python_version_tuple()[:2]), **{name: version(name) for name in LIBRARIES}}
 
 
 def git(*arguments: str) -> str:

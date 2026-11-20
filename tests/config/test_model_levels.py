@@ -14,7 +14,7 @@ from bioage.config.model_levels import DISCARDED, LEVEL_COLUMNS, LEVEL_MODELS
 from bioage.config.paths import ROOT, TRAINED_MODELS
 from bioage.config.plausible_ranges import PLAUSIBLE_RANGES
 from bioage.config.study import CATEGORICAL_LEVELS
-from bioage.models.predict import LIBRARIES
+from bioage.utils.provenance import LIBRARIES
 
 GOLD_PREDICTORS = SELECTED_PREDICTORS + DERIVED_FEATURES
 MODEL_VARIABLES = set().union(*LEVEL_COLUMNS.values())
