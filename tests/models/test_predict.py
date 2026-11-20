@@ -15,7 +15,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from bioage.config.model_sets import LEVEL_COLUMNS
+from bioage.config.model_levels import LEVEL_COLUMNS
 from bioage.config.paths import ROOT
 from bioage.models.predict import load_bundle, predict_age
 

@@ -10,7 +10,7 @@ import hashlib
 import pandas as pd
 import pytest
 
-from bioage.config.model_sets import LEVEL_COLUMNS
+from bioage.config.model_levels import LEVEL_COLUMNS
 from bioage.config.paths import GOLD_TABLE
 from bioage.models.predict import load_bundle
 from bioage.models.s1_split import split_train_test

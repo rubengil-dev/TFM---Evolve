@@ -1,5 +1,5 @@
-"""Configuration consistency, without data.
-
+"""
+Configuration consistency, without data:
 - Every Gold predictor used by a model or discarded with its reason
 - Model variables with what the app needs to check them
 - One algorithm and one saved model per level
@@ -10,7 +10,7 @@
 import tomllib
 
 from bioage.config.column_roles import DERIVED_FEATURES, SILVER_PREDICTORS
-from bioage.config.model_sets import DISCARDED, LEVEL_COLUMNS, LEVEL_MODELS
+from bioage.config.model_levels import DISCARDED, LEVEL_COLUMNS, LEVEL_MODELS
 from bioage.config.paths import ROOT, TRAINED_MODELS
 from bioage.config.plausible_ranges import PLAUSIBLE_RANGES
 from bioage.config.study import CATEGORICAL_LEVELS

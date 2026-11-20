@@ -12,7 +12,7 @@ from pathlib import Path
 import joblib
 import pandas as pd
 
-from bioage.config.model_sets import LEVEL_COLUMNS, LEVEL_MODELS
+from bioage.config.model_levels import LEVEL_COLUMNS, LEVEL_MODELS
 from bioage.config.paths import GOLD_TABLE, TRAINED_MODELS
 from bioage.models.predict import library_versions, risk_at_horizon
 from bioage.models.s3_algorithms import build_pipeline, survival_target

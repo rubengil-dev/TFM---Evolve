@@ -37,14 +37,14 @@ TFM/
 │       ├── 03_machine_learning.md    # Entrega 03
 │       └── enunciado3.pdf            # Enunciado (fuera de git)
 ├── models/                           # Modelos entrenados
-│   ├── base.joblib                   # Nivel 1
+│   ├── routine.joblib                # Nivel 1
 │   ├── extras.joblib                 # Nivel 2
 │   ├── questionnaire.joblib          # Nivel 3
 │   └── full.joblib                   # Nivel 4
 ├── notebooks/
 │   ├── 01_exploration_raw.ipynb      # Exploración (entregable)
 │   ├── 02_gold_sample.ipynb          # Muestra Entrega 02 (entregable)
-│   ├── base_correlations.ipynb       # Correlaciones de Base
+│   ├── routine_correlations.ipynb    # Correlaciones de Routine
 │   ├── models_lvl1.ipynb             # Nivel 1
 │   ├── models_lvl2.ipynb             # Nivel 2
 │   ├── models_lvl3.ipynb             # Nivel 3
@@ -61,7 +61,7 @@ TFM/
 │       │   ├── __init__.py
 │       │   ├── column_roles.py       # Papel de cada columna
 │       │   ├── corrections.py        # Correcciones CDC
-│       │   ├── model_sets.py         # Variables por nivel
+│       │   ├── model_levels.py       # Variables por nivel
 │       │   ├── nhanes_codes.py       # Códigos de cuestionarios
 │       │   ├── paths.py              # Rutas
 │       │   ├── plausible_ranges.py   # Rangos posibles

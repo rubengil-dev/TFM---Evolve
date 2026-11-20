@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from bioage.config.model_sets import LEVEL_COLUMNS
+from bioage.config.model_levels import LEVEL_COLUMNS
 from bioage.config.study import CLIP_QUANTILES
 from bioage.models.s2_preprocessing import GroupImputer, QuantileClipper, build_preprocessor, fill_value
 
