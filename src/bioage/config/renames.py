@@ -1,11 +1,11 @@
-"""Variable names.
+"""Variable naming standardization.
 
-- RENAMES: NHANES aliases between cycles (Bronze → Silver raw)
-- CLEAN_NAMES: NHANES names → readable names (Silver raw → Silver clean)
+- CYCLE_ALIASES: manages NHANES alias changes between cycles (Bronze → Silver raw)
+- CLEAN_NAMES: makes NHANES names readable (Silver raw → Silver clean)
 """
 
 # Aliases between cycles
-RENAMES = {
+CYCLE_ALIASES = {
     # Biochemistry (2001-2002)
     "LBDSAPSI": "LBXSAPSI",  # alkaline phosphatase (U/L)
     "LBDSCR":   "LBXSCR",    # creatinine (mg/dL)
@@ -14,23 +14,23 @@ RENAMES = {
     "LBDSTB":   "LBXSTB",    # total bilirubin (mg/dL)
 
     # Glucose and insulin (1999-2002)
-    "LBXGLUSI": "LBDGLUSI",  # fasting glucose (mmol/L)
-    "LBXINSI":  "LBDINSI",   # insulin (pmol/L)
+    "LBXGLUSI": "LBDGLUSI",  # fasting glucose (mmol/L), not used yet
+    "LBXINSI":  "LBDINSI",   # insulin (pmol/L), SI duplicate, not used
 
     # HDL (1999-2004)
     "LBDHDL":   "LBDHDD",    # HDL (mg/dL), 1999-2002
-    "LBDHDLSI": "LBDHDDSI",  # HDL (mmol/L), 1999-2002
+    "LBDHDLSI": "LBDHDDSI",  # HDL (mmol/L), 1999-2002, SI duplicate, not used
     "LBXHDD":   "LBDHDD",    # HDL (mg/dL), 2003-2004
 
     # Vitamin D (2001-2006, converted by CDC to LC-MS/MS)
     "LBDVIDMS": "LBXVIDMS",  # 25-OH vitamin D (nmol/L)
 
     # Urine (1999-2004)
-    "URXUCRSI": "URXCRS",    # urine creatinine (umol/L)
-    "URXUMASI": "URXUMS",    # urine albumin (mg/L)
+    "URXUCRSI": "URXCRS",    # urine creatinine (umol/L), SI duplicate, not used
+    "URXUMASI": "URXUMS",    # urine albumin (mg/L), SI duplicate, not used
 
     # Bone alkaline phosphatase (2001-2002)
-    "LBDBAP":   "LBXBAP",    # ug/L
+    "LBDBAP":   "LBXBAP",    # ug/L, not used yet
 }
 
 # Readable names

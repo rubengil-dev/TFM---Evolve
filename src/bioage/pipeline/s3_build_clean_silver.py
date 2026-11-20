@@ -22,7 +22,7 @@ from bioage.config.corrections import CORRECTIONS
 from bioage.config.nhanes_codes import (
     ALCOHOL_DAYS_2017,
     ALCOHOL_UNIT_DAYS,
-    LIFETIME_100_PLUS,
+    LIFETIME_100_CIGARETTES,
     MISSING_CODES,
     MORE_THAN_21_MEALS,
     NEVER_WHOLE_CIGARETTE,
@@ -345,9 +345,9 @@ def youth_smoking(raw: pd.DataFrame) -> pd.Series:
     youth = lifetime.notna() | raw["SMQ620"].notna()
     answer = np.select(
         [
-            lifetime.between(1, LIFETIME_100_PLUS - 1),
-            (lifetime == LIFETIME_100_PLUS) & (days >= 1),
-            (lifetime == LIFETIME_100_PLUS) & (days == 0),
+            lifetime.between(1, LIFETIME_100_CIGARETTES - 1),
+            (lifetime == LIFETIME_100_CIGARETTES) & (days >= 1),
+            (lifetime == LIFETIME_100_CIGARETTES) & (days == 0),
             raw["SMQ620"] == 2,
             raw["SMD630"] == NEVER_WHOLE_CIGARETTE,
             days >= YOUTH_CURRENT_SMOKER_DAYS,

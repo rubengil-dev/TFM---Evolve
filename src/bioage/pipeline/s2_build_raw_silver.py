@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 
 from bioage.config.paths import BRONZE, SILVER, SILVER_RAW
-from bioage.config.renames import RENAMES
+from bioage.config.renames import CYCLE_ALIASES
 from bioage.config.sources import CYCLES, DATASETS, MORTALITY_FILE
 from bioage.config.study import AGE_MAX, AGE_MIN
 from bioage.utils.nhanes import cycle_label, dxa_average_imputations, read_mortality, read_xpt
@@ -146,7 +146,7 @@ def filter_population(table: pd.DataFrame) -> pd.DataFrame:
 
 
 def rename_aliases(table: pd.DataFrame) -> pd.DataFrame:
-    """Old names → common names (RENAMES).
+    """Old names → common names (CYCLE_ALIASES).
 
     Args:
         table: Participants of a cycle.
@@ -157,7 +157,7 @@ def rename_aliases(table: pd.DataFrame) -> pd.DataFrame:
     Raises:
         ValueError: If a rename collides with an existing column.
     """
-    table = table.rename(columns=RENAMES)
+    table = table.rename(columns=CYCLE_ALIASES)
     repeated = table.columns[table.columns.duplicated()]
     if len(repeated):
         raise ValueError(f"Rename collision: {list(repeated)}")
