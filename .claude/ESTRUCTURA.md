@@ -59,8 +59,8 @@ TFM/
 │       ├── main.py                   # Punto de entrada
 │       ├── config/
 │       │   ├── __init__.py
-│       │   ├── column_roles.py       # Papel de cada columna
 │       │   ├── corrections.py        # Correcciones CDC
+│       │   ├── gold_columns.py       # Columnas de Gold
 │       │   ├── model_levels.py       # Variables por nivel
 │       │   ├── nhanes_codes.py       # Códigos de cuestionarios
 │       │   ├── paths.py              # Rutas

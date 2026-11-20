@@ -6,7 +6,7 @@ ID_COLUMNS = ["seqn", "cycle", "weight_exam"]
 # Outcome
 OUTCOME_COLUMNS = ["follow_up_months", "death"]
 
-# Candidate predictors from Silver clean
+# Predictors selected from Silver clean
 DEMOGRAPHICS = ["age", "sex"]
 
 BLOOD_COUNT = [
@@ -23,12 +23,12 @@ BIOCHEMISTRY = [
 
 MEASURES = ["weight", "height", "bmi", "waist", "systolic_bp", "diastolic_bp"]
 
-QUESTIONNAIRE = [
+HABITS = [
     "smoking", "alcohol_frequency", "alcohol_drinks", "physical_activity",
     "sedentary_hours", "fast_food_meals", "sleep_hours",
 ]
 
-SILVER_PREDICTORS = DEMOGRAPHICS + BLOOD_COUNT + BIOCHEMISTRY + MEASURES + QUESTIONNAIRE
+SELECTED_PREDICTORS = DEMOGRAPHICS + BLOOD_COUNT + BIOCHEMISTRY + MEASURES + HABITS
 
 # Derived features (utils/features.py)
 DERIVED_FEATURES = [

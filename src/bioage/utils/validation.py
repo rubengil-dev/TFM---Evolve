@@ -8,7 +8,7 @@
 # Imports
 import pandas as pd
 
-from bioage.config.column_roles import DERIVED_FEATURES, ID_COLUMNS, OUTCOME_COLUMNS, SILVER_PREDICTORS
+from bioage.config.gold_columns import DERIVED_FEATURES, ID_COLUMNS, OUTCOME_COLUMNS, SELECTED_PREDICTORS
 from bioage.config.plausible_ranges import PLAUSIBLE_RANGES
 from bioage.config.sources import CYCLES
 from bioage.config.study import AGE_MAX, AGE_MIN, CATEGORICAL_LEVELS, FOLLOW_UP_MIN
@@ -62,7 +62,7 @@ def check_structure(gold: pd.DataFrame) -> list[str]:
     Returns:
         One error line per problem.
     """
-    expected = ID_COLUMNS + OUTCOME_COLUMNS + SILVER_PREDICTORS + DERIVED_FEATURES
+    expected = ID_COLUMNS + OUTCOME_COLUMNS + SELECTED_PREDICTORS + DERIVED_FEATURES
     errors = [f"missing column: {column}" for column in expected if column not in gold]
     errors += [f"unexpected column: {column}" for column in gold if column not in expected]
     text = ["cycle"] + list(CATEGORICAL_LEVELS)

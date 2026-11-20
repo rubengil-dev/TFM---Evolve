@@ -9,14 +9,14 @@ Configuration consistency, without data:
 # Imports
 import tomllib
 
-from bioage.config.column_roles import DERIVED_FEATURES, SILVER_PREDICTORS
+from bioage.config.gold_columns import DERIVED_FEATURES, SELECTED_PREDICTORS
 from bioage.config.model_levels import DISCARDED, LEVEL_COLUMNS, LEVEL_MODELS
 from bioage.config.paths import ROOT, TRAINED_MODELS
 from bioage.config.plausible_ranges import PLAUSIBLE_RANGES
 from bioage.config.study import CATEGORICAL_LEVELS
 from bioage.models.predict import LIBRARIES
 
-GOLD_PREDICTORS = SILVER_PREDICTORS + DERIVED_FEATURES
+GOLD_PREDICTORS = SELECTED_PREDICTORS + DERIVED_FEATURES
 MODEL_VARIABLES = set().union(*LEVEL_COLUMNS.values())
 
 
