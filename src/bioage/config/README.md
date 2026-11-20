@@ -1,5 +1,15 @@
 # config/
+Files within this folder contain internal configuration.
 
-Configuration, separate from the logic: internal paths (`paths.py`), external sources (`sources.py`) and the tables of the study (renames, CDC corrections, plausible ranges, model variables, validation thresholds).
+- `paths.py`            : Internal project paths.
+- `sources.py`          : Data download paths and config.
+- `study.py`            : Project design parameters.
+- `model_levels.py`     : Variables for each model and discarded ones.
+- `nhanes_codes.py`     : NHANES answering codes.
+- `gold_columns.py`     : Role of each Gold column.
+- `renames.py`          : Clear and standard name definition.
+- `corrections.py`      : Corrections for NHANES measurement method changes.
+- `validation_rules.py` : Gold data validation thresholds.
+- `plausible_ranges.py` : Removes data artifacts (not illness data).
 
-Most files are hand-aligned tables, so ruff does not format this folder: keep the columns aligned when editing.
+Hand-aligned tables: ruff does not format this folder, keep the columns aligned when editing.
