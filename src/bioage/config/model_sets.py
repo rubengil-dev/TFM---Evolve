@@ -3,7 +3,7 @@
 # Level 0: baseline
 BASELINE = ["age", "sex"]
 
-# Level 1: routine Spanish blood test, plus age, sex and BMI (from weight and height)
+# Level 1: routine Spanish blood test (+ age, sex & BMI)
 BASE = [
     "age", "sex", "bmi",
     "hemoglobin", "erythrocytes", "mchc",
@@ -24,7 +24,7 @@ QUESTIONNAIRE = [
     "smoking", "physical_activity", "sedentary_hours", "sleep_hours",
 ]
 
-# Level 4: Base + Extras + Questionnaire, with no further pruning
+# Level 4: Base + Extras + Questionnaire
 
 # Variables of each level
 LEVEL_COLUMNS = {
@@ -42,7 +42,7 @@ LEVEL_MODELS = {
     "full":          "cox",
 }
 
-# Not used by any model: variable → reason
+# Not used by any model (reason)
 DISCARDED = {
     "weight":            "input of bmi",
     "height":            "input of bmi",

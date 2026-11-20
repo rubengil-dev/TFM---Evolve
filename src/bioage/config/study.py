@@ -1,25 +1,25 @@
-"""Study design parameters."""
+"""Project design parameters: population included, cleaning, split, models, optimizing, evaluation and preprocessing."""
 
 # Population
-AGE_MIN = 18  # mortality follow-up only for adults
-AGE_MAX = 79  # NHANES top-codes age: 80 means 80 or older (85 before 2007)
+AGE_MIN = 18    # Mortality follow-up only for adults
+AGE_MAX = 79    # NHANES top-codes age: 80 = 80+
 
 # Fasting
-FASTING_HOURS_MIN = 8  # triglycerides only kept if fasting at least this long
+FASTING_HOURS_MIN = 8  # MIN fasting to keep triglycerides
 
-# Form answers
-ALCOHOL_FREQUENCY = {      # answer → maximum drinking days per year
+# Alcohol
+ALCOHOL_FREQUENCY = {      # Max drinking days / year
     "never":            0,
     "less_than_weekly": 51,
     "weekly":           259,
     "daily":            366,
 }
 
-# Youth smoking
-YOUTH_CURRENT_SMOKER_DAYS = 10  # days smoked of the past 30 to count an 18-19 year old as current smoker (until 2010)
+# Smoking
+YOUTH_CURRENT_SMOKER_DAYS = 10  # Days smoked of last 30 to count an 18-19 year old as current smoker (until 2010)
 
-# Follow-up
-FOLLOW_UP_MIN = 0.1  # months; parametric survival models need time > 0
+# Follow-up (months)
+FOLLOW_UP_MIN = 0.1  # XGBoost needs time > 0
 
 # Split
 TEST_SIZE = 0.2
@@ -39,7 +39,7 @@ HORIZON_MONTHS = 120
 CALIBRATION_GROUPS = 10
 BOOTSTRAP_SAMPLES = 200
 
-# Tuning: settings searched, as (kind, lowest, highest)
+# Optuna tuning (kind, lowest, highest)
 TUNING_TRIALS = 50
 TUNING_SPACES = {
     "gradient_boosting": {
@@ -60,13 +60,13 @@ TUNING_SPACES = {
 # Comparison of tuned models: folds other than those used for tuning
 COMPARISON_SEED = 7
 
-# Preprocessing: imputation groups
-AGE_GROUP_EDGES = [18, 30, 40, 50, 60, 70, 80]  # lower bound included
+# Preprocessing: Age imputation groups
+AGE_GROUP_EDGES = [18, 30, 40, 50, 60, 70, 80]
 
-# Preprocessing: extremes
+# Preprocessing: Outliers extremes
 CLIP_QUANTILES = (0.001, 0.999)
 
-# Preprocessing: skewness above 2 in train; includes variables discarded in the level notebooks, to keep them reproducible
+# Preprocessing: Includes variables discarded in notebooks to keep them reproducible
 LOG_VARIABLES = [
     "rdw", "neutrophils", "lymphocytes", "monocytes", "eosinophils", "basophils",
     "glucose", "creatinine", "urea", "ast", "alt",
