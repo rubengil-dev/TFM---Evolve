@@ -14,23 +14,23 @@ CYCLE_ALIASES = {
     "LBDSTB":   "LBXSTB",    # total bilirubin (mg/dL)
 
     # Glucose and insulin (1999-2002)
-    "LBXGLUSI": "LBDGLUSI",  # fasting glucose (mmol/L), not used yet
-    "LBXINSI":  "LBDINSI",   # insulin (pmol/L), SI duplicate, not used
+    "LBXGLUSI": "LBDGLUSI",  # fasting glucose (mmol/L): not used
+    "LBXINSI":  "LBDINSI",   # insulin (pmol/L): not used
 
     # HDL (1999-2004)
     "LBDHDL":   "LBDHDD",    # HDL (mg/dL), 1999-2002
-    "LBDHDLSI": "LBDHDDSI",  # HDL (mmol/L), 1999-2002, SI duplicate, not used
+    "LBDHDLSI": "LBDHDDSI",  # HDL (mmol/L), 1999-2002: not used
     "LBXHDD":   "LBDHDD",    # HDL (mg/dL), 2003-2004
 
     # Vitamin D (2001-2006, converted by CDC to LC-MS/MS)
     "LBDVIDMS": "LBXVIDMS",  # 25-OH vitamin D (nmol/L)
 
     # Urine (1999-2004)
-    "URXUCRSI": "URXCRS",    # urine creatinine (umol/L), SI duplicate, not used
-    "URXUMASI": "URXUMS",    # urine albumin (mg/L), SI duplicate, not used
+    "URXUCRSI": "URXCRS",    # urine creatinine (umol/L): not used
+    "URXUMASI": "URXUMS",    # urine albumin (mg/L): not used
 
     # Bone alkaline phosphatase (2001-2002)
-    "LBDBAP":   "LBXBAP",    # ug/L, not used yet
+    "LBDBAP":   "LBXBAP",    # ug/L: not used
 }
 
 # Readable names
