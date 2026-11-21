@@ -4,21 +4,23 @@ Checks:
 1. Structure: exact columns and types.
 2. Size: enough persons and deaths, every cycle included.
 3. Coverage: % with value per column.
-4. Required: no missing values, one row per person.
-5. Outcome: death 0/1, follow-up in range (0.1-252 months), survey weight above 0.
+4. Required: no missing values, one row per person, survey weight above 0.
+5. Outcome: death 0/1, follow-up in range (0.1-252 months).
 6. Population: study ages and known cycles.
 7. Categories: only allowed answers.
 8. Ranges: only plausible values.
-9. Consistency: pairs in order, BMI matching weight and height.
+9. Finite: no infinite values (e.g. a division by 0).
+10. Consistency: pairs in order, BMI matching weight and height.
 
 Pipeline:
-- Blocking (1-8): if any fails, Gold is not saved.
-- Warning (9): only reported.
+- Blocking (1-9): if any fails, Gold is not saved.
+- Warning (10): only reported.
 """
 
 # Imports
 import logging
 
+import numpy as np
 import pandas as pd
 
 from bioage.config.gold_columns import DERIVED_FEATURES, ID_COLUMNS, OUTCOME_COLUMNS, SELECTED_PREDICTORS
@@ -61,6 +63,7 @@ def validate_gold(gold: pd.DataFrame) -> None:
             + check_population(gold)
             + check_categories(gold)
             + check_ranges(gold)
+            + check_finite(gold)
         )
     warnings = [] if errors else check_consistency(gold)
     log_report(errors, warnings)
@@ -130,7 +133,7 @@ def check_coverage(gold: pd.DataFrame) -> list[str]:
 
 
 def check_required(gold: pd.DataFrame) -> list[str]:
-    """No missing values in REQUIRED; one row per person.
+    """No missing values in REQUIRED; one row per person; survey weight > 0.
 
     Args:
         gold: Gold table.
@@ -141,11 +144,13 @@ def check_required(gold: pd.DataFrame) -> list[str]:
     errors = [f"{column}: {n} missing" for column, n in gold[REQUIRED].isna().sum().items() if n]
     if gold["seqn"].duplicated().any():
         errors.append(f"seqn: {gold['seqn'].duplicated().sum()} repeated")
+    if (gold["weight_exam"] <= 0).any():
+        errors.append(f"weight_exam: {(gold['weight_exam'] <= 0).sum()} not above 0")
     return errors
 
 
 def check_outcome(gold: pd.DataFrame) -> list[str]:
-    """Death only 0 / 1; follow-up between FOLLOW_UP_MIN and MAX_FOLLOW_UP; survey weight > 0.
+    """Death only 0 / 1; follow-up between FOLLOW_UP_MIN and MAX_FOLLOW_UP.
 
     Args:
         gold: Gold table.
@@ -157,8 +162,6 @@ def check_outcome(gold: pd.DataFrame) -> list[str]:
     if not gold["death"].isin([0, 1]).all():
         errors.append("death: values other than 0 / 1")
     errors += out_of_bounds(gold, "follow_up_months", FOLLOW_UP_MIN, MAX_FOLLOW_UP)
-    if (gold["weight_exam"] <= 0).any():
-        errors.append(f"weight_exam: {(gold['weight_exam'] <= 0).sum()} not above 0")
     return errors
 
 
@@ -209,6 +212,20 @@ def check_ranges(gold: pd.DataFrame) -> list[str]:
     for variable, (_, _, (low, high), _) in PLAUSIBLE_RANGES.items():
         errors += out_of_bounds(gold, variable, low, high)
     return errors
+
+
+def check_finite(gold: pd.DataFrame) -> list[str]:
+    """No infinite values in any numeric column (a division by 0 gives one).
+
+    Args:
+        gold: Gold table.
+
+    Returns:
+        One error line per column with infinite values.
+    """
+    numeric = gold.select_dtypes("number")
+    infinite = numeric.isin([np.inf, -np.inf]).sum()
+    return [f"{column}: {n} infinite values" for column, n in infinite.items() if n]
 
 
 def check_consistency(gold: pd.DataFrame) -> list[str]:

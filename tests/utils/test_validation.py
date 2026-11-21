@@ -5,6 +5,7 @@
 """
 
 # Imports
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -20,6 +21,7 @@ def test_valid_gold_passes_every_check_but_size(made_up_gold: pd.DataFrame) -> N
         validation.check_population,
         validation.check_categories,
         validation.check_ranges,
+        validation.check_finite,
         validation.check_consistency,
     ]
     assert {check.__name__: check(made_up_gold) for check in checks} == {check.__name__: [] for check in checks}
@@ -65,6 +67,16 @@ def test_outcome_and_population_catch_impossible_values(made_up_gold: pd.DataFra
         "follow_up_months: 1 values outside 0.1-252",
     ]
     assert validation.check_population(made_up_gold) == ["age: 1 values outside 18-79"]
+
+
+def test_required_catches_survey_weight_not_above_zero(made_up_gold: pd.DataFrame) -> None:
+    made_up_gold.loc[0, "weight_exam"] = 0
+    assert validation.check_required(made_up_gold) == ["weight_exam: 1 not above 0"]
+
+
+def test_finite_catches_division_by_zero(made_up_gold: pd.DataFrame) -> None:
+    made_up_gold.loc[0, "albumin_globulin"] = np.inf  # what albumin / 0 gives
+    assert validation.check_finite(made_up_gold) == ["albumin_globulin: 1 infinite values"]
 
 
 def test_consistency_warns_of_pairs_out_of_order(made_up_gold: pd.DataFrame) -> None:
