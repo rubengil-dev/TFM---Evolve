@@ -3,9 +3,11 @@
 - Retries
 - No half-written files
 - No error pages saved as data
+- SHA-256 of a file on disk
 """
 
 # Imports
+import hashlib
 import time
 from pathlib import Path
 
@@ -67,3 +69,19 @@ def is_valid(dest: Path, head: bytes) -> bool:
     if dest.suffix == ".dat":
         return not head.lstrip().startswith(b"<")
     return True
+
+
+def file_sha256(path: Path) -> str:
+    """SHA-256 of a file's content, read in blocks: same content → same hash.
+
+    Args:
+        path: File to hash.
+
+    Returns:
+        The 64-character hexadecimal hash.
+    """
+    digest = hashlib.sha256()
+    with path.open("rb") as f:
+        for block in iter(lambda: f.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
