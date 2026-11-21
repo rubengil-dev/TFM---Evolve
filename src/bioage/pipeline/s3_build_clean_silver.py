@@ -18,6 +18,8 @@ Changes:
 """
 
 # Imports
+import logging
+
 import numpy as np
 import pandas as pd
 
@@ -37,6 +39,8 @@ from bioage.config.sources import CYCLES
 from bioage.config.study import ALCOHOL_FREQUENCY, FASTING_HOURS_MIN, YOUTH_CURRENT_SMOKER_DAYS
 from bioage.utils.nhanes import cycle_label
 from bioage.utils.step_info import print_layer_summary, save_layer
+
+logger = logging.getLogger(__name__)
 
 
 def run() -> None:
@@ -80,7 +84,15 @@ def filter_population(raw: pd.DataFrame) -> pd.DataFrame:
     """
     lab_columns = [name for name in CLEAN_NAMES if name.startswith("LB")]
     has_lab = raw[lab_columns].notna().any(axis=1)
-    return raw[(raw["RIDSTATR"] == 2) & (raw["RIDEXPRG"] != 1) & has_lab].copy()
+    examined = raw["RIDSTATR"] == 2
+    pregnant = raw["RIDEXPRG"] == 1
+    logger.info(
+        "Population removed: %d without exam, %d pregnant, %d without lab values",
+        (~examined).sum(),
+        (examined & pregnant).sum(),
+        (examined & ~pregnant & ~has_lab).sum(),
+    )
+    return raw[examined & ~pregnant & has_lab].copy()
 
 
 def apply_corrections(raw: pd.DataFrame) -> pd.DataFrame:
@@ -430,7 +442,7 @@ def vitamin_d_to_ng_ml(clean: pd.DataFrame) -> pd.DataFrame:
 
 
 def remove_implausible_values(clean: pd.DataFrame) -> pd.DataFrame:
-    """Values outside the PLAUSIBLE_RANGES limits → missing, printing a count per variable.
+    """Values outside the PLAUSIBLE_RANGES limits → missing, logging a count per variable.
 
     Args:
         clean: Silver clean table.
@@ -438,11 +450,10 @@ def remove_implausible_values(clean: pd.DataFrame) -> pd.DataFrame:
     Returns:
         The same table without the implausible values.
     """
-    print("Implausible values set to missing:")
+    logger.info("Implausible values set to missing:")
     for variable, (_, _, (low, high), _) in PLAUSIBLE_RANGES.items():
         implausible = clean[variable].notna() & ~clean[variable].between(low, high)
         if implausible.any():
-            print(f"    {variable}: {implausible.sum()}")
+            logger.info("    %s: %d", variable, implausible.sum())
         clean[variable] = clean[variable].mask(implausible)
-    print()
     return clean

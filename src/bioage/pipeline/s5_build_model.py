@@ -7,6 +7,8 @@
 """
 
 # Imports
+import logging
+
 import joblib
 import pandas as pd
 
@@ -18,12 +20,15 @@ from bioage.models.s5_evaluation import c_index
 from bioage.utils.provenance import code_version, data_fingerprint, library_versions
 from bioage.utils.step_info import print_model_summary
 
+logger = logging.getLogger(__name__)
+
 
 def run() -> None:
     """Model step, called from main."""
     gold = pd.read_parquet(GOLD_TABLE)
     TRAINED_MODELS.mkdir(exist_ok=True)
     for level, columns in LEVEL_COLUMNS.items():
+        logger.info("%s: training...", level)
         bundle = build_level(level, columns, gold)
         path = TRAINED_MODELS / f"{level}.joblib"
         joblib.dump(bundle, path)

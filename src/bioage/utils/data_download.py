@@ -8,12 +8,15 @@
 
 # Imports
 import hashlib
+import logging
 import time
 from pathlib import Path
 
 import requests
 
 from bioage.config.sources import RETRIES, TIMEOUT
+
+logger = logging.getLogger(__name__)
 
 
 def download(url: str, dest: Path) -> None:
@@ -49,6 +52,7 @@ def download(url: str, dest: Path) -> None:
             tmp.unlink(missing_ok=True)
             if attempt == RETRIES:
                 raise RuntimeError(f"{url}: {error}") from error
+            logger.warning("    retry %d/%d in %d s: %s", attempt + 1, RETRIES, 2**attempt, error)
             time.sleep(2**attempt)  # 2, 4, 8 s
 
 

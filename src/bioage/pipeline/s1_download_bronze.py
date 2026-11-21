@@ -87,7 +87,7 @@ def download_all(jobs: list[dict]) -> list[dict]:
         try:
             download(job["url"], job["dest"])
         except RuntimeError as error:
-            logger.warning("    FAILED: %s", error)
+            logger.error("    FAILED: %s", error)
             failed.append(job)
     return failed
 

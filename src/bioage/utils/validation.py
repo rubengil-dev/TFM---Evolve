@@ -17,6 +17,8 @@ Pipeline:
 """
 
 # Imports
+import logging
+
 import pandas as pd
 
 from bioage.config.gold_columns import DERIVED_FEATURES, ID_COLUMNS, OUTCOME_COLUMNS, SELECTED_PREDICTORS
@@ -37,9 +39,11 @@ from bioage.config.validation_rules import (
 )
 from bioage.utils.nhanes import cycle_label
 
+logger = logging.getLogger(__name__)
+
 
 def validate_gold(gold: pd.DataFrame) -> None:
-    """Run every check on Gold: errors → ValueError, warnings → printed.
+    """Run every check on Gold: errors → ValueError, warnings → logged.
 
     Args:
         gold: Gold table about to be saved.
@@ -59,7 +63,7 @@ def validate_gold(gold: pd.DataFrame) -> None:
             + check_ranges(gold)
         )
     warnings = [] if errors else check_consistency(gold)
-    print_report(errors, warnings)
+    log_report(errors, warnings)
     if errors:
         raise ValueError(f"Gold validation failed with {len(errors)} errors, Gold not saved")
 
@@ -244,18 +248,16 @@ def out_of_bounds(gold: pd.DataFrame, column: str, low: float, high: float) -> l
     return [f"{column}: {outside.sum()} values outside {low}-{high}"] if outside.any() else []
 
 
-def print_report(errors: list[str], warnings: list[str]) -> None:
-    """Print the errors and warnings, or OK.
+def log_report(errors: list[str], warnings: list[str]) -> None:
+    """Log each error and warning, or OK.
 
     Args:
         errors: Lines of the blocking checks.
         warnings: Lines of the consistency check.
     """
-    print("Gold validation:")
     for line in errors:
-        print(f"    ERROR   {line}")
+        logger.error("Gold validation: %s", line)
     for line in warnings:
-        print(f"    WARNING {line}")
+        logger.warning("Gold validation: %s", line)
     if not errors and not warnings:
-        print("    OK")
-    print()
+        logger.info("Gold validation: OK")
