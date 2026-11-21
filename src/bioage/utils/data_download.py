@@ -14,25 +14,6 @@ import requests
 from bioage.config.sources import RETRIES, TIMEOUT
 
 
-def is_valid(dest: Path, head: bytes) -> bool:
-    """Check the file signature (the CDC can return an HTML error page with status 200).
-
-    Args:
-        dest: Final path of the file; its suffix tells the expected format.
-        head: First bytes of the downloaded file.
-
-    Returns:
-        True if the content matches the expected format.
-    """
-    if dest.suffix == ".xpt":
-        return head.startswith(b"HEADER RECORD")
-    if dest.suffix == ".pdf":
-        return head.startswith(b"%PDF")
-    if dest.suffix == ".dat":
-        return not head.lstrip().startswith(b"<")
-    return True
-
-
 def download(url: str, dest: Path) -> None:
     """Download to a .part file and rename it only when complete, retrying with a growing wait.
 
@@ -67,3 +48,22 @@ def download(url: str, dest: Path) -> None:
             if attempt == RETRIES:
                 raise RuntimeError(f"{url}: {error}") from error
             time.sleep(2**attempt)  # 2, 4, 8 s
+
+
+def is_valid(dest: Path, head: bytes) -> bool:
+    """Check the file signature (the CDC can return an HTML error page with status 200).
+
+    Args:
+        dest: Final path of the file; its suffix tells the expected format.
+        head: First bytes of the downloaded file.
+
+    Returns:
+        True if the content matches the expected format.
+    """
+    if dest.suffix == ".xpt":
+        return head.startswith(b"HEADER RECORD")
+    if dest.suffix == ".pdf":
+        return head.startswith(b"%PDF")
+    if dest.suffix == ".dat":
+        return not head.lstrip().startswith(b"<")
+    return True

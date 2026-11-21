@@ -1,5 +1,8 @@
-"""Bronze step, source files downloaded unchanged (only those not on disk yet).
+"""Build bronze data layer.
 
+Download unchanged files (only those not on disk yet).
+
+Files downloaded:
 - NHANES 1999-2018: participant data (.xpt) and codebook (.htm/.pdf) per dataset and cycle
 - NCHS linked mortality (follow-up to 2019): one .dat per cycle
 - Saved to data/01_bronze/<cycle>/ with their original names

@@ -1,5 +1,10 @@
 # pipeline/
+One file per pipeline step, in order:
 
-One file per pipeline step, in order: `s1_download_bronze`, `s2_build_raw_silver`, `s3_build_clean_silver`, `s4_build_gold` and `s5_build_model`. Each one has a `run()` that `main.py` calls.
+- `s1_download_bronze`      : Download raw data.
+- `s2_build_raw_silver`     : Merges data into 1 table.
+- `s3_build_clean_silver`   : Standardizes & cleans data.
+- `s4_build_gold`           : Prepares data for modeling.
+- `s5_build_model`          : Builds the models.
 
-The `s` prefix is there because Python cannot import modules whose name starts with a number.
+Each one has a `run()` that `main.py` calls.

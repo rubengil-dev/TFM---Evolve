@@ -1,17 +1,20 @@
-"""Silver clean step, the study population with clean variables and readable names.
+"""Build silver clean data layer.
 
-- Population: exam done, not pregnant and at least one lab value
-- CDC corrections for laboratory method changes (CORRECTIONS)
+Filters the study population and cleans the variables.
+
+Changes:
+- Population: exam done, not pregnant and at least one lab value.
 - Variables:
-  - Kept as they are, renamed (CLEAN_NAMES)
-  - Same test from two files → one column (cholesterol, triglycerides, CRP)
-  - Spanish lab units (urea, urine albumin/creatinine ratio, vitamin D)
-  - Triglycerides only with fasting ≥ FASTING_HOURS_MIN
-  - Blood pressure: mean of readings
+  - Readable names (renames.py).
+  - Converting to Spanish lab units: urea, urine albumin/creatinine ratio & vit-D.
+  - Merging tests that come from two files: cholesterol, triglycerides & CRP.
+  - Removing triglycerides if fasting < FASTING_HOURS_MIN.
+  - Averaging blood pressure.
   - Questionnaires → form answers (skipped questions: never drinkers, never smokers)
   - Exam survey weight for the 10 cycles combined
-- Values outside PLAUSIBLE_RANGES (data or unit errors) → missing
-- Saved to data/02_silver/silver_clean.parquet
+- Values:
+  - CDC corrections for NHANES laboratory method changes (corrections.py).
+  - Removing values outside PLAUSIBLE_RANGES.
 """
 
 # Imports
@@ -64,7 +67,10 @@ def run() -> None:
 def filter_population(raw: pd.DataFrame) -> pd.DataFrame:
     """Exam done, not pregnant and at least one lab value.
 
-    RIDSTATR = 2, RIDEXPRG ≠ 1 and any CLEAN_NAMES column starting with LB.
+    Means:
+        - RIDSTATR = 2
+        - RIDEXPRG ≠ 1
+        - CLEAN_NAMES column starting with LB
 
     Args:
         raw: Silver raw table.
@@ -239,7 +245,7 @@ def survey_weights(raw: pd.DataFrame) -> pd.Series:
 
 
 def lab_derived(raw: pd.DataFrame) -> pd.DataFrame:
-    """Lab variables built from NHANES ones.
+    """Units conversion and variables built from NHANES ones.
 
     - Total cholesterol: lipid file, biochemistry profile if missing
     - Urea = BUN × 2.14
@@ -276,13 +282,15 @@ def blood_pressure(raw: pd.DataFrame) -> pd.DataFrame:
         Systolic and diastolic pressure.
     """
     systolic = raw[["BPXSY1", "BPXSY2", "BPXSY3", "BPXSY4"]]
-    diastolic = raw[["BPXDI1", "BPXDI2", "BPXDI3", "BPXDI4"]].replace(0, np.nan)
-    # fmt: off
-    return pd.DataFrame({
-        "systolic_bp":  systolic.mean(axis=1),
-        "diastolic_bp": diastolic.mean(axis=1),
-    }, index=raw.index)
-    # fmt: on
+    diastolic = raw[["BPXDI1", "BPXDI2", "BPXDI3", "BPXDI4"]].replace(0, np.nan)  # 0 = manual measurement artifact
+
+    return pd.DataFrame(
+        {
+            "systolic_bp": systolic.mean(axis=1),
+            "diastolic_bp": diastolic.mean(axis=1),
+        },
+        index=raw.index,
+    )
 
 
 def questionnaire(raw: pd.DataFrame) -> pd.DataFrame:
@@ -297,13 +305,13 @@ def questionnaire(raw: pd.DataFrame) -> pd.DataFrame:
     frequency, drinks = alcohol(raw)
     # fmt: off
     return pd.DataFrame({
-        "smoking":           smoking(raw),
-        "alcohol_frequency": frequency,
-        "alcohol_drinks":    drinks,
-        "physical_activity": physical_activity(raw),
-        "sedentary_hours":   raw["PAD680"] / 60,
-        "fast_food_meals":   raw["DBD900"].replace(MORE_THAN_21_MEALS, 22),
-        "sleep_hours":       raw["SLD012"].fillna(raw["SLD010H"]),
+        "smoking"           :smoking(raw),
+        "alcohol_frequency" :frequency,
+        "alcohol_drinks"    :drinks,
+        "physical_activity" :physical_activity(raw),
+        "sedentary_hours"   :raw["PAD680"] / 60,
+        "fast_food_meals"   :raw["DBD900"].replace(MORE_THAN_21_MEALS, 22),
+        "sleep_hours"       :raw["SLD012"].fillna(raw["SLD010H"]),
     }, index=raw.index)
     # fmt: on
 

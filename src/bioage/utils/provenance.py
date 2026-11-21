@@ -1,8 +1,8 @@
 """Where a saved model comes from.
 
-- Fingerprint of the data it was trained on
-- Git commit of the code that trained it
-- Python and library versions it was saved with
+- Fingerprint of the data it was trained on.
+- Git commit of the code that trained it.
+- Python and library versions it was saved with.
 """
 
 # Imports

@@ -1,8 +1,19 @@
 """Gold validation before saving.
 
-- Blocking (error → Gold not saved): structure, size, coverage, required columns, outcome,
-  population, answers and plausible ranges
-- Warning only: consistency between variables
+Checks:
+1. Structure: exact columns and types.
+2. Size: enough persons and deaths, every cycle included.
+3. Coverage: % with value per column.
+4. Required: no missing values, one row per person.
+5. Outcome: death 0/1, follow-up in range (0.1-252 months), survey weight above 0.
+6. Population: study ages and known cycles.
+7. Categories: only allowed answers.
+8. Ranges: only plausible values.
+9. Consistency: pairs in order, BMI matching weight and height.
+
+Pipeline:
+- Blocking (1-8): if any fails, Gold is not saved.
+- Warning (9): only reported.
 """
 
 # Imports

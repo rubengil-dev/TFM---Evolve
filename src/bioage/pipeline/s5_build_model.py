@@ -1,7 +1,7 @@
-"""Model step of the pipeline, the final model of each level (1 to 4), the one the app uses.
+"""Building model from gold data layer.
 
-- Fitted on all of Gold, train and test (the test was already used once, in the final evaluation)
-- Preprocessing and algorithm of the level (LEVEL_COLUMNS, LEVEL_MODELS)
+- Fitted on all of Gold.
+- 4 model levels, based on what the app needs.
 - Biological age reference fitted on the model's own risk
 - Saved to models/<level>.joblib with its columns, what it was trained on and library versions
 """

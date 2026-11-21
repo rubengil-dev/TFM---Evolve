@@ -1,6 +1,6 @@
-"""Pipeline.
+"""Pipeline and logging setup.
 
-- Bronze → Silver raw → Silver clean → Gold → model
+Bronze → Silver raw → Silver clean → Gold → model
 """
 
 # Imports

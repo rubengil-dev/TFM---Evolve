@@ -1,7 +1,10 @@
-"""Gold step, the only table the model and the app read (one row per person).
+"""Build gold data layer.
 
+This is the only table the model and the app read (one row per person).
+
+Changes:
 - Derived features (utils/features.py)
-- Columns: identification, outcome, candidate predictors (config/gold_columns.py) and derived features
+- Columns: identification, outcome, selected predictors (config/gold_columns.py) and derived features
 - Follow-up of 0 months → FOLLOW_UP_MIN
 - Validation (utils/validation.py): any error → not saved
 - Saved to data/03_gold/gold.parquet

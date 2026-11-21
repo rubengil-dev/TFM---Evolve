@@ -1,8 +1,11 @@
-"""Silver raw step, every Bronze file in one table (one row per person, every variable, no cleaning).
+"""Build silver raw data layer.
 
+Every Bronze file in one table with one row per person.
+
+Changes:
 - Files of each cycle joined by SEQN on DEMO participants (mortality included, DXA averaged)
 - Adults AGE_MIN-AGE_MAX eligible for mortality follow-up
-- Variable aliases renamed so each variable has the same name in every cycle
+- Variable alias standardization, so each variable has the same name in every cycle
 - Cycles stacked and saved to data/02_silver/silver_raw.parquet
 """
 

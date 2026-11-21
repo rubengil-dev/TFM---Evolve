@@ -12,4 +12,4 @@ Files within this folder contain internal configuration.
 - `validation_rules.py` : Gold data validation thresholds.
 - `plausible_ranges.py` : Removes data artifacts (not illness data).
 
-Hand-aligned tables: ruff does not format this folder, keep the columns aligned when editing.
+NOTE: To keep hand-aligned tables, ruff does not format this folder.

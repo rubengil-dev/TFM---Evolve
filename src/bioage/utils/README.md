@@ -1,5 +1,11 @@
 # utils/
+Functions shared across the project:
 
-Functions shared across the project, one file per topic: download, NHANES readers, derived features, Gold validation, layer summary, the PhenoAge formula, where a model comes from, and helpers for the working notebooks.
-
-`features.py` is shared by the pipeline and the app, so both compute the derived features exactly the same way.
+- `data_download`   : Helpers to download files.
+- `nhanes`          : Helps with NHANES data processing.
+- `summary`         : Summary printed after every data layer saved.
+- `features`        : Builds derived features.
+- `validation`      : Gold validation before saving.
+- `provenance`      : Model metadata info.
+- `phenoage`        : PhenoAge external reference formula.
+- `notebook_helpers`: Helpers used only on exploratory notebooks.
