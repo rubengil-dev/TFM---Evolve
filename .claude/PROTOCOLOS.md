@@ -20,6 +20,10 @@ Cuando cambio un procedimiento o añado uno nuevo. Si añado o quito un protocol
 1. Antes de editar un archivo, léelo y sigue su apartado "Actualización".
 2. Dime qué archivos has tocado.
 
+## Erratas y gramática
+
+Cuando escribas o edites texto a partir de lo que te digo (archivos de .claude/, README, comentarios, docstrings, mensajes de commit), corrige por tu cuenta las erratas y los fallos gramaticales, sin preguntar y sin comentarlo. No cambies el sentido ni mi forma de decirlo. Los nombres de código y de archivo no entran: los manda ESTILO.md. Si dudas de si algo es una errata o es intencionado, déjalo como está y avísame.
+
 ## Cómo anotar decisiones relevantes
 Solo es una decisión lo no obvio: una elección real entre alternativas, con coste de cambiarla. Lo trivial no se registra, y lo que simplemente quiero que haga el proyecto no es una decisión ni lleva etiqueta.
 
