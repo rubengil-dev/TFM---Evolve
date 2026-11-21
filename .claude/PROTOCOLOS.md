@@ -1,7 +1,7 @@
 # Metadatos
 
 ## Qué contiene
-Cómo se ejecuta cada procedimiento que repetimos: pruebas, edición de archivos de `.claude/`, anotación de decisiones, cierre de implementación, cierre de sesión y revisión integral. Es igual en todos los proyectos.
+Cómo se ejecuta cada procedimiento que repetimos: pruebas, edición de archivos de `.claude/`, corrección de erratas, anotación de decisiones, cierre de implementación, cierre de sesión y revisión integral. Es igual en todos los proyectos.
 
 Lo que no encaje en esta descripción no va aquí.
 
