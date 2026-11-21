@@ -16,11 +16,12 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from bioage.config.paths import BRONZE, SILVER, SILVER_RAW
+from bioage.config.paths import BRONZE, SILVER_RAW
 from bioage.config.renames import CYCLE_ALIASES
 from bioage.config.sources import CYCLES, DATASETS, MORTALITY_FILE
 from bioage.config.study import AGE_MAX, AGE_MIN
 from bioage.utils.nhanes import cycle_label, dxa_average_imputations, read_mortality, read_xpt
+from bioage.utils.step_info import print_raw_summary, save_layer
 
 logger = logging.getLogger(__name__)
 
@@ -35,8 +36,8 @@ def run() -> None:
         cycles.append(table)
 
     raw = pd.concat(cycles, ignore_index=True)
-    save(raw)
-    print_summary(raw)
+    save_layer(raw, SILVER_RAW)
+    print_raw_summary(raw, SILVER_RAW)
 
 
 def merge_cycle_files(year: int) -> pd.DataFrame:
@@ -165,26 +166,3 @@ def rename_aliases(table: pd.DataFrame) -> pd.DataFrame:
     if len(repeated):
         raise ValueError(f"Rename collision: {list(repeated)}")
     return table
-
-
-def save(raw: pd.DataFrame) -> None:
-    """Silver raw → parquet.
-
-    Args:
-        raw: Silver raw table.
-    """
-    SILVER.mkdir(parents=True, exist_ok=True)
-    raw.to_parquet(SILVER_RAW, index=False)
-
-
-def print_summary(raw: pd.DataFrame) -> None:
-    """Print persons, deaths and columns per cycle.
-
-    Args:
-        raw: Silver raw table.
-    """
-    summary = raw.groupby("cycle").agg(persons=("SEQN", "size"), deaths=("MORTSTAT", "sum")).astype(int)
-    print(summary.to_string())
-    print(
-        f"\n{len(raw)} persons, {int(raw['MORTSTAT'].sum())} deaths, {raw.shape[1]} columns, saved to {SILVER_RAW.name}"
-    )

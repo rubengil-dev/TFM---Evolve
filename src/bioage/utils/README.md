@@ -3,7 +3,7 @@ Functions shared across the project:
 
 - `data_download`   : Helpers to download files.
 - `nhanes`          : Helps with NHANES data processing.
-- `summary`         : Summary printed after every data layer saved.
+- `step_info`       : Saves each data layer and prints the summary of each step.
 - `features`        : Builds derived features.
 - `validation`      : Gold validation before saving.
 - `provenance`      : Model metadata info.

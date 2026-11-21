@@ -36,7 +36,7 @@ from bioage.config.renames import CLEAN_NAMES
 from bioage.config.sources import CYCLES
 from bioage.config.study import ALCOHOL_FREQUENCY, FASTING_HOURS_MIN, YOUTH_CURRENT_SMOKER_DAYS
 from bioage.utils.nhanes import cycle_label
-from bioage.utils.summary import print_layer_summary
+from bioage.utils.step_info import print_layer_summary, save_layer
 
 
 def run() -> None:
@@ -60,7 +60,7 @@ def run() -> None:
     clean = vitamin_d_to_ng_ml(clean)
     clean = remove_implausible_values(clean)
 
-    save(clean)
+    save_layer(clean, SILVER_CLEAN)
     print_layer_summary(clean, SILVER_CLEAN)
 
 
@@ -446,12 +446,3 @@ def remove_implausible_values(clean: pd.DataFrame) -> pd.DataFrame:
         clean[variable] = clean[variable].mask(implausible)
     print()
     return clean
-
-
-def save(clean: pd.DataFrame) -> None:
-    """Silver clean → parquet.
-
-    Args:
-        clean: Silver clean table.
-    """
-    clean.to_parquet(SILVER_CLEAN, index=False)

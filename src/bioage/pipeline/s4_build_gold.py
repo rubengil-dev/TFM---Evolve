@@ -14,10 +14,10 @@ Changes:
 import pandas as pd
 
 from bioage.config.gold_columns import ID_COLUMNS, OUTCOME_COLUMNS, SELECTED_PREDICTORS
-from bioage.config.paths import GOLD, GOLD_TABLE, SILVER_CLEAN
+from bioage.config.paths import GOLD_TABLE, SILVER_CLEAN
 from bioage.config.study import FOLLOW_UP_MIN
 from bioage.utils.features import derived_features
-from bioage.utils.summary import print_layer_summary
+from bioage.utils.step_info import print_layer_summary, save_layer
 from bioage.utils.validation import validate_gold
 
 
@@ -34,7 +34,7 @@ def run() -> None:
     gold = fix_zero_follow_up(gold)
     validate_gold(gold)
 
-    save(gold)
+    save_layer(gold, GOLD_TABLE)
     print_layer_summary(gold, GOLD_TABLE)
 
 
@@ -49,13 +49,3 @@ def fix_zero_follow_up(gold: pd.DataFrame) -> pd.DataFrame:
     """
     gold["follow_up_months"] = gold["follow_up_months"].clip(lower=FOLLOW_UP_MIN)
     return gold
-
-
-def save(gold: pd.DataFrame) -> None:
-    """Gold → parquet.
-
-    Args:
-        gold: Gold table.
-    """
-    GOLD.mkdir(parents=True, exist_ok=True)
-    gold.to_parquet(GOLD_TABLE, index=False)

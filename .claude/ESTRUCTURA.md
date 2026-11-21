@@ -92,7 +92,7 @@ TFM/
 │           ├── notebook_helpers.py   # Apoyo a notebooks
 │           ├── phenoage.py           # Fórmula PhenoAge
 │           ├── provenance.py         # Origen del modelo
-│           ├── summary.py            # Resumen de capas
+│           ├── step_info.py          # Guardado y resúmenes
 │           └── validation.py         # Validación de Gold
 ├── tests/                            # replica src/
 ├── .gitattributes                    # Saltos de línea
