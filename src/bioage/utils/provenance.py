@@ -7,22 +7,14 @@
 
 # Imports
 import hashlib
+import re
 import subprocess
-from importlib.metadata import version
+from importlib.metadata import requires, version
 from platform import python_version_tuple
 
 import pandas as pd
 
 from bioage.config.paths import ROOT
-
-LIBRARIES = [
-    "numpy",
-    "pandas",
-    "scipy",
-    "scikit-learn",
-    "scikit-survival",
-    "joblib",
-]  # the ones a saved model depends on
 
 
 def data_fingerprint(data: pd.DataFrame) -> str:
@@ -51,12 +43,15 @@ def code_version() -> str:
 
 
 def library_versions() -> dict[str, str]:
-    """Python (major.minor) and the version of each library in LIBRARIES.
+    """Python (major.minor) and the installed version of each project dependency.
+
+    - Project dependencies = what a saved model needs to predict (pyproject.toml)
 
     Returns:
         Name → version.
     """
-    return {"python": ".".join(python_version_tuple()[:2]), **{name: version(name) for name in LIBRARIES}}
+    libraries = [re.split(r"[ ;<>=!~\[]", requirement)[0] for requirement in requires("bioage")]
+    return {"python": ".".join(python_version_tuple()[:2]), **{name: version(name) for name in libraries}}
 
 
 def git(*arguments: str) -> str:

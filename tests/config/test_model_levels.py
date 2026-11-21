@@ -3,7 +3,7 @@ Configuration consistency, without data:
 - Every Gold predictor used by a model or discarded with its reason
 - Model variables with what the app needs to check them
 - One algorithm and one saved model per level
-- App dependencies: the libraries of a saved model, each pinned to one version
+- App dependencies: each pinned to one version, all saved with the model
 """
 
 # Imports
@@ -14,7 +14,7 @@ from bioage.config.model_levels import DISCARDED, LEVEL_COLUMNS, LEVEL_MODELS
 from bioage.config.paths import ROOT, TRAINED_MODELS
 from bioage.config.plausible_ranges import PLAUSIBLE_RANGES
 from bioage.config.study import CATEGORICAL_LEVELS
-from bioage.utils.provenance import LIBRARIES
+from bioage.utils.provenance import library_versions
 
 GOLD_PREDICTORS = SELECTED_PREDICTORS + DERIVED_FEATURES
 MODEL_VARIABLES = set().union(*LEVEL_COLUMNS.values())
@@ -42,8 +42,8 @@ def test_every_level_has_algorithm_and_saved_model() -> None:
     assert all((TRAINED_MODELS / f"{level}.joblib").exists() for level in LEVEL_COLUMNS)
 
 
-def test_app_dependencies_are_the_model_libraries() -> None:
-    assert set(app_dependencies()) == set(LIBRARIES)
+def test_saved_versions_cover_every_app_dependency() -> None:
+    assert set(library_versions()) == {"python", *app_dependencies()}
 
 
 def app_dependencies() -> dict[str, str]:
