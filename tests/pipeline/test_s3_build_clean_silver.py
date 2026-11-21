@@ -137,3 +137,14 @@ def test_implausible_values_blanked(capsys: pytest.CaptureFixture[str]) -> None:
     assert silver.remove_implausible_values(clean)["glucose"].tolist() == pytest.approx(
         [np.nan, 30, 600, np.nan], nan_ok=True
     )
+
+
+def test_vitamin_d_in_spanish_units() -> None:
+    raw = pd.DataFrame(
+        {
+            "PHAFSTHR": [10], "PHAFSTMN": [0], "LBXTC": [200], "LBXSCH": [np.nan], "LBXSBU": [14],
+            "LBXCRP": [0.1], "LBXHSCRP": [np.nan], "LBXTR": [100], "LBXSTR": [np.nan],
+            "URXUMA": [10], "URXUCR": [100], "LBXVIDMS": [75.0],
+        }
+    )  # fmt: skip
+    assert silver.lab_derived(raw)["vitamin_d"].iloc[0] == pytest.approx(30.0)

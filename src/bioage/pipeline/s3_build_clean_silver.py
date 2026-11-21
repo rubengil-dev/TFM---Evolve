@@ -61,7 +61,6 @@ def run() -> None:
         ],
         axis=1,
     )
-    clean = vitamin_d_to_ng_ml(clean)
     clean = remove_implausible_values(clean)
 
     save_layer(clean, SILVER_CLEAN)
@@ -264,6 +263,7 @@ def lab_derived(raw: pd.DataFrame) -> pd.DataFrame:
     - CRP (mg/L): standard until 2010 (mg/dL × 10), high sensitivity from 2015
     - Triglycerides: lipid file, biochemistry profile if missing; only if fasting ≥ FASTING_HOURS_MIN
     - Urine albumin/creatinine ratio (mg/g)
+    - Vitamin D: nmol/L → ng/mL (÷ 2.5)
 
     Args:
         raw: Silver raw table.
@@ -280,6 +280,7 @@ def lab_derived(raw: pd.DataFrame) -> pd.DataFrame:
         "crp":               (raw["LBXCRP"] * 10).fillna(raw["LBXHSCRP"]),
         "triglycerides":     raw["LBXTR"].fillna(raw["LBXSTR"]).where(fasted),
         "urine_acr":         raw["URXUMA"] / raw["URXUCR"] * 100,
+        "vitamin_d":         raw["LBXVIDMS"] / 2.5,
     }, index=raw.index)
     # fmt: on
 
@@ -426,19 +427,6 @@ def physical_activity(raw: pd.DataFrame) -> pd.Series:
         default=None,
     )
     return pd.Series(answer, index=raw.index)
-
-
-def vitamin_d_to_ng_ml(clean: pd.DataFrame) -> pd.DataFrame:
-    """Vitamin D: nmol/L → ng/mL (÷ 2.5).
-
-    Args:
-        clean: Silver clean table.
-
-    Returns:
-        The same table with vitamin D in ng/mL.
-    """
-    clean["vitamin_d"] = clean["vitamin_d"] / 2.5
-    return clean
 
 
 def remove_implausible_values(clean: pd.DataFrame) -> pd.DataFrame:
