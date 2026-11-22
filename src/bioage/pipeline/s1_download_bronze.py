@@ -7,6 +7,8 @@ Files downloaded:
 - NCHS linked mortality (follow-up to 2019): one .dat per cycle
 - Saved to data/01_bronze/<cycle>/ with their original names
 - manifest.csv: file, URL, SHA-256 and first download date
+
+NOTE: Stops if any file could not be downloaded; warns if a file changed since the previous manifest.
 """
 
 # Imports
@@ -24,12 +26,18 @@ logger = logging.getLogger(__name__)
 
 
 def run() -> None:
-    """Bronze step, called from main."""
+    """Bronze step, called from main.
+
+    Raises:
+        RuntimeError: If any file could not be downloaded.
+    """
     BRONZE.mkdir(parents=True, exist_ok=True)
     jobs = build_jobs()
     failed = download_all(jobs)
     write_manifest(jobs)
     print_summary(jobs, failed)
+    if failed:
+        raise RuntimeError(f"{len(failed)} files not downloaded: Bronze incomplete")
 
 
 def build_jobs() -> list[dict]:
@@ -140,6 +148,7 @@ def download_date(previous: dict | None, sha256: str, dest: Path) -> str:
     - Same file as in the previous manifest → its date, even if the file was copied since
     - Previous manifest without SHA-256 (older format) → its date
     - New or changed file → its modification date, the moment it was just downloaded
+    - Changed file → also a warning: the CDC replaced it or it was altered on disk
 
     Args:
         previous: Row of the file in the previous manifest, or None.
@@ -151,6 +160,8 @@ def download_date(previous: dict | None, sha256: str, dest: Path) -> str:
     """
     if previous and previous.get("sha256", sha256) == sha256:
         return previous["downloaded_at"]
+    if previous and "sha256" in previous:
+        logger.warning("%s changed since the previous manifest", dest.name)
     return datetime.fromtimestamp(dest.stat().st_mtime).strftime("%Y-%m-%d %H:%M")
 
 
