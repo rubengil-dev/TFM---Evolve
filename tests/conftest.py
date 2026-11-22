@@ -1,9 +1,12 @@
 """Shared test data, without data/.
 
 - made_up_gold: small Gold with every column, valid values and a few gaps
+- Without the training libraries (CI): the tests of training code are not collected
 """
 
 # Imports
+from importlib.util import find_spec
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -15,6 +18,17 @@ from bioage.config.study import CATEGORICAL_LEVELS
 from bioage.config.validation_rules import REQUIRED
 from bioage.utils.features import derived_features
 from bioage.utils.nhanes import cycle_label
+
+TRAINING_LIBRARIES = ["lifelines", "matplotlib", "optuna", "requests", "xgboost"]
+TRAINING_TESTS = [
+    "models/test_s3_algorithms.py",
+    "models/test_s5_evaluation.py",
+    "pipeline/test_s1_download_bronze.py",
+    "pipeline/test_s5_build_model.py",
+    "utils/test_data_download.py",
+    "utils/test_notebook_helpers.py",
+]
+collect_ignore = [] if all(find_spec(name) for name in TRAINING_LIBRARIES) else TRAINING_TESTS
 
 PEOPLE = 600
 GAPS = 0.03  # share of missing values in each optional column
