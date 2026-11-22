@@ -1,9 +1,10 @@
-"""Biological age and derived features, on made-up values.
+"""Tests: Models - Step 4, biological age, on made-up values.
 
 - The typical person of each age gets that same age back, inside and outside the study ages
 - More risk → older; reference that does not grow with age → error
 - Survey weights move the reference
-- eGFR and age groups
+- Men and women in one call each read their own curve; the curve ends exactly at the last study age
+- Risk read at the 10-year horizon; risks of exactly 0 or 1 still give a finite age
 """
 
 # Imports
@@ -11,8 +12,14 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from bioage.models.s4_biological_age import biological_age, fit_reference, log_cumulative_hazard, reference_risk
-from bioage.utils.features import age_groups, egfr_ckd_epi_2021
+from bioage.config.study import AGE_MAX, AGE_MIN, HORIZON_MONTHS
+from bioage.models.s4_biological_age import (
+    biological_age,
+    fit_reference,
+    log_cumulative_hazard,
+    reference_risk,
+    risk_at_horizon,
+)
 
 
 def made_up_risk(slope: float = 0.09) -> tuple[pd.Series, pd.DataFrame]:
@@ -59,12 +66,33 @@ def test_weights_move_the_reference() -> None:
     assert np.all(weighted["female"] > unweighted["female"]) and np.all(weighted["male"] > unweighted["male"])
 
 
-def test_egfr_ckd_epi_2021() -> None:
-    egfr = egfr_ckd_epi_2021(pd.Series([0.7, 1.2, 1.0]), pd.Series([40, 60, 50]), pd.Series(["female", "male", None]))
-    assert egfr.tolist() == pytest.approx([112.0, 69.2, np.nan], abs=0.1, nan_ok=True)
+def test_mixed_sexes_read_their_own_curve() -> None:
+    reference = fit_reference(*made_up_risk())
+    ages, sexes = np.array([40, 40, 60, 60]), np.array(["female", "male", "male", "female"])
+    assert biological_age(reference_risk(ages, sexes, reference), sexes, reference) == pytest.approx(ages, abs=1e-6)
 
 
-def test_age_groups() -> None:
-    groups = age_groups(pd.DataFrame({"age": [18, 29.9, 30, 79, 80]}))
-    assert groups.astype(object).tolist()[:4] == ["18-29", "18-29", "30-39", "70-79"]
-    assert pd.isna(groups.iloc[4])
+def test_curve_covers_the_study_ages_exactly() -> None:
+    ages = fit_reference(*made_up_risk())["ages"]
+    assert (ages[0], ages[-1]) == (AGE_MIN, AGE_MAX)
+
+
+class FixedCurves:
+    """Stand-in for a fitted pipeline: survival exp(-rate × months) for each person."""
+
+    def __init__(self, rates: list[float]) -> None:
+        self.rates = rates
+
+    def predict_survival_function(self, data: pd.DataFrame) -> list:
+        return [lambda months, rate=rate: np.exp(-rate * months) for rate in self.rates]
+
+
+def test_risk_read_at_the_horizon() -> None:
+    risk = risk_at_horizon(FixedCurves([0.001, 0.01]), pd.DataFrame(index=[0, 1]))
+    expected = [1 - np.exp(-0.001 * HORIZON_MONTHS), 1 - np.exp(-0.01 * HORIZON_MONTHS)]
+    assert risk.tolist() == pytest.approx(expected)
+
+
+def test_risk_of_zero_or_one_gives_a_finite_age() -> None:
+    reference = fit_reference(*made_up_risk())
+    assert np.isfinite(biological_age(np.array([0.0, 1.0]), ["female", "male"], reference)).all()

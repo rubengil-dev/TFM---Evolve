@@ -1,7 +1,9 @@
-"""Saved models, as the app uses them.
+"""Tests: App - Prediction with the saved models, as the app uses them.
 
-- Same biological age as the reference for a few made-up people (REFERENCE_AGES)
+- Same biological age as the reference for a few made-up people (REFERENCE_AGES), in the expected order
+- One person alone gets the same age as in a group (the app predicts one at a time)
 - Prediction without the training libraries
+- Library versions: a model saved with other versions is refused, naming each library
 - After a deliberate retrain or preprocessing change: write_reference() and review the diff
 """
 
@@ -15,9 +17,11 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from bioage.app.predict import load_bundle, predict_age
+from bioage.app import predict
+from bioage.app.predict import check_versions, load_bundle, predict_age
 from bioage.config.model_levels import LEVEL_COLUMNS
 from bioage.config.paths import ROOT
+from bioage.utils.provenance import library_versions
 
 REFERENCE_AGES = Path(__file__).parent / "reference_ages.json"
 TOLERANCE = 0.01  # years
@@ -70,13 +74,44 @@ def test_ages_match_reference(level: str) -> None:
     assert ages.to_dict() == pytest.approx(expected, abs=TOLERANCE)
 
 
+@pytest.mark.parametrize("level", LEVEL_COLUMNS)
+def test_ages_in_the_expected_order(level: str) -> None:
+    ages = pd.Series(predict_age(load_bundle(level), PEOPLE), index=PEOPLE.index)
+    assert ages["healthy_young"] < ages["typical_middle"] < ages["unhealthy_old"]
+
+
+@pytest.mark.parametrize("level", LEVEL_COLUMNS)
+def test_one_person_alone_gets_the_same_age(level: str) -> None:
+    bundle = load_bundle(level)
+    together = predict_age(bundle, PEOPLE)
+    alone = [predict_age(bundle, PEOPLE.iloc[[row]])[0] for row in range(len(PEOPLE))]
+    assert alone == pytest.approx(together.tolist())
+
+
 def test_prediction_without_training_libraries() -> None:
     code = (
         "import sys; from bioage.app.predict import load_bundle; load_bundle('full'); "
-        "print([name for name in ('xgboost', 'optuna', 'matplotlib') if name in sys.modules])"
+        "print([name for name in ('xgboost', 'optuna', 'matplotlib', 'lifelines') if name in sys.modules])"
     )
     result = subprocess.run([sys.executable, "-c", code], cwd=ROOT, capture_output=True, text=True, check=True)
     assert result.stdout.strip() == "[]"
+
+
+def test_same_versions_accepted() -> None:
+    check_versions(library_versions())
+
+
+def test_other_versions_refused_naming_each_library() -> None:
+    saved = {**library_versions(), "numpy": "1.0.0", "not_installed": "2.0"}
+    with pytest.raises(RuntimeError) as error:
+        check_versions(saved)
+    assert "numpy 1.0.0 saved" in str(error.value) and "not_installed 2.0 saved, None installed" in str(error.value)
+
+
+def test_loading_checks_the_versions(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(predict.joblib, "load", lambda path: {"versions": {"numpy": "1.0.0"}})
+    with pytest.raises(RuntimeError, match="numpy 1.0.0 saved"):
+        load_bundle("routine")
 
 
 def write_reference() -> None:
