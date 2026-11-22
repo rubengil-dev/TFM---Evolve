@@ -18,17 +18,17 @@ from bioage.config.paths import ROOT
 
 
 def data_fingerprint(data: pd.DataFrame) -> str:
-    """Short hash of the rows and columns of data: same data → same fingerprint.
+    """Hash of the rows and columns of data: same data → same fingerprint.
 
     Args:
         data: Table to identify.
 
     Returns:
-        First 16 characters of the hash.
+        SHA-256 hash, in hexadecimal.
     """
     rows = pd.util.hash_pandas_object(data, index=False).to_numpy().tobytes()
     columns = ",".join(data.columns).encode()
-    return hashlib.sha256(columns + rows).hexdigest()[:16]
+    return hashlib.sha256(columns + rows).hexdigest()
 
 
 def code_version() -> str:

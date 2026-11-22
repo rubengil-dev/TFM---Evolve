@@ -24,7 +24,7 @@ from bioage.utils.provenance import data_fingerprint
 # Test people of the final evaluation (notebooks/final_evaluation.ipynb)
 TEST_PEOPLE = 9699
 TEST_DEATHS = 1086
-TEST_FINGERPRINT = "3db7cb485c350b61"  # sorted seqn of the test people
+TEST_FINGERPRINT = "f5eb679c40ea356e060e8386240fde4c9b17ebcb7e9cce92f5e2c700086996d8"  # sorted seqn of the test people
 
 needs_data = pytest.mark.skipif(not GOLD_TABLE.exists(), reason="needs data/, not in git")
 
@@ -63,5 +63,5 @@ def test_models_trained_on_current_gold(gold: pd.DataFrame, level: str) -> None:
 
 
 def seqn_fingerprint(data: pd.DataFrame) -> str:
-    """Short hash of the sorted seqn of data."""
-    return hashlib.sha256(",".join(map(str, sorted(data["seqn"]))).encode()).hexdigest()[:16]
+    """Hash of the sorted seqn of data."""
+    return hashlib.sha256(",".join(map(str, sorted(data["seqn"]))).encode()).hexdigest()
