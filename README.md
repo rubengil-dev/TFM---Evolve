@@ -7,7 +7,6 @@ It is not medical advice or a diagnosis.
 ## Who it is for and why
 - For people in Spain without medical training, using it from home.
 - No typing values by hand: the app reads them from the PDF.
-- Truly free: it is not a lead magnet or part of a funnel.
 - An understandable result: an age and an explanation, not a table of values.
 
 ## How it works
@@ -15,8 +14,6 @@ It is not medical advice or a diagnosis.
 - **Model:** there is no "true biological age" label, so a survival model (Cox) estimates the risk of dying within 10 years, and that risk is translated into the age at which a typical person of the same sex has the same risk, in the style of PhenoAge (Levine et al., 2018).
 - **Four levels**, depending on what the user brings: basic blood test, extended blood test, basic plus questionnaire, or everything.
 - **Privacy:** this is health data; the app processes everything in memory and stores nothing.
-
-The details of the data, the decisions and the evaluation are in [`docs/entregas/`](docs/entregas/) (in Spanish).
 
 ## Status
 - Done: data, preparation and model.
