@@ -1,6 +1,13 @@
-"""Step 2, preprocessing pipeline, fitted only on train and reused by the app.
+"""ML Pipeline: Step 2 - Preprocessing.
 
-- Clip extremes → fill gaps → log, scale and encode → squared terms
+Fitted only on train to avoid data leakage.
+
+Steps:
+1. Clip extremes
+2. Fill gaps
+3. Log & scale
+4. Encode
+5. Squared terms
 """
 
 # Imports
@@ -138,8 +145,8 @@ class GroupImputer(BaseEstimator, TransformerMixin):
         filled = data[self.columns].copy()
         for column in self.columns:
             values = keys.map(self.by_group_[column]).fillna(self.overall_[column])
-            filled[column] = filled[column].where(filled[column].notna(), values)
-        return consistent_alcohol(filled)
+            filled[column] = filled[column].fillna(values)
+        return filled
 
 
 def group_keys(data: pd.DataFrame) -> pd.Series:
@@ -168,20 +175,6 @@ def fill_value(values: pd.Series, column: str) -> float | str:
         return values.median()
     modes = values.mode()
     return modes.iloc[0] if len(modes) else np.nan
-
-
-def consistent_alcohol(filled: pd.DataFrame) -> pd.DataFrame:
-    """No drinks per day for people who never drink.
-
-    Args:
-        filled: Columns already filled.
-
-    Returns:
-        The same table with consistent alcohol answers.
-    """
-    if {"alcohol_frequency", "alcohol_drinks"} <= set(filled.columns):
-        filled.loc[filled["alcohol_frequency"] == "never", "alcohol_drinks"] = 0.0
-    return filled
 
 
 def log_skewed(numeric: pd.DataFrame) -> pd.DataFrame:

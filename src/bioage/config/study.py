@@ -67,12 +67,11 @@ AGE_GROUP_EDGES = [18, 30, 40, 50, 60, 70, 80]
 # Preprocessing: Outliers extremes
 CLIP_QUANTILES = (0.001, 0.999)
 
-# Preprocessing: Includes variables discarded in notebooks to keep them reproducible
+# Preprocessing: Skewed variables, in logarithm
 LOG_VARIABLES = [
-    "rdw", "neutrophils", "lymphocytes", "monocytes", "eosinophils", "basophils",
+    "neutrophils", "lymphocytes", "monocytes",
     "glucose", "creatinine", "urea", "ast", "alt",
-    "triglycerides", "ggt", "alkaline_phosphatase", "bilirubin", "hba1c", "crp", "ldh", "urine_acr",
-    "alcohol_drinks", "fast_food_meals",
+    "ggt", "alkaline_phosphatase", "ldh", "urine_acr",
 ]
 
 # Preprocessing: U-shaped relationships

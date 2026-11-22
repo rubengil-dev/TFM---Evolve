@@ -38,12 +38,6 @@ def test_imputer_keeps_given_values_and_falls_back_to_overall(made_up_gold: pd.D
     assert filled.tolist() == pytest.approx([123, made_up_gold.loc[made_up_gold["age"] < 70, "glucose"].median()])
 
 
-def test_imputer_gives_no_drinks_to_never_drinkers(made_up_gold: pd.DataFrame) -> None:
-    imputer = GroupImputer(["alcohol_frequency", "alcohol_drinks"]).fit(made_up_gold)
-    person = pd.DataFrame({"age": [45], "sex": ["male"], "alcohol_frequency": ["never"], "alcohol_drinks": [np.nan]})
-    assert imputer.transform(person)["alcohol_drinks"].iloc[0] == 0
-
-
 def test_fill_value_follows_the_column_not_the_series_name() -> None:
     answers = pd.Series(["never", "current", "never"], name="anything")
     assert fill_value(answers, "smoking") == "never"
