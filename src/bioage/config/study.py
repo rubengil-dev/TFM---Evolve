@@ -38,6 +38,7 @@ MODEL_PARAMS = {
 HORIZON_MONTHS = 120
 CALIBRATION_GROUPS = 10
 BOOTSTRAP_SAMPLES = 200
+YEARS_SEARCHED = 50  # Largest shift tried when telling a calibration gap in years
 
 # Optuna tuning (kind, lowest, highest)
 TUNING_TRIALS = 50

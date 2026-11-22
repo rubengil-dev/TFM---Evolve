@@ -1,13 +1,18 @@
-"""Helpers shared by the working notebooks of the model (lifelines, analysis only).
+"""Helpers shared by the working notebooks of the model (analysis and display only).
 
 - cox_weights: hazard ratio of each feature with its 95% interval
 - variable_of: Gold variable behind a feature
 - without: a list of columns minus some
+- print_split_summary: people and deaths of train and test
+- plot_calibration: predicted against observed risk
 """
 
 # Imports
+import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 from lifelines import CoxPHFitter
+from matplotlib.figure import Figure
 
 from bioage.models.s2_preprocessing import build_preprocessor
 
@@ -89,3 +94,44 @@ def without(columns: list[str], removed: list[str]) -> list[str]:
         The remaining columns.
     """
     return [column for column in columns if column not in removed]
+
+
+def print_split_summary(train: pd.DataFrame, test: pd.DataFrame, folds: list[tuple[np.ndarray, np.ndarray]]) -> None:
+    """Print the people and deaths per part and per cycle.
+
+    Args:
+        train: Train part of Gold.
+        test: Test part of Gold.
+        folds: Cross-validation folds of train.
+    """
+    parts = pd.concat([train.assign(part="train"), test.assign(part="test")])
+    summary = parts.groupby(["cycle", "part"])["death"].agg(people="size", deaths="sum").unstack("part")
+    print(summary.astype(int).to_string())
+    print(f"train: {len(train)} people, {int(train['death'].sum())} deaths")
+    print(f"test:  {len(test)} people, {int(test['death'].sum())} deaths")
+    print(f"folds: {[len(validation) for _, validation in folds]} people in each validation part")
+
+
+def plot_calibration(details: dict[str, dict]) -> Figure:
+    """One panel per model: predicted against observed risk, diagonal = perfect.
+
+    Args:
+        details: Detail of each model, from evaluate_level.
+
+    Returns:
+        The figure.
+    """
+    figure, axes = plt.subplots(
+        1, len(details), figsize=(3.2 * len(details), 3.4), sharex=True, sharey=True, squeeze=False
+    )
+    for axis, (name, detail) in zip(axes[0], details.items(), strict=True):
+        table = detail["calibration"]
+        limit = max(table["predicted"].max(), table["observed"].max()) * 1.05
+        axis.plot([0, limit], [0, limit], color="#b0b0b0", linewidth=1)
+        axis.plot(table["predicted"], table["observed"], color="#2a78d6", linewidth=2, marker="o", markersize=5)
+        axis.set_title(name, fontsize=11)
+        axis.set_xlabel("Predicted risk")
+        axis.spines[["top", "right"]].set_visible(False)
+    axes[0][0].set_ylabel("Observed risk")
+    figure.tight_layout()
+    return figure

@@ -1,7 +1,7 @@
-"""Step 1, split of Gold.
+"""ML Pipeline: Step 1 - Splitting Gold.
 
-- Random 80/20, stratified by cycle and death
-- 5 cross-validation folds inside train
+- Split: 80/20, stratified by cycle and death.
+- Cross-validation: 5 folds inside train.
 """
 
 # Imports
@@ -21,22 +21,8 @@ def split_data(gold: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, list[tup
     Returns:
         Train, test and the folds.
     """
-    train, test = split_train_test(gold)
-    folds = cv_folds(train)
-    print_summary(train, test, folds)
-    return train, test, folds
-
-
-def split_train_test(gold: pd.DataFrame) -> list[pd.DataFrame]:
-    """Train and test, stratified by cycle and death.
-
-    Args:
-        gold: Gold table.
-
-    Returns:
-        Train and test.
-    """
-    return train_test_split(gold, test_size=TEST_SIZE, stratify=strata(gold), random_state=SPLIT_SEED)
+    train, test = train_test_split(gold, test_size=TEST_SIZE, stratify=strata(gold), random_state=SPLIT_SEED)
+    return train, test, cv_folds(train)
 
 
 def cv_folds(train: pd.DataFrame, seed: int = SPLIT_SEED) -> list[tuple[np.ndarray, np.ndarray]]:
@@ -63,19 +49,3 @@ def strata(data: pd.DataFrame) -> pd.Series:
         Stratum label of each person.
     """
     return data["cycle"].astype(str) + "_" + data["death"].astype(int).astype(str)
-
-
-def print_summary(train: pd.DataFrame, test: pd.DataFrame, folds: list[tuple[np.ndarray, np.ndarray]]) -> None:
-    """Print the people and deaths per part and per cycle.
-
-    Args:
-        train: Train part of Gold.
-        test: Test part of Gold.
-        folds: Cross-validation folds of train.
-    """
-    parts = pd.concat([train.assign(part="train"), test.assign(part="test")])
-    summary = parts.groupby(["cycle", "part"])["death"].agg(people="size", deaths="sum").unstack("part")
-    print(summary.astype(int).to_string())
-    print(f"train: {len(train)} people, {int(train['death'].sum())} deaths")
-    print(f"test:  {len(test)} people, {int(test['death'].sum())} deaths")
-    print(f"folds: {[len(validation) for _, validation in folds]} people in each validation part")
