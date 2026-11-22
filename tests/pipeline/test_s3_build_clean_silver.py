@@ -1,8 +1,11 @@
-"""Silver clean rules on made-up NHANES rows.
+"""Tests: Pipeline - Step 3, Silver clean, on made-up NHANES rows.
 
+- Population: exam done, not pregnant, at least one lab value
 - CDC corrections: cycles, chains, limits on the original value and minimum
-- Questionnaires → form answers: smoking (adult and youth), alcohol, physical activity
-- Blood pressure, survey weight and implausible values
+- Sex codes and survey weight
+- Lab values in Spanish units: urea, CRP, cholesterol, fasting triglycerides, urine ratio, vitamin D
+- Questionnaires → form answers: smoking (adult and youth), alcohol, physical activity, sitting, sleep, fast food
+- Blood pressure and implausible values
 """
 
 # Imports
@@ -11,6 +14,7 @@ import pandas as pd
 import pytest
 
 from bioage.config.corrections import CORRECTIONS
+from bioage.config.renames import CLEAN_NAMES
 from bioage.pipeline import s3_build_clean_silver as silver
 from bioage.utils.nhanes import cycle_label
 
@@ -21,6 +25,17 @@ def raw_rows(cycles: list[int], **columns: list[float]) -> pd.DataFrame:
     for variable in dict.fromkeys(row[0] for row in CORRECTIONS):
         raw[variable] = np.nan
     return raw.assign(**{name: np.asarray(values, dtype=float) for name, values in columns.items()})
+
+
+def test_population_examined_not_pregnant_with_lab_values() -> None:
+    raw = pd.DataFrame({"RIDSTATR": [2, 1, 2, 2, 2], "RIDEXPRG": [2, 2, 1, np.nan, 2]})
+    raw = raw.assign(**{name: np.nan for name in CLEAN_NAMES if name.startswith("LB")})
+    raw.loc[[0, 1, 2, 3], "LBXHGB"] = 14
+    assert silver.filter_population(raw).index.tolist() == [0, 3]
+
+
+def test_sex_codes() -> None:
+    assert silver.sex(pd.DataFrame({"RIAGENDR": [1, 2]})).tolist() == ["male", "female"]
 
 
 def test_creatinine_corrected_only_in_its_cycles() -> None:
@@ -127,8 +142,8 @@ def test_blood_pressure_mean_without_zero_diastolic() -> None:
 
 
 def test_survey_weight_for_the_combined_cycles() -> None:
-    raw = raw_rows([1999, 2003], WTMEC4YR=[100, np.nan], WTMEC2YR=[np.nan, 300])
-    assert silver.survey_weights(raw).tolist() == pytest.approx([20, 30])
+    raw = raw_rows([1999, 2001, 2003], WTMEC4YR=[100, 200, np.nan], WTMEC2YR=[np.nan, np.nan, 300])
+    assert silver.survey_weights(raw).tolist() == pytest.approx([20, 40, 30])
 
 
 def test_implausible_values_blanked(capsys: pytest.CaptureFixture[str]) -> None:
@@ -139,12 +154,38 @@ def test_implausible_values_blanked(capsys: pytest.CaptureFixture[str]) -> None:
     )
 
 
-def test_vitamin_d_in_spanish_units() -> None:
-    raw = pd.DataFrame(
-        {
-            "PHAFSTHR": [10], "PHAFSTMN": [0], "LBXTC": [200], "LBXSCH": [np.nan], "LBXSBU": [14],
-            "LBXCRP": [0.1], "LBXHSCRP": [np.nan], "LBXTR": [100], "LBXSTR": [np.nan],
-            "URXUMA": [10], "URXUCR": [100], "LBXVIDMS": [75.0],
-        }
-    )  # fmt: skip
-    assert silver.lab_derived(raw)["vitamin_d"].iloc[0] == pytest.approx(30.0)
+def test_lab_values_in_spanish_units() -> None:
+    # fmt: off
+    raw = pd.DataFrame({
+        "PHAFSTHR": [10, 4, 8, 7],                        "PHAFSTMN": [0, 30, 0, 59],
+        "LBXTC":    [200, np.nan, 180, 180],              "LBXSCH":   [np.nan, 190, np.nan, np.nan],
+        "LBXSBU":   [14, 10, 10, 10],
+        "LBXCRP":   [0.5, np.nan, 0.5, 0.5],              "LBXHSCRP": [np.nan, 2.0, np.nan, np.nan],
+        "LBXTR":    [100, 120, 110, 110],                 "LBXSTR":   [np.nan] * 4,
+        "URXUMA":   [30, 10, 10, 10],                     "URXUCR":   [150, 100, 100, 100],
+        "LBXVIDMS": [75.0, 50.0, 50.0, 50.0],
+    })
+    # fmt: on
+    lab = silver.lab_derived(raw)
+    assert lab["total_cholesterol"].tolist()[:2] == [200, 190]
+    assert lab["urea"].tolist()[:2] == pytest.approx([14 * 2.14, 10 * 2.14])
+    assert lab["crp"].tolist()[:2] == pytest.approx([5.0, 2.0])
+    assert lab["triglycerides"].tolist() == pytest.approx([100, np.nan, 110, np.nan], nan_ok=True)  # 8 h is enough
+    assert lab["urine_acr"].tolist()[:2] == pytest.approx([20.0, 10.0])
+    assert lab["vitamin_d"].tolist()[:2] == pytest.approx([30.0, 20.0])
+
+
+def test_questionnaire_hours_and_meals() -> None:
+    raw = youth_columns(3).assign(
+        SMQ020=[2, 2, 2],
+        **{name: [np.nan] * 3 for name in ["ALQ120Q", "ALQ120U", "ALQ121", "ALQ110", "ALQ111", "ALQ130"]},
+        **{name: [np.nan] * 3 for name in ["PAD200", "PAD320", "PAQ650", "PAQ665"]},
+        PAD680=[480, 90, np.nan],
+        DBD900=[0, 5555, 3],
+        SLD012=[7.5, np.nan, np.nan],
+        SLD010H=[np.nan, 6, np.nan],
+    )
+    answers = silver.questionnaire(raw)
+    assert answers["sedentary_hours"].tolist() == pytest.approx([8, 1.5, np.nan], nan_ok=True)
+    assert answers["fast_food_meals"].tolist() == [0, 22, 3]
+    assert answers["sleep_hours"].tolist() == pytest.approx([7.5, 6, np.nan], nan_ok=True)
