@@ -16,7 +16,7 @@ Lo que no encaje en esta descripción no va aquí.
 # Contenido
 
 ## Revisión integral
-Sesiones desde la última: 1
+Sesiones desde la última: 2
 
 ## Bloqueos
 Todos son decisiones pendientes. Los de la fase 4 se cierran al empezarla, pensando en la Entrega 04 y empezando por el stack y el flujo de pantallas.
