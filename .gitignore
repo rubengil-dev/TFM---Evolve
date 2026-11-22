@@ -1,8 +1,8 @@
-# Datos de NHANES (se descargan con script)
+# NHANES data (downloaded by the pipeline)
 data/*
 !data/README.md
 
-# Analíticas reales
+# Real blood tests
 private/*
 !private/README.md
 
@@ -13,14 +13,14 @@ __pycache__/
 *.pyc
 .ipynb_checkpoints/
 
-# Secretos y configuración local
+# Secrets and local settings
 .env
 .claude/settings.local.json
 
-# Sistema
+# System
 Thumbs.db
 desktop.ini
 .DS_Store
 
-#Otros
+# Others
 enunciado*

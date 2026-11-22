@@ -1,7 +1,7 @@
 [project]
 name = "bioage"
 version = "0.1.0"
-description = "Biological age calculator from a routine blood test (EVOLVE master's thesis)"
+description = "Biological age calculator from a routine blood test (+ optional questionnaire)"
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
@@ -43,7 +43,6 @@ build-backend = "uv_build"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["."]
 
 [tool.ruff]
 line-length = 120

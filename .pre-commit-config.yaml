@@ -1,4 +1,4 @@
-# Checks before every commit, with the tools of the project environment (versions in uv.lock):
+# Checks before every commit:
 #   - ruff: lint with safe fixes, then format
 #   - pytest: the whole suite (tests that need data/ are skipped if it is missing)
 repos:

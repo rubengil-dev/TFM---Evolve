@@ -1,6 +1,6 @@
 # Biological age calculator
 
-Master's thesis of the EVOLVE Data Science and AI programme. A free website that estimates biological age from a real blood test: the user uploads the PDF, reviews the values that were read and, optionally, answers a short lifestyle questionnaire.
+A free website that estimates biological age from a real blood test: the user uploads the PDF, reviews the values that were read and, optionally, answers a short lifestyle questionnaire.
 
 It is not medical advice or a diagnosis.
 
@@ -39,14 +39,13 @@ uv run pytest
 To check the code before committing, install the hooks once with `uv run pre-commit install`.
 
 ## Structure
-| Folder       | What it contains                                                                       |
-|--------------|----------------------------------------------------------------------------------------|
-| `src/bioage` | The package: pipeline, model steps, configuration and shared functions                 |
-| `models/`    | One trained model per level, with its data fingerprint, code commit and versions       |
-| `notebooks/` | Exploration, model comparison per level, biological age, PhenoAge and final evaluation |
-| `tests/`     | Tests with pytest, mirroring `src/`; they run in GitHub Actions on every push          |
-| `docs/`      | Deliverables of the master's programme                                                 |
-| `data/`      | Bronze → Silver → Gold layers; not in git, rebuilt by the pipeline                     |
+- `src/bioage/` : The package: pipeline, model steps, app, configuration and shared functions.
+- `models/`     : One trained model per level, with its data fingerprint, code commit and versions.
+- `notebooks/`  : Exploration, model comparison per level, biological age, PhenoAge and final evaluation.
+- `tests/`      : Tests with pytest, mirroring `src/`; those of the app also run in GitHub Actions on every push.
+- `docs/`       : Deliverables of the master's programme.
+- `data/`       : Bronze → Silver → Gold layers; not in git, rebuilt by the pipeline.
+- `private/`    : Real blood tests in PDF to try the app; not in git.
 
 ## Main limitations
 - Reference population from the United States: it is assumed to be equivalent to the Spanish one.
