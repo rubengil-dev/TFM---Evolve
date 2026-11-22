@@ -4,4 +4,4 @@ Tests with pytest, mirroring `src/bioage/`: `test_<file>.py` in the folder of th
 
 Run them with `uv run pytest`. Tests that need `data/` are skipped if it does not exist.
 
-`models/reference_ages.json` holds the biological age of a few made-up people in each level. Rewrite it with `write_reference` (in `models/test_predict.py`) only after changing the model on purpose, and review the diff.
+`app/reference_ages.json` holds the biological age of a few made-up people in each level. Rewrite it with `write_reference` (in `app/test_predict.py`) only after changing the model on purpose, and review the diff.

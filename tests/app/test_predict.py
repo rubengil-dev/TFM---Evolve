@@ -15,9 +15,9 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from bioage.app.predict import load_bundle, predict_age
 from bioage.config.model_levels import LEVEL_COLUMNS
 from bioage.config.paths import ROOT
-from bioage.models.predict import load_bundle, predict_age
 
 REFERENCE_AGES = Path(__file__).parent / "reference_ages.json"
 TOLERANCE = 0.01  # years
@@ -72,7 +72,7 @@ def test_ages_match_reference(level: str) -> None:
 
 def test_prediction_without_training_libraries() -> None:
     code = (
-        "import sys; from bioage.models.predict import load_bundle; load_bundle('full'); "
+        "import sys; from bioage.app.predict import load_bundle; load_bundle('full'); "
         "print([name for name in ('xgboost', 'optuna', 'matplotlib') if name in sys.modules])"
     )
     result = subprocess.run([sys.executable, "-c", code], cwd=ROOT, capture_output=True, text=True, check=True)

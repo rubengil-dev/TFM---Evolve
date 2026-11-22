@@ -57,6 +57,9 @@ TFM/
 │   └── bioage/                       # Paquete del proyecto
 │       ├── __init__.py
 │       ├── main.py                   # Punto de entrada
+│       ├── app/
+│       │   ├── __init__.py
+│       │   └── predict.py            # Predicción
 │       ├── config/
 │       │   ├── __init__.py
 │       │   ├── corrections.py        # Correcciones CDC
@@ -71,7 +74,6 @@ TFM/
 │       │   └── validation_rules.py   # Umbrales de validación
 │       ├── models/
 │       │   ├── __init__.py
-│       │   ├── predict.py            # Predicción (app)
 │       │   ├── s1_split.py           # Split
 │       │   ├── s2_preprocessing.py   # Preprocesado
 │       │   ├── s3_algorithms.py      # Algoritmos

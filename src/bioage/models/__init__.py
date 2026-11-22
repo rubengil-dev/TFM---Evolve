@@ -1,1 +1,1 @@
-"""Model steps: split, preprocessing, algorithms, biological age, evaluation and prediction."""
+"""Model steps: split, preprocessing, algorithms, biological age, evaluation."""

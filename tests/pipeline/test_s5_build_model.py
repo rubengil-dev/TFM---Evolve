@@ -10,10 +10,10 @@ import hashlib
 import pandas as pd
 import pytest
 
+from bioage.app.predict import load_bundle
 from bioage.config.model_levels import LEVEL_COLUMNS
 from bioage.config.paths import GOLD_TABLE
-from bioage.models.predict import load_bundle
-from bioage.models.s1_split import split_train_test
+from bioage.models.s1_split import split_data
 from bioage.utils.provenance import data_fingerprint
 
 # Test people of the final evaluation (notebooks/final_evaluation.ipynb)
@@ -31,7 +31,7 @@ def gold() -> pd.DataFrame:
 
 
 def test_same_test_people(gold: pd.DataFrame) -> None:
-    _, test = split_train_test(gold)
+    _, test, _ = split_data(gold)
     assert (len(test), int(test["death"].sum())) == (TEST_PEOPLE, TEST_DEATHS)
     assert seqn_fingerprint(test) == TEST_FINGERPRINT
 
