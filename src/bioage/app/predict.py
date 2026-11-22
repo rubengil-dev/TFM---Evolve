@@ -1,4 +1,4 @@
-"""Prediction with a saved model, what the app uses (no training libraries).
+"""Prediction with a saved model.
 
 - Saved model of a level, checked against the installed library versions
 - People → 10-year risk → biological age
