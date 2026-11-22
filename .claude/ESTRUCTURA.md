@@ -67,6 +67,7 @@ TFM/
 │       │   ├── model_levels.py       # Variables por nivel
 │       │   ├── nhanes_codes.py       # Códigos de cuestionarios
 │       │   ├── paths.py              # Rutas
+│       │   ├── phenoage.py           # Constantes PhenoAge
 │       │   ├── plausible_ranges.py   # Rangos posibles
 │       │   ├── renames.py            # Renombres
 │       │   ├── sources.py            # Fuentes externas

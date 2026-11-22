@@ -11,5 +11,6 @@ Files within this folder contain internal configuration.
 - `corrections.py`      : Corrections for NHANES measurement method changes.
 - `validation_rules.py` : Gold data validation thresholds.
 - `plausible_ranges.py` : Removes data artifacts (not illness data).
+- `phenoage.py`         : PhenoAge published constants and units.
 
 NOTE: To keep hand-aligned tables, ruff does not format this folder.
