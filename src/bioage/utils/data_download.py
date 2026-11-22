@@ -57,7 +57,7 @@ def download(url: str, dest: Path) -> None:
 
 
 def is_valid(dest: Path, head: bytes) -> bool:
-    """Check the file signature (the CDC can return an HTML error page with status 200).
+    """Check the file signature (the CDC can return an HTML error page with status 200, or an empty file).
 
     Args:
         dest: Final path of the file; its suffix tells the expected format.
@@ -71,7 +71,7 @@ def is_valid(dest: Path, head: bytes) -> bool:
     if dest.suffix == ".pdf":
         return head.startswith(b"%PDF")
     if dest.suffix == ".dat":
-        return not head.lstrip().startswith(b"<")
+        return bool(head.strip()) and not head.lstrip().startswith(b"<")
     return True
 
 
