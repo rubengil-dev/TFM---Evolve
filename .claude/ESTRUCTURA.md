@@ -30,6 +30,7 @@ TFM/
 │   └── 03_gold/
 │       └── gold.parquet              # Tabla del modelo
 ├── docs/
+│   ├── import_graph.md               # Grafo de imports
 │   └── entregas/                     # Entregas del máster
 │       ├── 01_ideas_producto.md      # Entrega 01
 │       ├── 02_datos_y_preparacion.md # Entrega 02
