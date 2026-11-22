@@ -1,9 +1,11 @@
-"""Step 3, the four contenders of every level.
+"""ML Pipeline: Step 3 - Building the model(s).
 
-- Cox
-- Cox elastic net
-- Random survival forest
-- Gradient boosting
+Tested models:
+- Cox (& its elastic net variant).
+- Random survival forest.
+- Gradient boosting.
+
+SPOILER: Cox won in all 4 model levels.
 """
 
 # Imports
