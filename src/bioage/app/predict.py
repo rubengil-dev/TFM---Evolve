@@ -1,8 +1,4 @@
-"""Prediction with a saved model.
-
-- Saved model of a level, checked against the installed library versions
-- People → 10-year risk → biological age
-"""
+"""Predicts 10-year risk with a saved model and turns it into biological age."""
 
 # Imports
 import joblib
