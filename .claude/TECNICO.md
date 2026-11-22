@@ -44,7 +44,6 @@ Lo que no encaje en esta descripción no va aquí. Librerías y versiones, coman
 
 ### Datos y preparación
 - **Población del estudio:** adultos de 18 a 79 años elegibles para mortalidad, sin embarazadas ni personas sin examen físico o sin ningún valor de laboratorio. NHANES agrupa las edades de 80 en adelante y el embarazo altera la analítica.
-- **Ficheros descartados:** ferritina, PSA, TSH y B12/folato/homocisteína/ApoB (solo en subgrupos o en pocos ciclos); fuerza de prensión, bioimpedancia, acelerómetro, DXA y VO2 max (el usuario no los conoce); y la salud autovalorada (subjetiva).
 - **Los cambios de método de laboratorio se corrigen con las ecuaciones oficiales de la CDC** (creatinina, bioquímica y PCR de 2017-2018, insulina y creatinina en orina): sin corregir, el modelo confundiría el cambio de analizador con un cambio real de la población.
 - **Unidades del laboratorio español** desde Silver clean (urea, PCR en mg/L, cociente albúmina/creatinina en mg/g, vitamina D en ng/mL): así no hay que convertir al recibir la analítica.
 - **Los valores imposibles se vacían en Silver clean** con una tabla de rangos posibles por variable, con el criterio de un adulto que va por su pie a una analítica programada; los extremos de una enfermedad conocida se quedan. No son outliers, son errores o emergencias; la app usa la misma tabla.
