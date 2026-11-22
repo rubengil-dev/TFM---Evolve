@@ -3,6 +3,7 @@
 # Population
 AGE_MIN = 18    # Mortality follow-up only for adults
 AGE_MAX = 79    # NHANES top-codes age: 80 = 80+
+AGE_STEP = 0.01  # Resolution of the biological age reference curve
 
 # Fasting
 FASTING_HOURS_MIN = 8  # MIN fasting to keep triglycerides

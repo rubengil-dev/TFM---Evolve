@@ -2,6 +2,7 @@
 
 - The typical person of each age gets that same age back, inside and outside the study ages
 - More risk → older; reference that does not grow with age → error
+- Survey weights move the reference
 - eGFR and age groups
 """
 
@@ -17,7 +18,9 @@ from bioage.utils.features import age_groups, egfr_ckd_epi_2021
 def made_up_risk(slope: float = 0.09) -> tuple[pd.Series, pd.DataFrame]:
     """Risk that grows with age, higher for men, for 2000 made-up people."""
     rng = np.random.default_rng(0)
-    data = pd.DataFrame({"age": rng.uniform(18, 80, 2000), "sex": rng.choice(["female", "male"], 2000)})
+    data = pd.DataFrame(
+        {"age": rng.uniform(18, 80, 2000), "sex": rng.choice(["female", "male"], 2000), "weight_exam": 1.0}
+    )
     hazard = -6 + slope * (data["age"] - 18) + 0.4 * (data["sex"] == "male") + rng.normal(0, 0.3, 2000)
     return 1 - np.exp(-np.exp(hazard)), data
 
@@ -46,6 +49,14 @@ def test_more_risk_means_older() -> None:
 def test_reference_must_grow_with_age() -> None:
     with pytest.raises(ValueError):
         fit_reference(*made_up_risk(slope=-0.09))
+
+
+def test_weights_move_the_reference() -> None:
+    risk, data = made_up_risk()
+    unweighted = fit_reference(risk, data)
+    above_typical = risk > reference_risk(data["age"], data["sex"], unweighted)
+    weighted = fit_reference(risk, data.assign(weight_exam=np.where(above_typical, 10.0, 1.0)))
+    assert np.all(weighted["female"] > unweighted["female"]) and np.all(weighted["male"] > unweighted["male"])
 
 
 def test_egfr_ckd_epi_2021() -> None:
