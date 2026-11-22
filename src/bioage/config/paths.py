@@ -12,7 +12,7 @@ BRONZE = DATA / "01_bronze"
 SILVER = DATA / "02_silver"
 GOLD = DATA / "03_gold"
 
-# Trained models, one file per level (in git: the app needs them)
+# Trained models
 TRAINED_MODELS = ROOT / "models"
 
 # Outputs

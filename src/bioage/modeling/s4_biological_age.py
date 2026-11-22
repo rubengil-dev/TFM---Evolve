@@ -1,28 +1,44 @@
-"""Step 4, biological age, the same for every algorithm.
+"""ML Pipeline: Step 4 - Translating mortality risk to BioAge.
 
-- 10-year mortality risk → age at which the typical person of the same sex has that risk
-- Typical person: the median of what the same model gives to people of each age and sex
+- Every model uses this translation.
+- Mortality risk is considered over 10 years.
+
+NOTE: Biological age is the age at which the typical person of the same sex has that 10-year mortality risk.
+The typical person is the weighted median of what the same model gives to people of each age and sex.
 """
 
 # Imports
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import QuantileRegressor
+from sklearn.pipeline import Pipeline
 
-from bioage.config.study import AGE_MAX, AGE_MIN
+from bioage.config.study import AGE_MAX, AGE_MIN, AGE_STEP, HORIZON_MONTHS
 
-AGE_STEP = 0.01  # years, resolution of the reference curve
+
+def risk_at_horizon(pipeline: Pipeline, data: pd.DataFrame) -> np.ndarray:
+    """Probability of dying within the horizon, for each person.
+
+    Args:
+        pipeline: Fitted preprocessing and model.
+        data: People with the columns of the model.
+
+    Returns:
+        Risk of each person.
+    """
+    curves = pipeline.predict_survival_function(data)
+    return 1 - np.array([curve(HORIZON_MONTHS) for curve in curves])
 
 
 def fit_reference(risk: np.ndarray | pd.Series, data: pd.DataFrame) -> dict[str, np.ndarray]:
     """Typical person of each sex, from the risk the model gives in train.
 
     - Risk → log of the cumulative hazard, which grows almost in a straight line with age
-    - Median curve of second degree per sex, over the study ages
+    - Median curve of second degree per sex, over the study ages, weighted by the survey weights
 
     Args:
         risk: Risk at the horizon of each person.
-        data: The same people, with their age and sex.
+        data: The same people, with their age, sex and survey weight.
 
     Returns:
         Ages of the curve and the hazard of each sex at those ages.
@@ -31,12 +47,16 @@ def fit_reference(risk: np.ndarray | pd.Series, data: pd.DataFrame) -> dict[str,
         ValueError: If the curve of a sex does not always grow with age.
     """
     hazard = log_cumulative_hazard(risk)
-    ages = np.arange(AGE_MIN, AGE_MAX + AGE_STEP, AGE_STEP)
+    ages = np.linspace(AGE_MIN, AGE_MAX, round((AGE_MAX - AGE_MIN) / AGE_STEP) + 1)
     reference = {"ages": ages}
     for sex in ["female", "male"]:
         members = np.asarray(data["sex"] == sex)
         curve = QuantileRegressor(quantile=0.5, alpha=0, solver="highs")
-        curve.fit(age_terms(np.asarray(data["age"], dtype=float)[members]), hazard[members])
+        curve.fit(
+            age_terms(np.asarray(data["age"], dtype=float)[members]),
+            hazard[members],
+            sample_weight=np.asarray(data["weight_exam"], dtype=float)[members],
+        )
         reference[sex] = curve.predict(age_terms(ages))
         if np.any(np.diff(reference[sex]) <= 0):
             raise ValueError(f"Reference curve of {sex} does not always grow with age")

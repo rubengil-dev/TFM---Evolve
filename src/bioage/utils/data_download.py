@@ -3,9 +3,12 @@
 - Retries
 - No half-written files
 - No error pages saved as data
+- SHA-256 of a file on disk
 """
 
 # Imports
+import hashlib
+import logging
 import time
 from pathlib import Path
 
@@ -13,24 +16,7 @@ import requests
 
 from bioage.config.sources import RETRIES, TIMEOUT
 
-
-def is_valid(dest: Path, head: bytes) -> bool:
-    """Check the file signature (the CDC can return an HTML error page with status 200).
-
-    Args:
-        dest: Final path of the file; its suffix tells the expected format.
-        head: First bytes of the downloaded file.
-
-    Returns:
-        True if the content matches the expected format.
-    """
-    if dest.suffix == ".xpt":
-        return head.startswith(b"HEADER RECORD")
-    if dest.suffix == ".pdf":
-        return head.startswith(b"%PDF")
-    if dest.suffix == ".dat":
-        return not head.lstrip().startswith(b"<")
-    return True
+logger = logging.getLogger(__name__)
 
 
 def download(url: str, dest: Path) -> None:
@@ -66,4 +52,40 @@ def download(url: str, dest: Path) -> None:
             tmp.unlink(missing_ok=True)
             if attempt == RETRIES:
                 raise RuntimeError(f"{url}: {error}") from error
+            logger.warning("    retry %d/%d in %d s: %s", attempt + 1, RETRIES, 2**attempt, error)
             time.sleep(2**attempt)  # 2, 4, 8 s
+
+
+def is_valid(dest: Path, head: bytes) -> bool:
+    """Check the file signature (the CDC can return an HTML error page with status 200, or an empty file).
+
+    Args:
+        dest: Final path of the file; its suffix tells the expected format.
+        head: First bytes of the downloaded file.
+
+    Returns:
+        True if the content matches the expected format.
+    """
+    if dest.suffix == ".xpt":
+        return head.startswith(b"HEADER RECORD")
+    if dest.suffix == ".pdf":
+        return head.startswith(b"%PDF")
+    if dest.suffix == ".dat":
+        return bool(head.strip()) and not head.lstrip().startswith(b"<")
+    return True
+
+
+def file_sha256(path: Path) -> str:
+    """SHA-256 of a file's content, read in blocks: same content → same hash.
+
+    Args:
+        path: File to hash.
+
+    Returns:
+        The 64-character hexadecimal hash.
+    """
+    digest = hashlib.sha256()
+    with path.open("rb") as f:
+        for block in iter(lambda: f.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()

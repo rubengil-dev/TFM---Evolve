@@ -1,9 +1,13 @@
 """External data sources.
 
+- Download settings
 - URLs and files to download per cycle
 - Mortality file layout
-- Download settings
 """
+
+# Download settings
+RETRIES = 4
+TIMEOUT = 120  # seconds
 
 # NHANES cycles (start years)
 CYCLES = [1999, 2001, 2003, 2005, 2007, 2009, 2011, 2013, 2015, 2017]
@@ -63,7 +67,3 @@ DATASETS = {
 
 # Codebooks published as .pdf instead of .htm
 PDF_DOCS = {"DXX", "DXX_B", "DXX_C"}
-
-# Download settings
-RETRIES = 4
-TIMEOUT = 120  # seconds

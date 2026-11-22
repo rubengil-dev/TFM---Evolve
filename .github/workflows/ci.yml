@@ -1,7 +1,8 @@
 # Checks on every push and pull request:
 #   - lint: ruff check and format, with the version of uv.lock
 #   - tests: only the app dependencies plus pytest, which proves they are enough to load the
-#     models and predict; without data/ (not in git) its tests are skipped, models/ is in git
+#     models and predict; without data/ (not in git) its tests are skipped, models/ is in git;
+#     the tests of training code are not collected (tests/conftest.py)
 name: ci
 
 on: [push, pull_request]

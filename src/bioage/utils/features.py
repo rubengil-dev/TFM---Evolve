@@ -1,4 +1,4 @@
-"""Builds derived features from lab values and measures.
+"""Builds derived features (biomarkers).
 
 - Inflammation: NLR, PLR, SII
 - Lipids: non-HDL cholesterol, TG/HDL
@@ -19,7 +19,7 @@ from bioage.config.study import AGE_GROUP_EDGES
 def derived_features(data: pd.DataFrame) -> pd.DataFrame:
     """Every derived feature from Silver clean columns.
 
-    - Any input missing → output missing
+    If any input is missing → output is missing too.
 
     Args:
         data: Table with the Silver clean columns.

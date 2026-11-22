@@ -1,8 +1,11 @@
-"""Silver raw step, every Bronze file in one table (one row per person, every variable, no cleaning).
+"""Build silver raw data layer.
 
+Every Bronze file in one table with one row per person.
+
+Changes:
 - Files of each cycle joined by SEQN on DEMO participants (mortality included, DXA averaged)
 - Adults AGE_MIN-AGE_MAX eligible for mortality follow-up
-- Variable aliases renamed so each variable has the same name in every cycle
+- Variable alias standardization, so each variable has the same name in every cycle
 - Cycles stacked and saved to data/02_silver/silver_raw.parquet
 """
 
@@ -13,11 +16,12 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from bioage.config.paths import BRONZE, SILVER, SILVER_RAW
-from bioage.config.renames import RENAMES
+from bioage.config.paths import BRONZE, SILVER_RAW
+from bioage.config.renames import CYCLE_ALIASES
 from bioage.config.sources import CYCLES, DATASETS, MORTALITY_FILE
 from bioage.config.study import AGE_MAX, AGE_MIN
 from bioage.utils.nhanes import cycle_label, dxa_average_imputations, read_mortality, read_xpt
+from bioage.utils.step_info import print_raw_summary, save_layer
 
 logger = logging.getLogger(__name__)
 
@@ -32,8 +36,8 @@ def run() -> None:
         cycles.append(table)
 
     raw = pd.concat(cycles, ignore_index=True)
-    save(raw)
-    print_summary(raw)
+    save_layer(raw, SILVER_RAW)
+    print_raw_summary(raw, SILVER_RAW)
 
 
 def merge_cycle_files(year: int) -> pd.DataFrame:
@@ -112,6 +116,7 @@ def merge_table(merged: pd.DataFrame, table: pd.DataFrame, dataset: str) -> pd.D
             table = table.drop(columns=col)
         else:
             table = table.rename(columns={col: f"{col}_{dataset}"})
+            logger.info("    %s: %s differs from an earlier file, kept as %s_%s", dataset, col, col, dataset)
 
     return merged.join(table, how="left").reset_index()
 
@@ -142,11 +147,18 @@ def filter_population(table: pd.DataFrame) -> pd.DataFrame:
     """
     adults = table["RIDAGEYR"].between(AGE_MIN, AGE_MAX)
     eligible = table["ELIGSTAT"] == 1
+    logger.info(
+        "    removed: %d outside %d-%d years, %d not eligible for mortality follow-up",
+        (~adults).sum(),
+        AGE_MIN,
+        AGE_MAX,
+        (adults & ~eligible).sum(),
+    )
     return table[adults & eligible]
 
 
 def rename_aliases(table: pd.DataFrame) -> pd.DataFrame:
-    """Old names → common names (RENAMES).
+    """Old names → common names (CYCLE_ALIASES).
 
     Args:
         table: Participants of a cycle.
@@ -157,31 +169,8 @@ def rename_aliases(table: pd.DataFrame) -> pd.DataFrame:
     Raises:
         ValueError: If a rename collides with an existing column.
     """
-    table = table.rename(columns=RENAMES)
+    table = table.rename(columns=CYCLE_ALIASES)
     repeated = table.columns[table.columns.duplicated()]
     if len(repeated):
         raise ValueError(f"Rename collision: {list(repeated)}")
     return table
-
-
-def save(raw: pd.DataFrame) -> None:
-    """Silver raw → parquet.
-
-    Args:
-        raw: Silver raw table.
-    """
-    SILVER.mkdir(parents=True, exist_ok=True)
-    raw.to_parquet(SILVER_RAW, index=False)
-
-
-def print_summary(raw: pd.DataFrame) -> None:
-    """Print persons, deaths and columns per cycle.
-
-    Args:
-        raw: Silver raw table.
-    """
-    summary = raw.groupby("cycle").agg(persons=("SEQN", "size"), deaths=("MORTSTAT", "sum")).astype(int)
-    print(summary.to_string())
-    print(
-        f"\n{len(raw)} persons, {int(raw['MORTSTAT'].sum())} deaths, {raw.shape[1]} columns, saved to {SILVER_RAW.name}"
-    )

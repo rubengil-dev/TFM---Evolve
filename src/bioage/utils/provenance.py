@@ -1,12 +1,16 @@
 """Where a saved model comes from.
 
-- Fingerprint of the data it was trained on
-- Git commit of the code that trained it
+- Fingerprint of the data it was trained on.
+- Git commit of the code that trained it.
+- Python and library versions it was saved with.
 """
 
 # Imports
 import hashlib
+import re
 import subprocess
+from importlib.metadata import requires, version
+from platform import python_version_tuple
 
 import pandas as pd
 
@@ -14,17 +18,17 @@ from bioage.config.paths import ROOT
 
 
 def data_fingerprint(data: pd.DataFrame) -> str:
-    """Short hash of the rows and columns of data: same data → same fingerprint.
+    """Hash of the rows and columns of data: same data → same fingerprint.
 
     Args:
         data: Table to identify.
 
     Returns:
-        First 16 characters of the hash.
+        SHA-256 hash, in hexadecimal.
     """
     rows = pd.util.hash_pandas_object(data, index=False).to_numpy().tobytes()
     columns = ",".join(data.columns).encode()
-    return hashlib.sha256(columns + rows).hexdigest()[:16]
+    return hashlib.sha256(columns + rows).hexdigest()
 
 
 def code_version() -> str:
@@ -36,6 +40,18 @@ def code_version() -> str:
     commit = git("rev-parse", "--short", "HEAD")
     changed = git("status", "--porcelain", "--", "src")
     return commit + ("-dirty" if changed else "")
+
+
+def library_versions() -> dict[str, str]:
+    """Python (major.minor) and the installed version of each project dependency.
+
+    - Project dependencies = what a saved model needs to predict (pyproject.toml)
+
+    Returns:
+        Name → version.
+    """
+    libraries = [re.split(r"[ ;<>=!~\[]", requirement)[0] for requirement in requires("bioage")]
+    return {"python": ".".join(python_version_tuple()[:2]), **{name: version(name) for name in libraries}}
 
 
 def git(*arguments: str) -> str:

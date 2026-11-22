@@ -1,24 +1,26 @@
-"""Model step of the pipeline, the final model of each level (1 to 4), the one the app uses.
+"""Building model from gold data layer.
 
-- Fitted on all of Gold, train and test (the test was already used once, in the final evaluation)
-- Preprocessing and algorithm of the level (LEVEL_COLUMNS, LEVEL_MODELS)
+- Fitted on all of Gold.
+- 4 model levels, based on what the app needs.
 - Biological age reference fitted on the model's own risk
 - Saved to models/<level>.joblib with its columns, what it was trained on and library versions
 """
 
 # Imports
-from pathlib import Path
+import logging
 
 import joblib
 import pandas as pd
 
-from bioage.config.model_sets import LEVEL_COLUMNS, LEVEL_MODELS
+from bioage.config.model_levels import LEVEL_COLUMNS, LEVEL_MODELS
 from bioage.config.paths import GOLD_TABLE, TRAINED_MODELS
-from bioage.models.predict import library_versions, risk_at_horizon
-from bioage.models.s3_algorithms import build_pipeline, survival_target
-from bioage.models.s4_biological_age import fit_reference
-from bioage.models.s5_evaluation import c_index
-from bioage.utils.provenance import code_version, data_fingerprint
+from bioage.modeling.s3_algorithms import build_pipeline, survival_target
+from bioage.modeling.s4_biological_age import fit_reference, risk_at_horizon
+from bioage.modeling.s5_evaluation import c_index
+from bioage.utils.provenance import code_version, data_fingerprint, library_versions
+from bioage.utils.step_info import print_model_summary
+
+logger = logging.getLogger(__name__)
 
 
 def run() -> None:
@@ -26,10 +28,11 @@ def run() -> None:
     gold = pd.read_parquet(GOLD_TABLE)
     TRAINED_MODELS.mkdir(exist_ok=True)
     for level, columns in LEVEL_COLUMNS.items():
+        logger.info("%s: training...", level)
         bundle = build_level(level, columns, gold)
         path = TRAINED_MODELS / f"{level}.joblib"
         joblib.dump(bundle, path)
-        print_summary(bundle, path)
+        print_model_summary(bundle, path)
 
 
 def build_level(level: str, columns: list[str], data: pd.DataFrame) -> dict:
@@ -59,18 +62,3 @@ def build_level(level: str, columns: list[str], data: pd.DataFrame) -> dict:
         },
         "versions": library_versions(),
     }
-
-
-def print_summary(bundle: dict, path: Path) -> None:
-    """Print the variables, people, training C-index, code and file of a level.
-
-    Args:
-        bundle: Bundle of the level.
-        path: File it was saved to.
-    """
-    trained_on = bundle["trained_on"]
-    print(
-        f"{bundle['level']}: {len(bundle['columns'])} variables"
-        f" | {trained_on['people']} people, {trained_on['deaths']} deaths"
-        f" | C-index in training data {bundle['c_index_fit']:.4f} | code {trained_on['code']} | {path.name}"
-    )

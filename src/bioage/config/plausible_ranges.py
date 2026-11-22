@@ -1,15 +1,13 @@
 """Plausible range of each numeric variable, in Gold units.
 
-- Context: an adult who walks in for a scheduled test (NHANES exam, app user at home)
-- Outside the limits → vital emergency or measurement artifact, not a real everyday value
-- Extreme values from a known disease (diabetes, dialysis, iron deficiency…) stay inside
-- Silver clean blanks values outside; Gold validation checks none is left
-- App: a value outside → no biological age, warning to see a doctor right away
-- Outlier clipping is part of the model preprocessing, not this table
+Those ranges will filter health emergencies (out of scope) and measurement artifacts.
+Ranges of real illnesses stay in.
+Used by Silver clean (blanks), Gold validation (checks) and the app (no age, see a doctor).
+NOTE: This isn't outlier clipping (that is in the model preprocessing).
 """
 
 PLAUSIBLE_RANGES = {
-    # variable               unit          normal          limits         why outside the limits is an emergency or an artifact
+    # variable               unit          normal          limits         why
 
     # Blood count
     "leukocytes":           ("10^3/uL",    (4, 11),        (1, 500),      "below 1: severe neutropenia; chronic leukemias stay below 500"),

@@ -30,6 +30,7 @@ TFM/
 │   └── 03_gold/
 │       └── gold.parquet              # Tabla del modelo
 ├── docs/
+│   ├── import_graph.md               # Grafo de imports
 │   └── entregas/                     # Entregas del máster
 │       ├── 01_ideas_producto.md      # Entrega 01
 │       ├── 02_datos_y_preparacion.md # Entrega 02
@@ -37,14 +38,14 @@ TFM/
 │       ├── 03_machine_learning.md    # Entrega 03
 │       └── enunciado3.pdf            # Enunciado (fuera de git)
 ├── models/                           # Modelos entrenados
-│   ├── base.joblib                   # Nivel 1
+│   ├── routine.joblib                # Nivel 1
 │   ├── extras.joblib                 # Nivel 2
 │   ├── questionnaire.joblib          # Nivel 3
 │   └── full.joblib                   # Nivel 4
 ├── notebooks/
 │   ├── 01_exploration_raw.ipynb      # Exploración (entregable)
 │   ├── 02_gold_sample.ipynb          # Muestra Entrega 02 (entregable)
-│   ├── base_correlations.ipynb       # Correlaciones de Base
+│   ├── routine_correlations.ipynb    # Correlaciones de Routine
 │   ├── models_lvl1.ipynb             # Nivel 1
 │   ├── models_lvl2.ipynb             # Nivel 2
 │   ├── models_lvl3.ipynb             # Nivel 3
@@ -57,21 +58,24 @@ TFM/
 │   └── bioage/                       # Paquete del proyecto
 │       ├── __init__.py
 │       ├── main.py                   # Punto de entrada
+│       ├── app/
+│       │   ├── __init__.py
+│       │   └── predict.py            # Predicción
 │       ├── config/
 │       │   ├── __init__.py
-│       │   ├── column_roles.py       # Papel de cada columna
 │       │   ├── corrections.py        # Correcciones CDC
-│       │   ├── model_sets.py         # Variables por nivel
+│       │   ├── gold_columns.py       # Columnas de Gold
+│       │   ├── model_levels.py       # Variables por nivel
 │       │   ├── nhanes_codes.py       # Códigos de cuestionarios
 │       │   ├── paths.py              # Rutas
+│       │   ├── phenoage.py           # Constantes PhenoAge
 │       │   ├── plausible_ranges.py   # Rangos posibles
 │       │   ├── renames.py            # Renombres
 │       │   ├── sources.py            # Fuentes externas
 │       │   ├── study.py              # Parámetros del estudio
 │       │   └── validation_rules.py   # Umbrales de validación
-│       ├── models/
+│       ├── modeling/
 │       │   ├── __init__.py
-│       │   ├── predict.py            # Predicción (app)
 │       │   ├── s1_split.py           # Split
 │       │   ├── s2_preprocessing.py   # Preprocesado
 │       │   ├── s3_algorithms.py      # Algoritmos
@@ -92,7 +96,7 @@ TFM/
 │           ├── notebook_helpers.py   # Apoyo a notebooks
 │           ├── phenoage.py           # Fórmula PhenoAge
 │           ├── provenance.py         # Origen del modelo
-│           ├── summary.py            # Resumen de capas
+│           ├── step_info.py          # Guardado y resúmenes
 │           └── validation.py         # Validación de Gold
 ├── tests/                            # replica src/
 ├── .gitattributes                    # Saltos de línea

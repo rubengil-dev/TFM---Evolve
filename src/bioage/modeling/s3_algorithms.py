@@ -1,9 +1,11 @@
-"""Step 3, the four contenders of every level.
+"""ML Pipeline: Step 3 - Building the model(s).
 
-- Cox
-- Cox elastic net
-- Random survival forest
-- Gradient boosting
+Tested models:
+- Cox (& its elastic net variant).
+- Random survival forest.
+- Gradient boosting.
+
+SPOILER: Cox won in all 4 model levels.
 """
 
 # Imports
@@ -19,7 +21,7 @@ from sksurv.util import Surv
 from xgboost import XGBRegressor
 
 from bioage.config.study import MODEL_PARAMS
-from bioage.models.s2_preprocessing import build_preprocessor
+from bioage.modeling.s2_preprocessing import build_preprocessor
 
 
 class GradientBoostingCox(XGBRegressor):

@@ -3,8 +3,8 @@
 # Level 0: baseline
 BASELINE = ["age", "sex"]
 
-# Level 1: routine Spanish blood test, plus age, sex and BMI (from weight and height)
-BASE = [
+# Level 1: routine Spanish blood test (+ age, sex & BMI)
+ROUTINE = [
     "age", "sex", "bmi",
     "hemoglobin", "erythrocytes", "mchc",
     "neutrophils", "lymphocytes", "monocytes",
@@ -12,37 +12,37 @@ BASE = [
     "sodium", "potassium",
 ]
 
-# Level 2: added to Base when the user brings them
+# Level 2: added to Routine when the user brings them
 EXTRAS = [
     "ggt", "alkaline_phosphatase", "albumin", "vitamin_d",
     "chloride", "phosphorus", "ldh", "urine_acr",
     "systolic_bp", "diastolic_bp",
 ]
 
-# Level 3: added to Base in questionnaire mode
+# Level 3: added to Routine in questionnaire mode
 QUESTIONNAIRE = [
     "smoking", "physical_activity", "sedentary_hours", "sleep_hours",
 ]
 
-# Level 4: Base + Extras + Questionnaire, with no further pruning
+# Level 4: Routine + Extras + Questionnaire
 
 # Variables of each level
 LEVEL_COLUMNS = {
-    "base":          BASE,
-    "extras":        BASE + EXTRAS,
-    "questionnaire": BASE + QUESTIONNAIRE,
-    "full":          BASE + EXTRAS + QUESTIONNAIRE,
+    "routine":       ROUTINE,
+    "extras":        ROUTINE + EXTRAS,
+    "questionnaire": ROUTINE + QUESTIONNAIRE,
+    "full":          ROUTINE + EXTRAS + QUESTIONNAIRE,
 }
 
 # Algorithm kept for each level
 LEVEL_MODELS = {
-    "base":          "cox",
+    "routine":       "cox",
     "extras":        "cox",
     "questionnaire": "cox",
     "full":          "cox",
 }
 
-# Not used by any model: variable → reason
+# Not used by any model (reason)
 DISCARDED = {
     "weight":            "input of bmi",
     "height":            "input of bmi",
@@ -56,21 +56,21 @@ DISCARDED = {
     "egfr":              "follows from creatinine, age and sex",
     "insulin":           "47% coverage, unexplained jump in 2009, rarely requested",
     "homa_ir":           "47% coverage, built from insulin",
-    "nlr":               "ratio of variables in Base; not on the PDF",
-    "plr":               "ratio of variables in Base; not on the PDF",
-    "sii":               "ratio of variables in Base; not on the PDF",
+    "nlr":               "ratio of variables in Routine; not on the PDF",
+    "plr":               "ratio of variables in Routine; not on the PDF",
+    "sii":               "ratio of variables in Routine; not on the PDF",
     "tg_hdl":            "ratio of variables in the model; not on the PDF",
-    "ast_alt":           "ratio of variables in Base; not on the PDF",
-    "urea_creatinine":   "ratio of variables in Base; not on the PDF",
+    "ast_alt":           "ratio of variables in Routine; not on the PDF",
+    "urea_creatinine":   "ratio of variables in Routine; not on the PDF",
     "albumin_globulin":  "ratio of variables in Extras; not on the PDF",
     "cpk":               "only 4 cycles, 15% of deaths",
     "waist":             "the user does not know it",
-    "platelets":         "no clear effect in Base; removing it does not lower the C-index",
-    "mpv":               "no clear effect in Base; removing it does not lower the C-index",
-    "eosinophils":       "no clear effect in Base; removing it does not lower the C-index",
-    "basophils":         "no clear effect in Base; removing it does not lower the C-index",
-    "total_cholesterol": "no clear effect in Base; removing it does not lower the C-index",
-    "calcium":           "no clear effect in Base; removing it does not lower the C-index",
+    "platelets":         "no clear effect in Routine; removing it does not lower the C-index",
+    "mpv":               "no clear effect in Routine; removing it does not lower the C-index",
+    "eosinophils":       "no clear effect in Routine; removing it does not lower the C-index",
+    "basophils":         "no clear effect in Routine; removing it does not lower the C-index",
+    "total_cholesterol": "no clear effect in Routine; removing it does not lower the C-index",
+    "calcium":           "no clear effect in Routine; removing it does not lower the C-index",
     "rdw":               "analyser-dependent: +1 point moves the biological age 2-3 years",
     "triglycerides":     "no clear effect in Extras; removing it does not lower the C-index",
     "crp":               "no clear effect in Extras; removing it does not lower the C-index",

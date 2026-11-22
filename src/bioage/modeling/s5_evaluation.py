@@ -1,21 +1,23 @@
-"""Step 5, evaluation at 10 years, out of training.
+"""ML Pipeline: Step 5 - Model evaluation.
 
-- evaluate_level: summary of every model of a level
-- compare_risks: whether one model really beats another
-- bootstrap_c_indexes, confidence_interval: C-index of several models with its interval
-- calibration_in_years: calibration gap told in years of biological age
-- plot_calibration: predicted against observed risk
-- tune_model: best settings of a model
+Evaluation:
+1. Does the model order people correctly?
+    - evaluate_level, cross_validate, metrics_row, c_index, c_index_by_group & same_age_c_index
+2. Is the model accurate?
+    - calibration_table, observed_risk, calibration_in_years & years_to_observed
+3. Is every level actually better than a lower one?
+    - compare_risks, bootstrap_c_indexes & confidence_interval
+
+Tuning:
+    - tune_model, suggest_settings & same_age_score
 """
 
 # Imports
 import time
 
-import matplotlib.pyplot as plt
 import numpy as np
 import optuna
 import pandas as pd
-from matplotlib.figure import Figure
 from scipy.optimize import brentq
 from sksurv.metrics import concordance_index_ipcw
 from sksurv.nonparametric import kaplan_meier_estimator
@@ -27,13 +29,11 @@ from bioage.config.study import (
     SPLIT_SEED,
     TUNING_SPACES,
     TUNING_TRIALS,
+    YEARS_SEARCHED,
 )
-from bioage.models.predict import risk_at_horizon
-from bioage.models.s3_algorithms import MODELS, build_pipeline, survival_target
-from bioage.models.s4_biological_age import reference_risk
+from bioage.modeling.s3_algorithms import MODELS, build_pipeline, survival_target
+from bioage.modeling.s4_biological_age import reference_risk, risk_at_horizon
 from bioage.utils.features import age_groups
-
-YEARS_SEARCHED = 50  # largest shift tried when telling a calibration gap in years
 
 
 def evaluate_level(
@@ -57,7 +57,7 @@ def evaluate_level(
     """
     settings = settings or {}
     details = {name: cross_validate(name, columns, train, folds, settings.get(name)) for name in models}
-    summary = pd.DataFrame({name: summarize(detail) for name, detail in details.items()}).T
+    summary = pd.DataFrame({name: metrics_row(detail) for name, detail in details.items()}).T
     return summary.round(4), details
 
 
@@ -190,7 +190,7 @@ def observed_risk(data: pd.DataFrame) -> float:
     return 1 - survival[np.searchsorted(times, HORIZON_MONTHS, side="right") - 1]
 
 
-def summarize(detail: dict) -> dict[str, float]:
+def metrics_row(detail: dict) -> dict[str, float]:
     """One row of the level summary.
 
     Args:
@@ -396,28 +396,3 @@ def same_age_score(
         The same-age C-index.
     """
     return same_age_c_index(cross_validate(name, columns, train, folds, settings)["by_age"])
-
-
-def plot_calibration(details: dict[str, dict]) -> Figure:
-    """One panel per model: predicted against observed risk, diagonal = perfect.
-
-    Args:
-        details: Detail of each model, from evaluate_level.
-
-    Returns:
-        The figure.
-    """
-    figure, axes = plt.subplots(
-        1, len(details), figsize=(3.2 * len(details), 3.4), sharex=True, sharey=True, squeeze=False
-    )
-    for axis, (name, detail) in zip(axes[0], details.items(), strict=True):
-        table = detail["calibration"]
-        limit = max(table["predicted"].max(), table["observed"].max()) * 1.05
-        axis.plot([0, limit], [0, limit], color="#b0b0b0", linewidth=1)
-        axis.plot(table["predicted"], table["observed"], color="#2a78d6", linewidth=2, marker="o", markersize=5)
-        axis.set_title(name, fontsize=11)
-        axis.set_xlabel("Predicted risk")
-        axis.spines[["top", "right"]].set_visible(False)
-    axes[0][0].set_ylabel("Observed risk")
-    figure.tight_layout()
-    return figure

@@ -23,13 +23,15 @@ Lo que no encaje en esta descripción no va aquí. Las decisiones propias del pr
   - Columns: id, name, frequency, created_at
   - Unique constraint on name per user
   ```
-- **Ramas (Git Flow adaptado):** `main` es lo estable.
-  - Fase 0: directo en `main`. Fase 1: cada feature sale de `main` como `feat/nombre-corto` y vuelve a `main` cuando está acabada y funciona.
-  - Desde la fase 2: cada fase tiene su rama `phase-N`. Las features salen de ella y vuelven a ella. `phase-N` entra en `main` solo cuando la fase está terminada y todo funciona.
-  - Si algo se rompe en `main`, se arregla en `fix/nombre-corto` desde `main`.
+- No añadas la nota de co-autoría de Claude.
+- **Ramas (Git Flow adaptado):**
+  - `main` es la versión PRO: lo que ya tenemos y queremos proteger. En la fase 0 se trabaja directo en `main`, porque aún no hay nada que proteger.
+  - Desde la fase 1, cada fase tiene su rama `phase-N`, donde se programa.
+  - Cada feature sale de `phase-N` como `feat/nombre-corto` y vuelve a `phase-N` cuando está acabada y funciona.
+  - `phase-N` entra en `main` solo cuando la fase está terminada y todo funciona.
+  - Si algo se rompe en `main`, se arregla en `fix/nombre-corto` desde `main` y se integra en `main` y en la `phase-N` activa.
 - **Merges:** siempre merge commit con `--no-ff`. Nada de squash ni rebase, para conservar los commits de cada rama. Sin Pull Requests.
 - **Etiquetas de versión:** ninguna hasta terminar el MVP; entonces `v1.0.0`. Cada versión posterior sale de `FUTURO.md`.
-- No añadas la nota de co-autoría de claude.
 
 ### Estructura del proyecto
 - **Nombres de archivos y carpetas:** sin acentos ni ñ.

@@ -1,20 +1,25 @@
-"""Silver clean step, the study population with clean variables and readable names.
+"""Build silver clean data layer.
 
-- Population: exam done, not pregnant and at least one lab value
-- CDC corrections for laboratory method changes (CORRECTIONS)
+Filters the study population and cleans the variables.
+
+Changes:
+- Population: exam done, not pregnant and at least one lab value.
 - Variables:
-  - Kept as they are, renamed (CLEAN_NAMES)
-  - Same test from two files → one column (cholesterol, triglycerides, CRP)
-  - Spanish lab units (urea, urine albumin/creatinine ratio, vitamin D)
-  - Triglycerides only with fasting ≥ FASTING_HOURS_MIN
-  - Blood pressure: mean of readings
+  - Readable names (renames.py).
+  - Converting to Spanish lab units: urea, urine albumin/creatinine ratio & vit-D.
+  - Merging tests that come from two files: cholesterol, triglycerides & CRP.
+  - Removing triglycerides if fasting < FASTING_HOURS_MIN.
+  - Averaging blood pressure.
   - Questionnaires → form answers (skipped questions: never drinkers, never smokers)
   - Exam survey weight for the 10 cycles combined
-- Values outside PLAUSIBLE_RANGES (data or unit errors) → missing
-- Saved to data/02_silver/silver_clean.parquet
+- Values:
+  - CDC corrections for NHANES laboratory method changes (corrections.py).
+  - Removing values outside PLAUSIBLE_RANGES.
 """
 
 # Imports
+import logging
+
 import numpy as np
 import pandas as pd
 
@@ -22,7 +27,7 @@ from bioage.config.corrections import CORRECTIONS
 from bioage.config.nhanes_codes import (
     ALCOHOL_DAYS_2017,
     ALCOHOL_UNIT_DAYS,
-    LIFETIME_100_PLUS,
+    LIFETIME_100_CIGARETTES,
     MISSING_CODES,
     MORE_THAN_21_MEALS,
     NEVER_WHOLE_CIGARETTE,
@@ -33,7 +38,9 @@ from bioage.config.renames import CLEAN_NAMES
 from bioage.config.sources import CYCLES
 from bioage.config.study import ALCOHOL_FREQUENCY, FASTING_HOURS_MIN, YOUTH_CURRENT_SMOKER_DAYS
 from bioage.utils.nhanes import cycle_label
-from bioage.utils.summary import print_layer_summary
+from bioage.utils.step_info import print_layer_summary, save_layer
+
+logger = logging.getLogger(__name__)
 
 
 def run() -> None:
@@ -54,17 +61,19 @@ def run() -> None:
         ],
         axis=1,
     )
-    clean = vitamin_d_to_ng_ml(clean)
     clean = remove_implausible_values(clean)
 
-    save(clean)
+    save_layer(clean, SILVER_CLEAN)
     print_layer_summary(clean, SILVER_CLEAN)
 
 
 def filter_population(raw: pd.DataFrame) -> pd.DataFrame:
     """Exam done, not pregnant and at least one lab value.
 
-    RIDSTATR = 2, RIDEXPRG ≠ 1 and any CLEAN_NAMES column starting with LB.
+    Means:
+        - RIDSTATR = 2
+        - RIDEXPRG ≠ 1
+        - CLEAN_NAMES column starting with LB
 
     Args:
         raw: Silver raw table.
@@ -74,7 +83,15 @@ def filter_population(raw: pd.DataFrame) -> pd.DataFrame:
     """
     lab_columns = [name for name in CLEAN_NAMES if name.startswith("LB")]
     has_lab = raw[lab_columns].notna().any(axis=1)
-    return raw[(raw["RIDSTATR"] == 2) & (raw["RIDEXPRG"] != 1) & has_lab].copy()
+    examined = raw["RIDSTATR"] == 2
+    pregnant = raw["RIDEXPRG"] == 1
+    logger.info(
+        "Population removed: %d without exam, %d pregnant, %d without lab values",
+        (~examined).sum(),
+        (examined & pregnant).sum(),
+        (examined & ~pregnant & ~has_lab).sum(),
+    )
+    return raw[examined & ~pregnant & has_lab].copy()
 
 
 def apply_corrections(raw: pd.DataFrame) -> pd.DataFrame:
@@ -239,13 +256,14 @@ def survey_weights(raw: pd.DataFrame) -> pd.Series:
 
 
 def lab_derived(raw: pd.DataFrame) -> pd.DataFrame:
-    """Lab variables built from NHANES ones.
+    """Units conversion and variables built from NHANES ones.
 
     - Total cholesterol: lipid file, biochemistry profile if missing
     - Urea = BUN × 2.14
     - CRP (mg/L): standard until 2010 (mg/dL × 10), high sensitivity from 2015
     - Triglycerides: lipid file, biochemistry profile if missing; only if fasting ≥ FASTING_HOURS_MIN
     - Urine albumin/creatinine ratio (mg/g)
+    - Vitamin D: nmol/L → ng/mL (÷ 2.5)
 
     Args:
         raw: Silver raw table.
@@ -262,6 +280,7 @@ def lab_derived(raw: pd.DataFrame) -> pd.DataFrame:
         "crp":               (raw["LBXCRP"] * 10).fillna(raw["LBXHSCRP"]),
         "triglycerides":     raw["LBXTR"].fillna(raw["LBXSTR"]).where(fasted),
         "urine_acr":         raw["URXUMA"] / raw["URXUCR"] * 100,
+        "vitamin_d":         raw["LBXVIDMS"] / 2.5,
     }, index=raw.index)
     # fmt: on
 
@@ -276,13 +295,15 @@ def blood_pressure(raw: pd.DataFrame) -> pd.DataFrame:
         Systolic and diastolic pressure.
     """
     systolic = raw[["BPXSY1", "BPXSY2", "BPXSY3", "BPXSY4"]]
-    diastolic = raw[["BPXDI1", "BPXDI2", "BPXDI3", "BPXDI4"]].replace(0, np.nan)
-    # fmt: off
-    return pd.DataFrame({
-        "systolic_bp":  systolic.mean(axis=1),
-        "diastolic_bp": diastolic.mean(axis=1),
-    }, index=raw.index)
-    # fmt: on
+    diastolic = raw[["BPXDI1", "BPXDI2", "BPXDI3", "BPXDI4"]].replace(0, np.nan)  # 0 = manual measurement artifact
+
+    return pd.DataFrame(
+        {
+            "systolic_bp": systolic.mean(axis=1),
+            "diastolic_bp": diastolic.mean(axis=1),
+        },
+        index=raw.index,
+    )
 
 
 def questionnaire(raw: pd.DataFrame) -> pd.DataFrame:
@@ -297,13 +318,13 @@ def questionnaire(raw: pd.DataFrame) -> pd.DataFrame:
     frequency, drinks = alcohol(raw)
     # fmt: off
     return pd.DataFrame({
-        "smoking":           smoking(raw),
-        "alcohol_frequency": frequency,
-        "alcohol_drinks":    drinks,
-        "physical_activity": physical_activity(raw),
-        "sedentary_hours":   raw["PAD680"] / 60,
-        "fast_food_meals":   raw["DBD900"].replace(MORE_THAN_21_MEALS, 22),
-        "sleep_hours":       raw["SLD012"].fillna(raw["SLD010H"]),
+        "smoking"           :smoking(raw),
+        "alcohol_frequency" :frequency,
+        "alcohol_drinks"    :drinks,
+        "physical_activity" :physical_activity(raw),
+        "sedentary_hours"   :raw["PAD680"] / 60,
+        "fast_food_meals"   :raw["DBD900"].replace(MORE_THAN_21_MEALS, 22),
+        "sleep_hours"       :raw["SLD012"].fillna(raw["SLD010H"]),
     }, index=raw.index)
     # fmt: on
 
@@ -345,9 +366,9 @@ def youth_smoking(raw: pd.DataFrame) -> pd.Series:
     youth = lifetime.notna() | raw["SMQ620"].notna()
     answer = np.select(
         [
-            lifetime.between(1, LIFETIME_100_PLUS - 1),
-            (lifetime == LIFETIME_100_PLUS) & (days >= 1),
-            (lifetime == LIFETIME_100_PLUS) & (days == 0),
+            lifetime.between(1, LIFETIME_100_CIGARETTES - 1),
+            (lifetime == LIFETIME_100_CIGARETTES) & (days >= 1),
+            (lifetime == LIFETIME_100_CIGARETTES) & (days == 0),
             raw["SMQ620"] == 2,
             raw["SMD630"] == NEVER_WHOLE_CIGARETTE,
             days >= YOUTH_CURRENT_SMOKER_DAYS,
@@ -408,21 +429,8 @@ def physical_activity(raw: pd.DataFrame) -> pd.Series:
     return pd.Series(answer, index=raw.index)
 
 
-def vitamin_d_to_ng_ml(clean: pd.DataFrame) -> pd.DataFrame:
-    """Vitamin D: nmol/L → ng/mL (÷ 2.5).
-
-    Args:
-        clean: Silver clean table.
-
-    Returns:
-        The same table with vitamin D in ng/mL.
-    """
-    clean["vitamin_d"] = clean["vitamin_d"] / 2.5
-    return clean
-
-
 def remove_implausible_values(clean: pd.DataFrame) -> pd.DataFrame:
-    """Values outside the PLAUSIBLE_RANGES limits → missing, printing a count per variable.
+    """Values outside the PLAUSIBLE_RANGES limits → missing, logging a count per variable.
 
     Args:
         clean: Silver clean table.
@@ -430,20 +438,10 @@ def remove_implausible_values(clean: pd.DataFrame) -> pd.DataFrame:
     Returns:
         The same table without the implausible values.
     """
-    print("Implausible values set to missing:")
+    logger.info("Implausible values set to missing:")
     for variable, (_, _, (low, high), _) in PLAUSIBLE_RANGES.items():
         implausible = clean[variable].notna() & ~clean[variable].between(low, high)
         if implausible.any():
-            print(f"    {variable}: {implausible.sum()}")
+            logger.info("    %s: %d", variable, implausible.sum())
         clean[variable] = clean[variable].mask(implausible)
-    print()
     return clean
-
-
-def save(clean: pd.DataFrame) -> None:
-    """Silver clean → parquet.
-
-    Args:
-        clean: Silver clean table.
-    """
-    clean.to_parquet(SILVER_CLEAN, index=False)

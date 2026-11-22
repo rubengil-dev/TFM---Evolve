@@ -1,14 +1,29 @@
 """Gold validation before saving.
 
-- Blocking (error → Gold not saved): structure, size, coverage, required columns, outcome,
-  population, answers and plausible ranges
-- Warning only: consistency between variables
+Checks:
+1. Structure: exact columns and types.
+2. Size: enough persons and deaths, every cycle included.
+3. Coverage: % with value per column.
+4. Required: no missing values, one row per person, survey weight above 0.
+5. Outcome: death 0/1, follow-up in range (0.1-252 months).
+6. Population: study ages and known cycles.
+7. Categories: only allowed answers.
+8. Ranges: only plausible values.
+9. Finite: no infinite values (e.g. a division by 0).
+10. Consistency: pairs in order, BMI matching weight and height.
+
+Pipeline:
+- Blocking (1-9): if any fails, Gold is not saved.
+- Warning (10): only reported.
 """
 
 # Imports
+import logging
+
+import numpy as np
 import pandas as pd
 
-from bioage.config.column_roles import DERIVED_FEATURES, ID_COLUMNS, OUTCOME_COLUMNS, SILVER_PREDICTORS
+from bioage.config.gold_columns import DERIVED_FEATURES, ID_COLUMNS, OUTCOME_COLUMNS, SELECTED_PREDICTORS
 from bioage.config.plausible_ranges import PLAUSIBLE_RANGES
 from bioage.config.sources import CYCLES
 from bioage.config.study import AGE_MAX, AGE_MIN, CATEGORICAL_LEVELS, FOLLOW_UP_MIN
@@ -26,9 +41,11 @@ from bioage.config.validation_rules import (
 )
 from bioage.utils.nhanes import cycle_label
 
+logger = logging.getLogger(__name__)
+
 
 def validate_gold(gold: pd.DataFrame) -> None:
-    """Run every check on Gold: errors → ValueError, warnings → printed.
+    """Run every check on Gold: errors → ValueError, warnings → logged.
 
     Args:
         gold: Gold table about to be saved.
@@ -46,9 +63,10 @@ def validate_gold(gold: pd.DataFrame) -> None:
             + check_population(gold)
             + check_categories(gold)
             + check_ranges(gold)
+            + check_finite(gold)
         )
     warnings = [] if errors else check_consistency(gold)
-    print_report(errors, warnings)
+    log_report(errors, warnings)
     if errors:
         raise ValueError(f"Gold validation failed with {len(errors)} errors, Gold not saved")
 
@@ -62,7 +80,7 @@ def check_structure(gold: pd.DataFrame) -> list[str]:
     Returns:
         One error line per problem.
     """
-    expected = ID_COLUMNS + OUTCOME_COLUMNS + SILVER_PREDICTORS + DERIVED_FEATURES
+    expected = ID_COLUMNS + OUTCOME_COLUMNS + SELECTED_PREDICTORS + DERIVED_FEATURES
     errors = [f"missing column: {column}" for column in expected if column not in gold]
     errors += [f"unexpected column: {column}" for column in gold if column not in expected]
     text = ["cycle"] + list(CATEGORICAL_LEVELS)
@@ -115,7 +133,7 @@ def check_coverage(gold: pd.DataFrame) -> list[str]:
 
 
 def check_required(gold: pd.DataFrame) -> list[str]:
-    """No missing values in REQUIRED; one row per person.
+    """No missing values in REQUIRED; one row per person; survey weight > 0.
 
     Args:
         gold: Gold table.
@@ -126,11 +144,13 @@ def check_required(gold: pd.DataFrame) -> list[str]:
     errors = [f"{column}: {n} missing" for column, n in gold[REQUIRED].isna().sum().items() if n]
     if gold["seqn"].duplicated().any():
         errors.append(f"seqn: {gold['seqn'].duplicated().sum()} repeated")
+    if (gold["weight_exam"] <= 0).any():
+        errors.append(f"weight_exam: {(gold['weight_exam'] <= 0).sum()} not above 0")
     return errors
 
 
 def check_outcome(gold: pd.DataFrame) -> list[str]:
-    """Death only 0 / 1; follow-up between FOLLOW_UP_MIN and MAX_FOLLOW_UP; survey weight > 0.
+    """Death only 0 / 1; follow-up between FOLLOW_UP_MIN and MAX_FOLLOW_UP.
 
     Args:
         gold: Gold table.
@@ -142,8 +162,6 @@ def check_outcome(gold: pd.DataFrame) -> list[str]:
     if not gold["death"].isin([0, 1]).all():
         errors.append("death: values other than 0 / 1")
     errors += out_of_bounds(gold, "follow_up_months", FOLLOW_UP_MIN, MAX_FOLLOW_UP)
-    if (gold["weight_exam"] <= 0).any():
-        errors.append(f"weight_exam: {(gold['weight_exam'] <= 0).sum()} not above 0")
     return errors
 
 
@@ -196,6 +214,20 @@ def check_ranges(gold: pd.DataFrame) -> list[str]:
     return errors
 
 
+def check_finite(gold: pd.DataFrame) -> list[str]:
+    """No infinite values in any numeric column (a division by 0 gives one).
+
+    Args:
+        gold: Gold table.
+
+    Returns:
+        One error line per column with infinite values.
+    """
+    numeric = gold.select_dtypes("number")
+    infinite = numeric.isin([np.inf, -np.inf]).sum()
+    return [f"{column}: {n} infinite values" for column, n in infinite.items() if n]
+
+
 def check_consistency(gold: pd.DataFrame) -> list[str]:
     """Each LOWER_THAN pair in order; bmi matching weight / height² (± BMI_TOLERANCE).
 
@@ -233,18 +265,16 @@ def out_of_bounds(gold: pd.DataFrame, column: str, low: float, high: float) -> l
     return [f"{column}: {outside.sum()} values outside {low}-{high}"] if outside.any() else []
 
 
-def print_report(errors: list[str], warnings: list[str]) -> None:
-    """Print the errors and warnings, or OK.
+def log_report(errors: list[str], warnings: list[str]) -> None:
+    """Log each error and warning, or OK.
 
     Args:
         errors: Lines of the blocking checks.
         warnings: Lines of the consistency check.
     """
-    print("Gold validation:")
     for line in errors:
-        print(f"    ERROR   {line}")
+        logger.error("Gold validation: %s", line)
     for line in warnings:
-        print(f"    WARNING {line}")
+        logger.warning("Gold validation: %s", line)
     if not errors and not warnings:
-        print("    OK")
-    print()
+        logger.info("Gold validation: OK")
