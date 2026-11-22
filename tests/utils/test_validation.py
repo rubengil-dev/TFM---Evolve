@@ -1,7 +1,8 @@
-"""Gold validation on a made-up Gold.
+"""Tests: Utils - Gold validation, on a made-up Gold.
 
-- A valid Gold passes every check but size
-- Each check catches the error it is for
+- A valid Gold passes every check but size; a failed check stops Gold
+- Each check catches the error it is for: missing cycle and too few deaths, low coverage (stricter outside the partial
+  columns), unknown cycle, BMI not matching weight and height, and the rest
 """
 
 # Imports
@@ -9,6 +10,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from bioage.config.validation_rules import MIN_COVERAGE, MIN_DEATHS, MIN_PERSONS_PER_CYCLE
 from bioage.utils import validation
 
 
@@ -28,9 +30,23 @@ def test_valid_gold_passes_every_check_but_size(made_up_gold: pd.DataFrame) -> N
     assert validation.check_size(made_up_gold)
 
 
-def test_failed_validation_stops_gold(made_up_gold: pd.DataFrame, capsys: pytest.CaptureFixture[str]) -> None:
+def test_failed_validation_stops_gold(made_up_gold: pd.DataFrame) -> None:
     with pytest.raises(ValueError):
         validation.validate_gold(made_up_gold)
+
+
+def test_size_catches_missing_cycle_and_too_few_deaths(made_up_gold: pd.DataFrame) -> None:
+    gold = made_up_gold[made_up_gold["cycle"] != "2009_2010"].assign(death=0)  # as if mortality never joined
+    errors = validation.check_size(gold)
+    assert f"cycle 2009_2010: 0 persons, minimum {MIN_PERSONS_PER_CYCLE}" in errors
+    assert f"0 deaths, minimum {MIN_DEATHS}" in errors
+
+
+def test_coverage_catches_column_mostly_empty(made_up_gold: pd.DataFrame) -> None:
+    half = made_up_gold.index[: len(made_up_gold) // 2]
+    made_up_gold.loc[half, ["glucose", "vitamin_d"]] = np.nan
+    errors = validation.check_coverage(made_up_gold)  # vitamin_d is partial: about half is enough
+    assert len(errors) == 1 and errors[0].startswith("glucose:") and errors[0].endswith(f"minimum {MIN_COVERAGE}%")
 
 
 def test_structure_catches_missing_extra_and_wrong_type(made_up_gold: pd.DataFrame) -> None:
@@ -69,6 +85,11 @@ def test_outcome_and_population_catch_impossible_values(made_up_gold: pd.DataFra
     assert validation.check_population(made_up_gold) == ["age: 1 values outside 18-79"]
 
 
+def test_population_catches_unknown_cycle(made_up_gold: pd.DataFrame) -> None:
+    made_up_gold.loc[0, "cycle"] = "2019_2020"
+    assert validation.check_population(made_up_gold) == ["cycle: 1 unknown"]
+
+
 def test_required_catches_survey_weight_not_above_zero(made_up_gold: pd.DataFrame) -> None:
     made_up_gold.loc[0, "weight_exam"] = 0
     assert validation.check_required(made_up_gold) == ["weight_exam: 1 not above 0"]
@@ -76,9 +97,18 @@ def test_required_catches_survey_weight_not_above_zero(made_up_gold: pd.DataFram
 
 def test_finite_catches_division_by_zero(made_up_gold: pd.DataFrame) -> None:
     made_up_gold.loc[0, "albumin_globulin"] = np.inf  # what albumin / 0 gives
-    assert validation.check_finite(made_up_gold) == ["albumin_globulin: 1 infinite values"]
+    made_up_gold.loc[1, "urine_acr"] = -np.inf
+    assert sorted(validation.check_finite(made_up_gold)) == [
+        "albumin_globulin: 1 infinite values",
+        "urine_acr: 1 infinite values",
+    ]
 
 
 def test_consistency_warns_of_pairs_out_of_order(made_up_gold: pd.DataFrame) -> None:
     made_up_gold.loc[0, ["hdl", "total_cholesterol"]] = [150, 140]
     assert validation.check_consistency(made_up_gold) == ["hdl not below total_cholesterol: 1 persons"]
+
+
+def test_consistency_warns_of_bmi_not_matching_weight_and_height(made_up_gold: pd.DataFrame) -> None:
+    made_up_gold.loc[0, ["weight", "height", "bmi"]] = [80, 180, 30]  # 80 / 1.8² = 24.7
+    assert validation.check_consistency(made_up_gold) == ["bmi not matching weight / height^2: 1 persons"]
