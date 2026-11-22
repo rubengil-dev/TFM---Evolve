@@ -21,7 +21,7 @@ from sksurv.util import Surv
 from xgboost import XGBRegressor
 
 from bioage.config.study import MODEL_PARAMS
-from bioage.models.s2_preprocessing import build_preprocessor
+from bioage.modeling.s2_preprocessing import build_preprocessor
 
 
 class GradientBoostingCox(XGBRegressor):

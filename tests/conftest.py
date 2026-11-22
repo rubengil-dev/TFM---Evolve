@@ -21,8 +21,8 @@ from bioage.utils.nhanes import cycle_label
 
 TRAINING_LIBRARIES = ["lifelines", "matplotlib", "optuna", "requests", "xgboost"]
 TRAINING_TESTS = [
-    "models/test_s3_algorithms.py",
-    "models/test_s5_evaluation.py",
+    "modeling/test_s3_algorithms.py",
+    "modeling/test_s5_evaluation.py",
     "pipeline/test_s1_download_bronze.py",
     "pipeline/test_s5_build_model.py",
     "utils/test_data_download.py",

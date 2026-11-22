@@ -12,7 +12,7 @@ import pandas as pd
 import pytest
 
 from bioage.config.study import COMPARISON_SEED, CV_FOLDS, TEST_SIZE
-from bioage.models.s1_split import cv_folds, split_data, strata
+from bioage.modeling.s1_split import cv_folds, split_data, strata
 
 # 600 made-up people over 10 cycles: some cycle-death strata are too small for 5 folds
 pytestmark = pytest.mark.filterwarnings("ignore:The least populated class:UserWarning")

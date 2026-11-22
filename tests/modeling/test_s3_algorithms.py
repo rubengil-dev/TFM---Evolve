@@ -12,9 +12,9 @@ import pytest
 
 from bioage.config.model_levels import ROUTINE
 from bioage.config.study import MODEL_PARAMS
-from bioage.models.s3_algorithms import build_pipeline, survival_target
-from bioage.models.s4_biological_age import risk_at_horizon
-from bioage.models.s5_evaluation import c_index
+from bioage.modeling.s3_algorithms import build_pipeline, survival_target
+from bioage.modeling.s4_biological_age import risk_at_horizon
+from bioage.modeling.s5_evaluation import c_index
 
 
 def test_tuned_settings_replace_the_fixed_ones() -> None:

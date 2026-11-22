@@ -80,7 +80,7 @@ Lo que no encaje en esta descripción no va aquí. Librerías y versiones, coman
 
 ## Trampas
 - **Reentrenar los modelos** (entre 5 y 27 minutos, según cómo ande el disco): hay que commitear antes el código y no tocar `src/` mientras entrena. Por qué: cada modelo guarda el commit y lo marca como `-dirty` si `src/` tiene cambios sin commitear, y la marca se calcula al guardar cada modelo, no al empezar. Después, los modelos se commitean aparte.
-- **`src/bioage/models/s2_preprocessing` no se puede mover ni renombrar** sin reentrenar, y el paquete `bioage` tampoco. Por qué: los modelos guardados apuntan a su ruta de import.
+- **`src/bioage/modeling/s2_preprocessing` no se puede mover ni renombrar** sin reentrenar, y el paquete `bioage` tampoco. Por qué: los modelos guardados apuntan a su ruta de import.
 - **Los modelos de `models/` no sirven para evaluar.** Por qué: están entrenados con toda Gold, test incluido.
 - **La referencia de edades de los tests** se rehace solo tras cambiar el modelo a propósito, con `write_reference` de `tests/app/test_predict.py`, y se revisa el diff. Por qué: rehacerla tras un cambio involuntario escondería justo lo que el test tiene que detectar.
 - **Ejecutar un notebook desde la terminal:** siempre con `uv run jupyter nbconvert`. Por qué: el `jupyter` global arranca el Python global, que no tiene scikit-survival; antes hacía falta un `JUPYTER_PATH` porque `nbconvert` no estaba en el entorno.

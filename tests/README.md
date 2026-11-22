@@ -4,7 +4,7 @@ Tests with pytest, one `test_<file>.py` per source file, in the same folders as 
 - `conftest.py` : Builds a small made-up Gold shared by several tests.
 - `app/`        : Saved models, as the app uses them.
 - `config/`     : Configuration consistency, without data: one file for the whole folder.
-- `models/`     : Model steps on made-up data.
+- `modeling/`   : Model steps on made-up data.
 - `pipeline/`   : Pipeline steps; some need `data/`.
 - `utils/`      : Shared functions.
 

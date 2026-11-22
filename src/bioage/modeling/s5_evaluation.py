@@ -31,8 +31,8 @@ from bioage.config.study import (
     TUNING_TRIALS,
     YEARS_SEARCHED,
 )
-from bioage.models.s3_algorithms import MODELS, build_pipeline, survival_target
-from bioage.models.s4_biological_age import reference_risk, risk_at_horizon
+from bioage.modeling.s3_algorithms import MODELS, build_pipeline, survival_target
+from bioage.modeling.s4_biological_age import reference_risk, risk_at_horizon
 from bioage.utils.features import age_groups
 
 

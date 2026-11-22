@@ -13,7 +13,7 @@ import pandas as pd
 import pytest
 
 from bioage.config.study import AGE_MAX, AGE_MIN, HORIZON_MONTHS
-from bioage.models.s4_biological_age import (
+from bioage.modeling.s4_biological_age import (
     biological_age,
     fit_reference,
     log_cumulative_hazard,

@@ -14,9 +14,9 @@ import pandas as pd
 
 from bioage.config.model_levels import LEVEL_COLUMNS, LEVEL_MODELS
 from bioage.config.paths import GOLD_TABLE, TRAINED_MODELS
-from bioage.models.s3_algorithms import build_pipeline, survival_target
-from bioage.models.s4_biological_age import fit_reference, risk_at_horizon
-from bioage.models.s5_evaluation import c_index
+from bioage.modeling.s3_algorithms import build_pipeline, survival_target
+from bioage.modeling.s4_biological_age import fit_reference, risk_at_horizon
+from bioage.modeling.s5_evaluation import c_index
 from bioage.utils.provenance import code_version, data_fingerprint, library_versions
 from bioage.utils.step_info import print_model_summary
 

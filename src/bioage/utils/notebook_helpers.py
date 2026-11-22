@@ -14,7 +14,7 @@ import pandas as pd
 from lifelines import CoxPHFitter
 from matplotlib.figure import Figure
 
-from bioage.models.s2_preprocessing import build_preprocessor
+from bioage.modeling.s2_preprocessing import build_preprocessor
 
 
 def cox_weights(columns: list[str], data: pd.DataFrame, expected_signs: dict[str, str] | None = None) -> pd.DataFrame:

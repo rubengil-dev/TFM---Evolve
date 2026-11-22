@@ -73,7 +73,7 @@ TFM/
 │       │   ├── sources.py            # Fuentes externas
 │       │   ├── study.py              # Parámetros del estudio
 │       │   └── validation_rules.py   # Umbrales de validación
-│       ├── models/
+│       ├── modeling/
 │       │   ├── __init__.py
 │       │   ├── s1_split.py           # Split
 │       │   ├── s2_preprocessing.py   # Preprocesado

@@ -16,7 +16,7 @@ import pytest
 
 from bioage.config.model_levels import LEVEL_COLUMNS
 from bioage.config.study import CATEGORICAL_LEVELS, CLIP_QUANTILES
-from bioage.models.s2_preprocessing import (
+from bioage.modeling.s2_preprocessing import (
     GroupImputer,
     QuantileClipper,
     build_preprocessor,

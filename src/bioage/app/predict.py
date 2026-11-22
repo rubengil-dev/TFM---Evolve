@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 
 from bioage.config.paths import TRAINED_MODELS
-from bioage.models.s4_biological_age import biological_age, risk_at_horizon
+from bioage.modeling.s4_biological_age import biological_age, risk_at_horizon
 from bioage.utils.provenance import library_versions
 
 

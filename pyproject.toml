@@ -76,7 +76,7 @@ convention = "google"
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["D"]
 "src/bioage/config/*.py" = ["E501"]  # hand-aligned tables, some rows are long
-"src/bioage/models/s3_algorithms.py" = ["N803"]  # X: argument name of the scikit-learn interface
+"src/bioage/modeling/s3_algorithms.py" = ["N803"]  # X: argument name of the scikit-learn interface
 
 [tool.ruff.lint.flake8-annotations]
 allow-star-arg-any = true

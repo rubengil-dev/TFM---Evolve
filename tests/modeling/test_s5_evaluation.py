@@ -15,10 +15,10 @@ import pandas as pd
 import pytest
 
 from bioage.config.model_levels import ROUTINE
-from bioage.models import s5_evaluation as evaluation
-from bioage.models.s1_split import cv_folds
-from bioage.models.s3_algorithms import build_pipeline, survival_target
-from bioage.models.s4_biological_age import fit_reference, reference_risk, risk_at_horizon
+from bioage.modeling import s5_evaluation as evaluation
+from bioage.modeling.s1_split import cv_folds
+from bioage.modeling.s3_algorithms import build_pipeline, survival_target
+from bioage.modeling.s4_biological_age import fit_reference, reference_risk, risk_at_horizon
 
 pytestmark = pytest.mark.filterwarnings("ignore:The least populated class:UserWarning")
 

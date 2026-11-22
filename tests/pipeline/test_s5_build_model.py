@@ -17,7 +17,7 @@ import pytest
 from bioage.app.predict import load_bundle, predict_age
 from bioage.config.model_levels import LEVEL_COLUMNS
 from bioage.config.paths import GOLD_TABLE
-from bioage.models.s1_split import split_data
+from bioage.modeling.s1_split import split_data
 from bioage.pipeline.s5_build_model import build_level
 from bioage.utils.provenance import data_fingerprint
 

@@ -1,4 +1,4 @@
-# models/
+# modeling/
 
 One file per ML step, in order:
 
