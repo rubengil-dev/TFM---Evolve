@@ -45,15 +45,22 @@ TFM/
 │   │   ├── components/
 │   │   │   ├── CellBackground.tsx    # Fondo de células
 │   │   │   ├── ChoiceCards.tsx       # Tarjetas de opciones
+│   │   │   ├── GroupIcon.tsx         # Icono de cada grupo
 │   │   │   ├── NumberSlider.tsx      # Barra de números
+│   │   │   ├── OrganIcons.tsx        # Iconos anatómicos
 │   │   │   ├── ProgressBar.tsx       # Barra de progreso
-│   │   │   └── WarningBar.tsx        # Franja del aviso
+│   │   │   ├── ShareButtons.tsx      # Compartir y descargar
+│   │   │   ├── WarningBar.tsx        # Franja del aviso
+│   │   │   └── YearsTable.tsx        # Tabla de años
 │   │   ├── config/
+│   │   │   ├── example.ts            # Resultado de ejemplo
+│   │   │   ├── groups.ts             # Grupos del resultado
 │   │   │   └── questions.ts          # Preguntas
 │   │   ├── pages/
 │   │   │   ├── Landing.tsx           # Portada
 │   │   │   ├── Loading.tsx           # Carga
-│   │   │   └── Questionnaire.tsx     # Cuestionario
+│   │   │   ├── Questionnaire.tsx     # Cuestionario
+│   │   │   └── Result.tsx            # Resultado
 │   │   ├── App.tsx                   # Pantalla activa
 │   │   ├── index.css                 # Colores y fuentes
 │   │   ├── main.tsx                  # Arranque

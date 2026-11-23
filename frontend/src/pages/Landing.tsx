@@ -45,7 +45,8 @@ export default function Landing({ onStart }: Props) {
           Analítica + hábitos
         </button>
       </div>
-      <p className="mt-4 text-xs text-moss">Solo PDF. No guardamos nada: tu analítica se procesa y se descarta.</p>
+      <p className="mt-4 text-xs text-moss">Para adultos de 18 a 79 años · Solo PDF</p>
+      <p className="mt-1 text-xs text-moss">No guardamos nada: tu analítica se procesa y se descarta.</p>
 
       <input ref={inputRef} type="file" accept="application/pdf,.pdf" className="hidden" onChange={handleFile} />
     </main>

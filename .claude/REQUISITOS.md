@@ -38,22 +38,30 @@ Se carga siempre, así que si crece demasiado (unas 300 líneas), avísame para 
 - Usa lo que trae una analítica de rutina española, lo que se pide a menudo (p. ej. vitamina D) y lo que el usuario sabe sin pensar (edad, sexo, peso, talla), siempre que exista en NHANES.
 - Edad y sexo se extraen del PDF si vienen; si no, se piden.
 - Tensión arterial: dato opcional para afinar, nunca obligatorio.
-- Solo adultos, dentro del rango de edad de los datos de entrenamiento (18 a 79 años).
+- Solo adultos, dentro del rango de edad de los datos de entrenamiento (18 a 79 años). La portada lo dice en una línea y la app comprueba la edad del PDF. (Rubén, de acuerdo) Descartado: pop-up al entrar, añade un clic.
 - Las analíticas no traen siempre los mismos parámetros: si falta algún dato, se calcula igualmente con menos fiabilidad; si faltan demasiados, se avisa de que no se puede calcular.
 - **Valor fuera del rango posible:** en la pantalla de revisión se pide al usuario que lo compruebe (puede ser una mala lectura del PDF); si lo confirma, la app no calcula la edad biológica y avisa de ir al médico cuanto antes. Son valores de emergencia o de una muestra defectuosa: dar una edad ahí sería engañoso.
 
 ### Resultado
 Siempre:
 - Edad biológica estimada ± X años y la diferencia con la edad cronológica. X depende de la precisión de cada caso: más ancho si faltan datos o en jóvenes de riesgo bajo.
-- Los mejores y los peores parámetros del usuario, en tablas y explicados en lenguaje llano: cuántos años suma o resta cada uno frente a una persona media de su edad y sexo.
+- [pendiente: cómo se calcula el ±. Descartado: bootstrap del modelo con relleno de huecos, a Rubén no le convence; si no hay un método claro, se quita.]
+- Edades fuera de 18-79: por debajo de 18, "menos de 18"; de 79 a 90, el número con la nota "orientativo"; por encima de 90, "más de 90". (Rubén, de acuerdo)
+- Una tabla fija, igual para todos, con los grupos que la gente entiende: vitaminas y minerales, azúcar, corazón (HDL y tensión), glóbulos rojos, defensas (con un escudo), hígado, riñón y peso (IMC). Cada fila dice cuántos años suma o resta frente a una persona típica de su edad y sexo, sin ±. Se parte en dos columnas, "te quitan años" y "te suman años", cada una ordenada por valor absoluto de mayor a menor; los grupos sin datos van en una línea aparte. (Rubén, de acuerdo) Descartado: los mejores y peores parámetros de cada persona, la tabla cambiaría de un usuario a otro; porcentajes por órgano, escala inventada
 - Aviso de que no es consejo médico ni diagnóstico. No se dan recomendaciones (suplementos, tratamientos…), solo observaciones de los datos.
-- Aviso asimétrico: salir por encima es señal para consultar, pero salir bien no significa estar sano.
+- Aviso asimétrico: salir por encima es señal para consultar, pero salir bien no significa estar sano. De momento no se muestra: la franja amarilla ya avisa y Rubén no quiere más mensajes. (Rubén, en desacuerdo)
 
 Cuando se hace el cuestionario:
-- Cuántos años suman o restan sus hábitos.
+- Una segunda tabla igual con sus hábitos: tabaco, ejercicio, horas sentado y horas de sueño.
 
-Cuando la edad biológica está por encima de un umbral (haya o no cuestionario):
-- Recomendación de revisar la analítica con su médico.
+Diseño del resultado:
+- La pestaña del navegador se llama "BioAge".
+- El resultado va dentro de un recuadro de bordes redondeados. La edad biológica en grande, sin título encima, con el ± en pequeño a su lado (no debajo), y debajo la frase "X años menos/más que tu edad real (Y)". (Rubén, de acuerdo) Descartado: medidor en arco, no aporta; tarjetas y pastillas.
+- Al final, compartir (en el móvil) y descargar el resultado como imagen; la imagen se crea en el navegador, sin subir nada. (Rubén, de acuerdo) Descartado: "calcular otra vez"; texto pequeño de aviso bajo las tablas, ya lo hace la franja amarilla.
+- Iconos anatómicos de Healthicons para corazón, hígado y riñón; gota para glóbulos rojos, escudo para defensas, diamante para vitaminas y minerales, un montoncito de azúcar y "kg" para el peso.
+
+Cuando la edad biológica está 10 o más años por encima de la real (haya o no cuestionario):
+- [pendiente: si se recomienda comentarla con el médico y con qué frase; Rubén lo consulta con el profesor. De momento, sin mensaje.]
 
 ## Experiencia de uso
 - La UX tiene prioridad sobre afinar el modelo: el modelo es fácil de iterar, y una UX mal planteada obliga a rehacerla.

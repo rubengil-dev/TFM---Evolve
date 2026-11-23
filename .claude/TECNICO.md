@@ -28,6 +28,7 @@ Lo que no encaje en esta descripción no va aquí. Librerías y versiones, coman
 - **FastAPI:** el backend de la app; Rubén ya lo usa en otro proyecto y se vio en el máster. (Rubén, de acuerdo)
 - **React con Vite y Tailwind:** el front; Vite arranca y empaqueta React, y Tailwind pone los estilos en el propio HTML para iterar rápido. (Claude, a petición) Descartado: Streamlit, no admite sin pelearse el fondo animado ni las preguntas en pantallas sucesivas.
 - **TypeScript en el front:** como los type hints de Python, el editor avisa de los errores antes de abrir la web. (Claude, autónomo)
+- **La imagen para compartir se genera en el navegador** (html-to-image), sin pasar por el servidor: son datos de salud y no se almacenan. (Claude, autónomo)
 - **Fuentes e iconos empaquetados con la app,** no cargados de Google Fonts: un tercero vería quién visita una web de salud. (Claude, autónomo)
 - **Hugging Face Spaces con Docker:** el hosting; pensado para apps de ML, con RAM de sobra para el modelo y sin dormirse a los pocos minutos. Sus límites se comprueban al desplegar, en la fase 5. (Claude, a petición) Descartado: Vercel, el backend Python va en funciones con límite de tamaño, justo para scikit-survival; Render, se duerme a los 15 minutos y tarda ~1 minuto en despertar.
 

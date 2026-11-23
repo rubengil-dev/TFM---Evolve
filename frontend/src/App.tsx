@@ -3,51 +3,35 @@
 import { useState } from 'react'
 import CellBackground from './components/CellBackground'
 import WarningBar from './components/WarningBar'
+import { EXAMPLE_RESULT } from './config/example'
 import Landing from './pages/Landing'
 import Loading from './pages/Loading'
 import Questionnaire from './pages/Questionnaire'
-import type { Answers, Mode } from './types'
+import Result from './pages/Result'
+import type { Mode } from './types'
 
 type Screen = 'landing' | 'questions' | 'loading' | 'result'
 
+// Until the backend is connected, the PDF and the answers are not sent anywhere and the result is an example
 export default function App() {
   const [screen, setScreen] = useState<Screen>('landing')
   const [mode, setMode] = useState<Mode>('full')
-  const [file, setFile] = useState<File | null>(null)
-  const [answers, setAnswers] = useState<Answers>({})
 
-  function start(chosenMode: Mode, chosenFile: File) {
+  function start(chosenMode: Mode) {
     setMode(chosenMode)
-    setFile(chosenFile)
     setScreen('questions')
   }
 
-  function finish(given: Answers) {
-    setAnswers(given)
-    setScreen('loading')
-  }
+  const result = mode === 'full' ? EXAMPLE_RESULT : { ...EXAMPLE_RESULT, habits: undefined }
 
   return (
     <>
       <CellBackground />
       {screen === 'landing' && <Landing onStart={start} />}
-      {screen === 'questions' && <Questionnaire mode={mode} onDone={finish} onExit={() => setScreen('landing')} />}
+      {screen === 'questions' && <Questionnaire mode={mode} onDone={() => setScreen('loading')} onExit={() => setScreen('landing')} />}
       {screen === 'loading' && <Loading onDone={() => setScreen('result')} />}
-      {screen === 'result' && <Placeholder file={file} answers={answers} onBack={() => setScreen('landing')} />}
+      {screen === 'result' && <Result result={result} />}
       {(screen === 'landing' || screen === 'result') && <WarningBar />}
     </>
-  )
-}
-
-function Placeholder({ file, answers, onBack }: { file: File | null; answers: Answers; onBack: () => void }) {
-  return (
-    <main className="flex min-h-full flex-col items-center justify-center gap-4 px-6 pb-24 text-center text-moss">
-      <p>{file?.name}</p>
-      <pre className="text-left text-xs">{JSON.stringify(answers, null, 2)}</pre>
-      <p>Pantalla de resultado: en construcción.</p>
-      <button type="button" onClick={onBack} className="text-emerald underline">
-        Volver al inicio
-      </button>
-    </main>
   )
 }

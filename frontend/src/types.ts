@@ -33,3 +33,15 @@ export type NumberQuestion = BaseQuestion & {
 }
 
 export type Question = ChoiceQuestion | NumberQuestion
+
+/** Years a group adds (+) or takes away (−) against a typical person of the same age and sex; null = no data. */
+export type GroupYears = Record<string, number | null>
+
+/** What the backend returns for one person. */
+export type Result = {
+  age: number
+  bioAge: number
+  margin: number
+  blood: GroupYears
+  habits?: GroupYears
+}

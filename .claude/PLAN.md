@@ -38,7 +38,10 @@ Lo que no encaje en esta descripción no va aquí. Las decisiones pendientes no 
   - [ ] Pantalla de revisión, solo para los valores que el parser marca como dudosos.
   - [/] Validación de lo que entra al modelo, en el módulo de predicción: columnas, tipos, categorías, rangos posibles y edad, con errores con código que el front traduce. Hoy una columna ausente o un número como texto dan un error técnico, y un valor imposible devuelve una edad sin avisar.
   - [ ] Cuestionario de hábitos.
-  - [/] Pantalla de resultado, presentada como edad equivalente según la referencia de NHANES.
+  - [ ] Pantalla de resultado, presentada como edad equivalente según la referencia de NHANES: edad ± X, tabla de grupos y, con cuestionario, tabla de hábitos.
+  - [ ] Aportación en años de cada grupo de variables frente a la persona típica de su edad y sexo.
+  - [ ] Margen ± de la edad y de cada grupo (método por decidir; si no hay uno claro, se quita).
+  - [x] Línea "de 18 a 79 años" en la portada.
   - [ ] Logs de la app en JSON, sin valores de salud: modelo, nivel, variables recibidas, latencia, estado y código de error.
   - [ ] Añadir las librerías del stack a las dependencias del proyecto (`pyproject.toml`) y completar el README.
 - [ ] **Fase 5, despliegue:** web pública en un hosting gratuito *(se afina al llegar)*
