@@ -21,8 +21,6 @@ Sesiones desde la última: 0
 ## Bloqueos
 Todos son decisiones pendientes. Los de la fase 4 se cierran al empezarla, pensando en la Entrega 04 y empezando por el stack y el flujo de pantallas.
 
-- **Stack de front y backend.** Frena todas las casillas de la fase 4: sin él no se puede escribir la app. Lo desbloquea: elegirlo.
-- **Cómo elige el usuario el modo.** Frena el flujo de pantallas. Idea: dos pestañas, "solo analítica" por defecto y "analítica + cuestionario". Lo desbloquea: decidirlo con el flujo.
 - **Diseño del parser y de la normalización de nombres y unidades.** Frena el parser. Lo desbloquea: decidirlo, y antes decidir cómo anonimizar los PDFs de `private/` para que Claude pueda leerlos (la app sí puede leerlos sin anonimizar, en local).
 - **Mínimo viable de variables:** con qué datos faltantes se deja de calcular. Frena la validación de lo que entra al modelo. Lo desbloquea: decidirlo.
 - **Resultado.** Frena la pantalla de resultado. Lo desbloquea: decidir estos cinco puntos.

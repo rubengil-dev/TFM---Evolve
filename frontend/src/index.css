@@ -1,0 +1,32 @@
+/* Global styles: Tailwind, the design colors and fonts, and the page background. */
+
+@import 'tailwindcss';
+
+/* Design tokens: colors and fonts of the "microscope" look */
+@theme {
+  --color-deep: #06120d;
+  --color-emerald: #34d399;
+  --color-emerald-ink: #052e1f;
+  --color-mist: #ecfdf5;
+  --color-moss: #9db5aa;
+  --color-line: #2f5c49;
+  --color-mint: #a7f3d0;
+  --color-hazard: #facc15;
+  --color-hazard-ink: #1a1500;
+
+  --font-display: 'Fraunces Variable', Georgia, serif;
+  --font-sans: 'Inter Variable', system-ui, sans-serif;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background: var(--color-deep);
+  color: var(--color-mist);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}

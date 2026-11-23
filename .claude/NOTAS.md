@@ -15,7 +15,7 @@ Lo que no encaje en esta descripción no va aquí.
 # Contenido
 
 ## Decisiones pendientes
-- Hosting (fase 5).
+- La tabla de mejores y peores parámetros puede quedar fuera de la primera versión de la app si vamos justos.
 - Almacén remoto de DVC: DagsHub o una carpeta local. Hay que elegirlo antes de montar DVC (fase 6).
 - Versión del modelo: registro de MLflow, o etiqueta de git con las huellas de datos y modelo (fase 6).
 - Monitorización: si se hace, qué se puede contar sin almacenar datos de salud (fase 6).

@@ -1,0 +1,16 @@
+# Files kept out of git; all of them are rebuilt by npm
+
+# Dependencies (npm install)
+node_modules
+
+# Build output (npm run build)
+dist
+
+# Logs and local settings
+*.log
+*.local
+
+# Editors
+.vscode/*
+!.vscode/extensions.json
+.idea

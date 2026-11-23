@@ -37,6 +37,28 @@ TFM/
 │       ├── 02_gold_sample.csv        # Muestra de Gold
 │       ├── 03_machine_learning.md    # Entrega 03
 │       └── enunciado3.pdf            # Enunciado (fuera de git)
+├── frontend/                         # Web (React)
+│   ├── public/
+│   │   └── favicon.svg               # Icono
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── CellBackground.tsx    # Fondo de células
+│   │   │   └── WarningBar.tsx        # Franja del aviso
+│   │   ├── pages/
+│   │   │   └── Landing.tsx           # Portada
+│   │   ├── App.tsx                   # Pantalla activa
+│   │   ├── index.css                 # Colores y fuentes
+│   │   ├── main.tsx                  # Arranque
+│   │   └── types.ts                  # Tipos comunes
+│   ├── .gitignore                    # Fuera de git
+│   ├── .oxlintrc.json                # Linter
+│   ├── index.html                    # Página única
+│   ├── package.json                  # Dependencias y comandos
+│   ├── package-lock.json             # Versiones exactas (npm)
+│   ├── tsconfig.app.json             # TypeScript de la app
+│   ├── tsconfig.json                 # TypeScript raíz
+│   ├── tsconfig.node.json            # TypeScript de Vite
+│   └── vite.config.ts                # Vite
 ├── models/                           # Modelos entrenados
 │   ├── routine.joblib                # Nivel 1
 │   ├── extras.joblib                 # Nivel 2

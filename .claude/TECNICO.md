@@ -25,7 +25,11 @@ Lo que no encaje en esta descripción no va aquí. Librerías y versiones, coman
 - **pytest y GitHub Actions:** ruff y tests en cada push. El trabajo de tests instala solo las dependencias de la app más pytest (grupo `test`), lo que demuestra que bastan para predecir, y no tiene `data/`: los tests que la necesitan se saltan, y los del código de entrenamiento no se recogen (`TRAINING_TESTS` en `tests/conftest.py`).
 - **ruff y pre-commit:** ruff revisa y formatea, con líneas de 120 caracteres; pre-commit lo ejecuta junto con los tests antes de cada commit, con las versiones de `uv.lock` (hooks locales, sin repetir la versión de ruff en otro archivo). Los archivos de `config/` quedan fuera del formateo y las tablas alineadas del resto van entre `# fmt: off` y `# fmt: on`, porque el formateador deshace las columnas. Los notebooks quedan fuera de ruff para no reescribir celdas con salidas guardadas. (Claude, autónomo)
 - **GitHub:** `rubengil-dev/TFM---Evolve`, rama principal `main`.
-- [pendiente: stack de front y backend y hosting; son bloqueos de `ESTADO.md`.]
+- **FastAPI:** el backend de la app; Rubén ya lo usa en otro proyecto y se vio en el máster. (Rubén, de acuerdo)
+- **React con Vite y Tailwind:** el front; Vite arranca y empaqueta React, y Tailwind pone los estilos en el propio HTML para iterar rápido. (Claude, a petición) Descartado: Streamlit, no admite sin pelearse el fondo animado ni las preguntas en pantallas sucesivas.
+- **TypeScript en el front:** como los type hints de Python, el editor avisa de los errores antes de abrir la web. (Claude, autónomo)
+- **Fuentes e iconos empaquetados con la app,** no cargados de Google Fonts: un tercero vería quién visita una web de salud. (Claude, autónomo)
+- **Hugging Face Spaces con Docker:** el hosting; pensado para apps de ML, con RAM de sobra para el modelo y sin dormirse a los pocos minutos. Sus límites se comprueban al desplegar, en la fase 5. (Claude, a petición) Descartado: Vercel, el backend Python va en funciones con límite de tamaño, justo para scikit-survival; Render, se duerme a los 15 minutos y tarda ~1 minuto en despertar.
 
 ## Otras decisiones
 
@@ -67,6 +71,7 @@ Lo que no encaje en esta descripción no va aquí. Librerías y versiones, coman
 - **Evaluación final con los criterios fijados antes de abrir el test:** se cumplen todos menos la infraestimación en los deciles de riesgo bajo (de 3,7 a 9,6 años, sobre todo ruido por las pocas muertes). No se reajusta el modelo: queda como limitación, y por eso el margen ± X es más ancho en jóvenes de riesgo bajo. Las cifras están en `docs/entregas/03_machine_learning.md`.
 
 ### App
+- **Un solo servicio: FastAPI sirve también el React ya compilado:** un despliegue en vez de dos y sin CORS. (Claude, a petición)
 - **La app usa el nivel más completo que permitan los datos del usuario:** los cuatro saltos son reales en test. No se promedian modelos, porque promediar con uno peor empeora el resultado.
 - **Si falta una variable del modelo pero viene su pareja, se estima** con una ecuación ajustada sobre Gold (p. ej. hemoglobina desde el hematocrito), solo en parejas con correlación alta: se pierden menos variables sin pedir nada más al usuario.
 - **El filtrado glomerular no es variable del modelo** (es redundante con creatinina, edad y sexo), pero el parser puede usarlo para recuperar la creatinina si falta.
