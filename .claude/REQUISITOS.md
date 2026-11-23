@@ -60,11 +60,11 @@ Cuando la edad biológica está por encima de un umbral (haya o no cuestionario)
 - Usable por cualquier persona: flujo corto, lenguaje claro sin jerga, responsive y pensado para móvil.
 - Estados de carga y errores de parseo comprensibles y accionables: qué ha fallado y qué puede hacer el usuario.
 - Portada: título, los dos botones y, en una franja inferior muy visible, el aviso de que no es consejo médico.
-- La franja está en la portada y en el resultado, no en el cuestionario: si está siempre, pasa a ser parte del fondo y deja de leerse. (Rubén, de acuerdo)
+- La franja está en la portada y en el resultado, no en el cuestionario ni en la carga: si está siempre, pasa a ser parte del fondo y deja de leerse. (Rubén, de acuerdo)
 - Estética "microscopio": oscuro, verde profundo con acentos esmeralda, titulares en Fraunces y el aviso en amarillo de peligro con el símbolo de riesgo biológico. (Rubén, de acuerdo) Descartado: neón con red de partículas, no evoca biología; mezclar la hélice de ADN con las células en el fondo, recargado.
 - Fondo animado en todas las pantallas: células flotando como bajo la lente. Manda la fluidez sobre la estética: si no va fluido, imagen fija.
 - Al tocar el fondo salen destellos y nacen o explotan células; al pulsar botones, no.
-- La hélice de ADN girando se reserva para la pantalla de carga y, quizá, el cuestionario.
+- Pantalla de carga cosmética antes del resultado, de 1,5 a 2 segundos: una hélice de ADN verde que se construye de arriba abajo, "Calculando tu edad" y un porcentaje que sube rápido de 0 a 100. (Rubén, de acuerdo) Descartado: frases que cambian y lista de pasos; hélice bicolor, cansa la vista.
 - En la portada, "solo analítica" va a la izquierda y "analítica + hábitos", destacado, a la derecha.
 - Resto del diseño visual (cuestionario, carga, errores y resultado): se afina en la fase de app.
 

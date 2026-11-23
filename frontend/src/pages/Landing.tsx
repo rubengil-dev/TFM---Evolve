@@ -1,23 +1,23 @@
 /** Home screen: title and the two buttons that pick the mode and open the file picker. */
 
-import { useRef, useState, type ChangeEvent } from 'react'
+import { useRef, type ChangeEvent } from 'react'
 import type { Mode } from '../types'
 
 type Props = { onStart: (mode: Mode, file: File) => void }
 
 export default function Landing({ onStart }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
-  const [mode, setMode] = useState<Mode>('full')
+  const modeRef = useRef<Mode>('full')
 
   function pick(chosen: Mode) {
-    setMode(chosen)
+    modeRef.current = chosen
     inputRef.current?.click()
   }
 
   function handleFile(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]
     event.target.value = ''
-    if (file) onStart(mode, file)
+    if (file) onStart(modeRef.current, file)
   }
 
   return (

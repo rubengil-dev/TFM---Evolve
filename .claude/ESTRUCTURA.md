@@ -52,6 +52,7 @@ TFM/
 │   │   │   └── questions.ts          # Preguntas
 │   │   ├── pages/
 │   │   │   ├── Landing.tsx           # Portada
+│   │   │   ├── Loading.tsx           # Carga
 │   │   │   └── Questionnaire.tsx     # Cuestionario
 │   │   ├── App.tsx                   # Pantalla activa
 │   │   ├── index.css                 # Colores y fuentes

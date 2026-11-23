@@ -4,10 +4,11 @@ import { useState } from 'react'
 import CellBackground from './components/CellBackground'
 import WarningBar from './components/WarningBar'
 import Landing from './pages/Landing'
+import Loading from './pages/Loading'
 import Questionnaire from './pages/Questionnaire'
 import type { Answers, Mode } from './types'
 
-type Screen = 'landing' | 'questions' | 'result'
+type Screen = 'landing' | 'questions' | 'loading' | 'result'
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>('landing')
@@ -23,7 +24,7 @@ export default function App() {
 
   function finish(given: Answers) {
     setAnswers(given)
-    setScreen('result')
+    setScreen('loading')
   }
 
   return (
@@ -31,8 +32,9 @@ export default function App() {
       <CellBackground />
       {screen === 'landing' && <Landing onStart={start} />}
       {screen === 'questions' && <Questionnaire mode={mode} onDone={finish} onExit={() => setScreen('landing')} />}
+      {screen === 'loading' && <Loading onDone={() => setScreen('result')} />}
       {screen === 'result' && <Placeholder file={file} answers={answers} onBack={() => setScreen('landing')} />}
-      {screen !== 'questions' && <WarningBar />}
+      {(screen === 'landing' || screen === 'result') && <WarningBar />}
     </>
   )
 }
