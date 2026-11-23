@@ -4,35 +4,47 @@ import { useState } from 'react'
 import CellBackground from './components/CellBackground'
 import WarningBar from './components/WarningBar'
 import Landing from './pages/Landing'
-import type { Mode } from './types'
+import Questionnaire from './pages/Questionnaire'
+import type { Answers, Mode } from './types'
 
-type Upload = { mode: Mode; file: File }
+type Screen = 'landing' | 'questions' | 'result'
 
 export default function App() {
-  const [upload, setUpload] = useState<Upload | null>(null)
+  const [screen, setScreen] = useState<Screen>('landing')
+  const [mode, setMode] = useState<Mode>('full')
+  const [file, setFile] = useState<File | null>(null)
+  const [answers, setAnswers] = useState<Answers>({})
+
+  function start(chosenMode: Mode, chosenFile: File) {
+    setMode(chosenMode)
+    setFile(chosenFile)
+    setScreen('questions')
+  }
+
+  function finish(given: Answers) {
+    setAnswers(given)
+    setScreen('result')
+  }
 
   return (
     <>
       <CellBackground />
-      {upload === null ? (
-        <Landing onStart={(mode, file) => setUpload({ mode, file })} />
-      ) : (
-        <Placeholder upload={upload} onBack={() => setUpload(null)} />
-      )}
-      <WarningBar />
+      {screen === 'landing' && <Landing onStart={start} />}
+      {screen === 'questions' && <Questionnaire mode={mode} onDone={finish} onExit={() => setScreen('landing')} />}
+      {screen === 'result' && <Placeholder file={file} answers={answers} onBack={() => setScreen('landing')} />}
+      {screen !== 'questions' && <WarningBar />}
     </>
   )
 }
 
-function Placeholder({ upload, onBack }: { upload: Upload; onBack: () => void }) {
+function Placeholder({ file, answers, onBack }: { file: File | null; answers: Answers; onBack: () => void }) {
   return (
     <main className="flex min-h-full flex-col items-center justify-center gap-4 px-6 pb-24 text-center text-moss">
-      <p>
-        {upload.file.name} · modo {upload.mode === 'full' ? 'analítica + hábitos' : 'solo analítica'}
-      </p>
-      <p>Siguiente pantalla: en construcción.</p>
+      <p>{file?.name}</p>
+      <pre className="text-left text-xs">{JSON.stringify(answers, null, 2)}</pre>
+      <p>Pantalla de resultado: en construcción.</p>
       <button type="button" onClick={onBack} className="text-emerald underline">
-        Volver
+        Volver al inicio
       </button>
     </main>
   )

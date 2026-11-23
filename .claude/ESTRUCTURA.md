@@ -36,16 +36,23 @@ TFM/
 │       ├── 02_datos_y_preparacion.md # Entrega 02
 │       ├── 02_gold_sample.csv        # Muestra de Gold
 │       ├── 03_machine_learning.md    # Entrega 03
-│       └── enunciado3.pdf            # Enunciado (fuera de git)
+│       ├── enunciado3.pdf            # Enunciado 03 (fuera de git)
+│       └── enunciado4.pdf            # Enunciado 04 (fuera de git)
 ├── frontend/                         # Web (React)
 │   ├── public/
 │   │   └── favicon.svg               # Icono
 │   ├── src/
 │   │   ├── components/
 │   │   │   ├── CellBackground.tsx    # Fondo de células
+│   │   │   ├── ChoiceCards.tsx       # Tarjetas de opciones
+│   │   │   ├── NumberSlider.tsx      # Barra de números
+│   │   │   ├── ProgressBar.tsx       # Barra de progreso
 │   │   │   └── WarningBar.tsx        # Franja del aviso
+│   │   ├── config/
+│   │   │   └── questions.ts          # Preguntas
 │   │   ├── pages/
-│   │   │   └── Landing.tsx           # Portada
+│   │   │   ├── Landing.tsx           # Portada
+│   │   │   └── Questionnaire.tsx     # Cuestionario
 │   │   ├── App.tsx                   # Pantalla activa
 │   │   ├── index.css                 # Colores y fuentes
 │   │   ├── main.tsx                  # Arranque

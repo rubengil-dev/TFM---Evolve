@@ -17,6 +17,7 @@ frontend/
 ├── public/               # Served as they are (favicon)
 ├── src/
 │   ├── components/       # Pieces shared by several screens
+│   ├── config/           # Settings written by hand (questions)
 │   ├── pages/            # One file per screen
 │   ├── App.tsx           # Decides which screen to show
 │   ├── index.css         # Design colors and fonts

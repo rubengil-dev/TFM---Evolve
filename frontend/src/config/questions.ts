@@ -1,0 +1,81 @@
+/** Questions asked after the PDF, in order: body measures in both modes, habits only in the full mode. */
+
+import type { Question } from '../types'
+
+// Answer values match the categories the model was trained with (study.py);
+// number ranges match the plausible ranges of the model (plausible_ranges.py)
+export const QUESTIONS: Question[] = [
+  {
+    id: 'weight',
+    kind: 'number',
+    title: '¿Cuánto pesas?',
+    hint: 'Aproximado vale.',
+    modes: ['quick', 'full'],
+    min: 30,
+    max: 300,
+    step: 1,
+    start: 70,
+    unit: 'kg',
+  },
+  {
+    id: 'height',
+    kind: 'number',
+    title: '¿Cuánto mides?',
+    hint: 'En centímetros.',
+    modes: ['quick', 'full'],
+    min: 120,
+    max: 220,
+    step: 1,
+    start: 170,
+    unit: 'cm',
+  },
+  {
+    id: 'smoking',
+    kind: 'choice',
+    title: '¿Fumas?',
+    hint: 'Cigarrillos, puros o tabaco de liar.',
+    modes: ['full'],
+    options: [
+      { value: 'never', label: 'Nunca he fumado', detail: 'O solo lo probé: menos de 100 cigarrillos en toda mi vida', icon: 'never' },
+      { value: 'former', label: 'Fumaba, pero lo dejé', icon: 'former' },
+      { value: 'current', label: 'Sí, fumo', detail: 'A diario o de vez en cuando', icon: 'current' },
+    ],
+    note: '¿Y el alcohol? No lo preguntamos: en los datos con los que aprendió el modelo, beber sale "protector" porque muchos dejaron de beber al enfermar. Te daría un resultado engañoso.',
+  },
+  {
+    id: 'physical_activity',
+    kind: 'choice',
+    title: '¿Haces ejercicio en tu tiempo libre?',
+    hint: 'En una semana normal, al menos 10 minutos seguidos.',
+    modes: ['full'],
+    options: [
+      { value: 'intense', label: 'Sí, intenso', detail: 'Me hace sudar o respirar fuerte: correr, fútbol, spinning…', icon: 'intense' },
+      { value: 'moderate', label: 'Sí, moderado', detail: 'Me acelera un poco: caminar rápido, bici suave, nadar tranquilo…', icon: 'moderate' },
+      { value: 'sedentary', label: 'No, casi nunca', icon: 'none' },
+    ],
+  },
+  {
+    id: 'sedentary_hours',
+    kind: 'number',
+    title: '¿Cuántas horas pasas sentado al día?',
+    hint: 'Trabajo, coche, sofá y pantallas. Sin contar las horas de sueño.',
+    modes: ['full'],
+    min: 0,
+    max: 24,
+    step: 0.5,
+    start: 8,
+    unit: 'h',
+  },
+  {
+    id: 'sleep_hours',
+    kind: 'number',
+    title: '¿Cuántas horas duermes normalmente?',
+    hint: 'Una noche típica entre semana.',
+    modes: ['full'],
+    min: 2,
+    max: 16,
+    step: 0.5,
+    start: 8,
+    unit: 'h',
+  },
+]

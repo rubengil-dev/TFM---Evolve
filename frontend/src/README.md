@@ -5,5 +5,6 @@ The app code (React + TypeScript):
 - `App.tsx`: Keeps the user's choices and decides which screen to show.
 - `index.css`: Design colors and fonts (Tailwind theme).
 - `types.ts`: Types shared by several files.
+- `config/`: Settings written by hand (the questions).
 - `pages/`: One file per screen.
 - `components/`: Pieces shared by several screens.

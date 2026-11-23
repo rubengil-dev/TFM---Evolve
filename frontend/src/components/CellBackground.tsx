@@ -1,4 +1,4 @@
-/** Cells floating behind every screen, as if under a microscope; a tap bursts a cell or makes a new one. */
+/** Cells floating behind every screen, as if under a microscope; a tap on the background bursts a cell or makes a new one. */
 
 import { useEffect, useRef } from 'react'
 
@@ -15,6 +15,7 @@ const STROKE = 'rgba(52, 211, 153, 0.22)'
 const FILL = 'rgba(52, 211, 153, 0.05)'
 const NUCLEUS = 'rgba(52, 211, 153, 0.25)'
 const SPARK = '167, 243, 208'
+const INTERACTIVE = 'button, a, input, label, [role="radio"]' // taps here stay quiet
 
 export default function CellBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -45,6 +46,7 @@ export default function CellBackground() {
     }
 
     function tap(event: PointerEvent) {
+      if ((event.target as Element).closest(INTERACTIVE)) return
       const { clientX: x, clientY: y } = event
       sparks.push(...makeSparks(x, y))
       const hit = cells.findIndex((cell) => Math.hypot(cell.x - x, cell.y - y) < cell.r)

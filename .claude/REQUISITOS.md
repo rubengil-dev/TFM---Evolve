@@ -22,17 +22,17 @@ Se carga siempre, así que si crece demasiado (unas 300 líneas), avísame para 
 - Interfaz en español.
 
 ### Flujo
-- Subir PDF → (responder el cuestionario, si se elige ese modo) → ver resultado.
+- Subir PDF → peso y talla (y edad y sexo si el PDF no los trae), en los dos modos → (hábitos, si se elige ese modo) → ver resultado.
 - La pantalla de revisión solo aparece si el parser marca algún valor como dudoso (sin reconocer, sin unidad, fuera del rango posible o edad y sexo ausentes), y solo con esos valores: revisarlo todo mete la fricción que la app quiere quitar. Se valida con los PDFs reales de Rubén; si fallan, se replantea. (Rubén, de acuerdo) Descartado: revisión siempre.
 - La app lee los valores del PDF y normaliza los nombres de los parámetros (glucosa / gluc / GLU…) y las unidades antes de la pantalla de revisión.
 
 ### Modos
 - Dos modos, a elección del usuario: solo con la analítica, o con la analítica más un cuestionario de hábitos de vida.
 - El modo se elige con dos botones en la portada, y el de analítica + cuestionario es el destacado porque da la mejor respuesta. Al pulsar cualquiera se abre el selector de archivos. (Rubén, de acuerdo) Descartado: dos pestañas.
-- El cuestionario va una pregunta por pantalla, al estilo Typeform.
+- El cuestionario va una pregunta por pantalla, al estilo Typeform: las opciones en tarjetas con icono y aclaración, que pasan solas a la siguiente pregunta; los números en una barra deslizable para el valor grueso con − y + en los extremos para el ajuste fino, y una barra de progreso fina arriba. Peso y talla siguen el mismo estilo. Los rangos de las barras son los rangos posibles del modelo. (Rubén, de acuerdo) Descartado: hélice como barra de progreso; fichas que se deslizan, demasiados toques para peso y talla.
 - El cuestionario pregunta por tabaco, actividad física, horas sentado y horas de sueño.
 - Preguntas sin inputs escritos y solo de datos objetivos: nada de autovaloraciones ("¿cómo de sana es tu dieta?", "¿cómo es tu salud?").
-- **El alcohol no se pregunta, y la app explica por qué falta:** el modelo no lo usa (en los datos, beber sale protector por causalidad inversa) y el usuario espera verlo en un cuestionario de hábitos.
+- **El alcohol no se pregunta, y la app explica por qué falta, en la pregunta del tabaco:** el modelo no lo usa (en los datos, beber sale protector por causalidad inversa) y el usuario espera verlo en un cuestionario de hábitos.
 
 ### Datos de entrada
 - Usa lo que trae una analítica de rutina española, lo que se pide a menudo (p. ej. vitamina D) y lo que el usuario sabe sin pensar (edad, sexo, peso, talla), siempre que exista en NHANES.
@@ -59,9 +59,11 @@ Cuando la edad biológica está por encima de un umbral (haya o no cuestionario)
 - La UX tiene prioridad sobre afinar el modelo: el modelo es fácil de iterar, y una UX mal planteada obliga a rehacerla.
 - Usable por cualquier persona: flujo corto, lenguaje claro sin jerga, responsive y pensado para móvil.
 - Estados de carga y errores de parseo comprensibles y accionables: qué ha fallado y qué puede hacer el usuario.
-- Portada: título, los dos botones y, en una franja inferior muy visible, el aviso de que no es consejo médico; el aviso sigue visible hasta el resultado.
+- Portada: título, los dos botones y, en una franja inferior muy visible, el aviso de que no es consejo médico.
+- La franja está en la portada y en el resultado, no en el cuestionario: si está siempre, pasa a ser parte del fondo y deja de leerse. (Rubén, de acuerdo)
 - Estética "microscopio": oscuro, verde profundo con acentos esmeralda, titulares en Fraunces y el aviso en amarillo de peligro con el símbolo de riesgo biológico. (Rubén, de acuerdo) Descartado: neón con red de partículas, no evoca biología; mezclar la hélice de ADN con las células en el fondo, recargado.
 - Fondo animado en todas las pantallas: células flotando como bajo la lente. Manda la fluidez sobre la estética: si no va fluido, imagen fija.
+- Al tocar el fondo salen destellos y nacen o explotan células; al pulsar botones, no.
 - La hélice de ADN girando se reserva para la pantalla de carga y, quizá, el cuestionario.
 - En la portada, "solo analítica" va a la izquierda y "analítica + hábitos", destacado, a la derecha.
 - Resto del diseño visual (cuestionario, carga, errores y resultado): se afina en la fase de app.
