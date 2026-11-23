@@ -1,20 +1,24 @@
 /** Root of the app: keeps the user's choices and decides which screen to show. */
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import CellBackground from './components/CellBackground'
+import ImpossibleValue from './components/ImpossibleValue'
 import WarningBar from './components/WarningBar'
-import { EXAMPLE_RESULT } from './config/example'
+import { ERRORS, type ErrorKind } from './config/errors'
+import { EXAMPLE_MISSING, EXAMPLE_ODD_VALUE, EXAMPLE_RESULT, startingDemo } from './config/example'
+import ErrorScreen from './pages/ErrorScreen'
 import Landing from './pages/Landing'
 import Loading from './pages/Loading'
 import Questionnaire from './pages/Questionnaire'
 import Result from './pages/Result'
 import type { Mode } from './types'
 
-type Screen = 'landing' | 'questions' | 'loading' | 'result'
+export type Screen = 'landing' | 'questions' | 'loading' | 'result' | 'odd_value' | ErrorKind
 
 // Until the backend is connected, the PDF and the answers are not sent anywhere and the result is an example
 export default function App() {
-  const [screen, setScreen] = useState<Screen>('landing')
+  const demo = startingDemo()
+  const [screen, setScreen] = useState<Screen>(demo.screen)
   const [mode, setMode] = useState<Mode>('full')
 
   function start(chosenMode: Mode) {
@@ -22,16 +26,30 @@ export default function App() {
     setScreen('questions')
   }
 
-  const result = mode === 'full' ? EXAMPLE_RESULT : { ...EXAMPLE_RESULT, habits: undefined }
+  const home = () => setScreen('landing')
+
+  // Every screen opens at the top, also after a reload
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }, [screen])
+  const result = { ...EXAMPLE_RESULT, ...demo.result, habits: mode === 'full' ? EXAMPLE_RESULT.habits : undefined }
 
   return (
     <>
       <CellBackground />
-      {screen === 'landing' && <Landing onStart={start} />}
-      {screen === 'questions' && <Questionnaire mode={mode} onDone={() => setScreen('loading')} onExit={() => setScreen('landing')} />}
+      {screen === 'landing' && <Landing onStart={start} onWrongFile={() => setScreen('unreadable')} />}
+      {screen === 'questions' && <Questionnaire mode={mode} missing={EXAMPLE_MISSING} onDone={() => setScreen('loading')} onExit={home} />}
       {screen === 'loading' && <Loading onDone={() => setScreen('result')} />}
-      {screen === 'result' && <Result result={result} />}
-      {(screen === 'landing' || screen === 'result') && <WarningBar />}
+      {(screen === 'result' || screen === 'odd_value') && <Result result={result} blurred={screen === 'odd_value'} />}
+      {screen === 'odd_value' && (
+        <ImpossibleValue odd={EXAMPLE_ODD_VALUE} onCorrected={() => setScreen('loading')} onConfirmed={() => setScreen('impossible')} />
+      )}
+      {isError(screen) && <ErrorScreen kind={screen} onRetry={() => setScreen('questions')} onHome={home} />}
+      {(screen === 'result' || screen === 'odd_value') && <WarningBar />}
     </>
   )
+}
+
+function isError(screen: Screen): screen is ErrorKind {
+  return screen in ERRORS
 }

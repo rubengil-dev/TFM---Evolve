@@ -1,10 +1,35 @@
-/** Questions asked after the PDF, in order: body measures in both modes, habits only in the full mode. */
+/** Questions asked after the PDF, in order: sex and age only if the PDF lacks them, body measures, habits in the full mode. */
 
 import type { Question } from '../types'
 
 // Answer values match the categories the model was trained with (study.py);
 // number ranges match the plausible ranges of the model (plausible_ranges.py)
 export const QUESTIONS: Question[] = [
+  {
+    id: 'sex',
+    kind: 'choice',
+    title: '¿Cuál es tu sexo?',
+    hint: 'Tu analítica no lo indica. Usamos el sexo biológico porque los valores normales cambian entre hombres y mujeres.',
+    modes: ['quick', 'full'],
+    onlyIfMissing: true,
+    options: [
+      { value: 'female', label: 'Mujer', icon: 'female' },
+      { value: 'male', label: 'Hombre', icon: 'male' },
+    ],
+  },
+  {
+    id: 'age',
+    kind: 'number',
+    title: '¿Qué edad tienes?',
+    hint: 'Tu analítica no la indica.',
+    modes: ['quick', 'full'],
+    onlyIfMissing: true,
+    min: 16,
+    max: 100,
+    step: 1,
+    start: 45,
+    unit: 'años',
+  },
   {
     id: 'weight',
     kind: 'number',

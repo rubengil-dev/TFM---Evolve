@@ -1,11 +1,13 @@
 /** Answer options as large cards with an icon and a short clarification; tapping one picks it. */
 
-import { IconArmchair, IconHistory, IconRun, IconSmoking, IconSmokingNo, IconWalk } from '@tabler/icons-react'
+import { IconArmchair, IconGenderFemale, IconGenderMale, IconHistory, IconRun, IconSmoking, IconSmokingNo, IconWalk } from '@tabler/icons-react'
 import type { ChoiceOption } from '../types'
 
 type Props = { options: ChoiceOption[]; selected?: string; onPick: (value: string) => void }
 
 const ICONS = {
+  female: IconGenderFemale,
+  male: IconGenderMale,
   never: IconSmokingNo,
   former: IconHistory,
   current: IconSmoking,
@@ -16,7 +18,7 @@ const ICONS = {
 
 export default function ChoiceCards({ options, selected, onPick }: Props) {
   return (
-    <div role="radiogroup" className="flex flex-col gap-3">
+    <div role="radiogroup" className={sideBySide(options) ? 'grid grid-cols-2 gap-3' : 'flex flex-col gap-3'}>
       {options.map((option) => {
         const Icon = ICONS[option.icon]
         const isSelected = option.value === selected
@@ -41,4 +43,9 @@ export default function ChoiceCards({ options, selected, onPick }: Props) {
       })}
     </div>
   )
+}
+
+/** Two short options without clarification fit on one line (e.g. woman / man). */
+function sideBySide(options: ChoiceOption[]): boolean {
+  return options.length === 2 && options.every((option) => !option.detail)
 }

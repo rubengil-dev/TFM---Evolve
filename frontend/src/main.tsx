@@ -8,6 +8,10 @@ import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 
+// Always open at the top: no restored scroll, no #anchor left from an earlier visit
+window.history.scrollRestoration = 'manual'
+if (window.location.hash) window.history.replaceState(null, '', window.location.pathname + window.location.search)
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />

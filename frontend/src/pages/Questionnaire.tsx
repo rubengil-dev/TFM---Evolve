@@ -8,12 +8,14 @@ import ProgressBar from '../components/ProgressBar'
 import { QUESTIONS } from '../config/questions'
 import type { Answers, Mode, Question } from '../types'
 
-type Props = { mode: Mode; onDone: (answers: Answers) => void; onExit: () => void }
+type Props = { mode: Mode; missing: string[]; onDone: (answers: Answers) => void; onExit: () => void }
 
 const AUTO_ADVANCE_MS = 280
 
-export default function Questionnaire({ mode, onDone, onExit }: Props) {
-  const questions = QUESTIONS.filter((question) => question.modes.includes(mode))
+export default function Questionnaire({ mode, missing, onDone, onExit }: Props) {
+  const questions = QUESTIONS.filter(
+    (question) => question.modes.includes(mode) && (!question.onlyIfMissing || missing.includes(question.id)),
+  )
   const [index, setIndex] = useState(0)
   const [answers, setAnswers] = useState<Answers>(() => startingAnswers(questions))
   const question = questions[index]

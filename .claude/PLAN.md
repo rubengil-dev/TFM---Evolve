@@ -35,7 +35,10 @@ Lo que no encaje en esta descripción no va aquí. Las decisiones pendientes no 
   - [*] Front en React, completo: portada con la elección de modo, preguntas, revisión, carga, errores y resultado, con el diseño visual definitivo. Primero con datos de ejemplo y después conectado al backend.
   - [ ] Entrega 04: `docs/entregas/04_diseno_frontal_ux.md` con capturas de la app.
   - [/] Parser del PDF, con la normalización de nombres y unidades, probado con mis PDFs.
-  - [ ] Pantalla de revisión, solo para los valores que el parser marca como dudosos.
+  - [ ] Pantalla de revisión, solo para los valores que el parser marca como dudosos, y solo si las pruebas del parser muestran que hace falta.
+  - [x] Preguntas de sexo y edad, solo si el PDF no las trae.
+  - [x] Pantallas de error: PDF ilegible o que no es una analítica, faltan demasiados datos y valor imposible; aviso rojo de edad fuera de 18-79 en el resultado.
+  - [x] Letra pequeña de la portada (privacidad y cómo se calcula).
   - [/] Validación de lo que entra al modelo, en el módulo de predicción: columnas, tipos, categorías, rangos posibles y edad, con errores con código que el front traduce. Hoy una columna ausente o un número como texto dan un error técnico, y un valor imposible devuelve una edad sin avisar.
   - [ ] Cuestionario de hábitos.
   - [ ] Pantalla de resultado, presentada como edad equivalente según la referencia de NHANES: edad ± X, tabla de grupos y, con cuestionario, tabla de hábitos.

@@ -46,6 +46,7 @@ TFM/
 │   │   │   ├── CellBackground.tsx    # Fondo de células
 │   │   │   ├── ChoiceCards.tsx       # Tarjetas de opciones
 │   │   │   ├── GroupIcon.tsx         # Icono de cada grupo
+│   │   │   ├── ImpossibleValue.tsx   # Ventana de valor imposible
 │   │   │   ├── NumberSlider.tsx      # Barra de números
 │   │   │   ├── OrganIcons.tsx        # Iconos anatómicos
 │   │   │   ├── ProgressBar.tsx       # Barra de progreso
@@ -53,10 +54,12 @@ TFM/
 │   │   │   ├── WarningBar.tsx        # Franja del aviso
 │   │   │   └── YearsTable.tsx        # Tabla de años
 │   │   ├── config/
-│   │   │   ├── example.ts            # Resultado de ejemplo
+│   │   │   ├── errors.ts             # Textos de error
+│   │   │   ├── example.ts            # Datos de ejemplo y demos
 │   │   │   ├── groups.ts             # Grupos del resultado
 │   │   │   └── questions.ts          # Preguntas
 │   │   ├── pages/
+│   │   │   ├── ErrorScreen.tsx       # Errores
 │   │   │   ├── Landing.tsx           # Portada
 │   │   │   ├── Loading.tsx           # Carga
 │   │   │   ├── Questionnaire.tsx     # Cuestionario

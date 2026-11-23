@@ -10,7 +10,7 @@ export type ChoiceOption = {
   value: string
   label: string
   detail?: string
-  icon: 'never' | 'former' | 'current' | 'intense' | 'moderate' | 'none'
+  icon: 'female' | 'male' | 'never' | 'former' | 'current' | 'intense' | 'moderate' | 'none'
 }
 
 type BaseQuestion = {
@@ -18,6 +18,7 @@ type BaseQuestion = {
   title: string
   hint: string
   modes: Mode[]
+  onlyIfMissing?: boolean
   note?: string
 }
 

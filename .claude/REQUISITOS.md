@@ -23,7 +23,7 @@ Se carga siempre, así que si crece demasiado (unas 300 líneas), avísame para 
 
 ### Flujo
 - Subir PDF → peso y talla (y edad y sexo si el PDF no los trae), en los dos modos → (hábitos, si se elige ese modo) → ver resultado.
-- La pantalla de revisión solo aparece si el parser marca algún valor como dudoso (sin reconocer, sin unidad, fuera del rango posible o edad y sexo ausentes), y solo con esos valores: revisarlo todo mete la fricción que la app quiere quitar. Se valida con los PDFs reales de Rubén; si fallan, se replantea. (Rubén, de acuerdo) Descartado: revisión siempre.
+- La pantalla de revisión se construye solo si las pruebas del parser muestran que hace falta. Si se construye, solo aparece si el parser marca algún valor como dudoso (sin reconocer, sin unidad, fuera del rango posible o edad y sexo ausentes), y solo con esos valores: revisarlo todo mete la fricción que la app quiere quitar. Se valida con los PDFs reales de Rubén; si fallan, se replantea. (Rubén, de acuerdo) Descartado: revisión siempre.
 - La app lee los valores del PDF y normaliza los nombres de los parámetros (glucosa / gluc / GLU…) y las unidades antes de la pantalla de revisión.
 
 ### Modos
@@ -36,11 +36,15 @@ Se carga siempre, así que si crece demasiado (unas 300 líneas), avísame para 
 
 ### Datos de entrada
 - Usa lo que trae una analítica de rutina española, lo que se pide a menudo (p. ej. vitamina D) y lo que el usuario sabe sin pensar (edad, sexo, peso, talla), siempre que exista en NHANES.
-- Edad y sexo se extraen del PDF si vienen; si no, se piden.
+- Edad y sexo se extraen del PDF si vienen (la edad, de la fecha de nacimiento si no viene directa); si no, se piden como primeras preguntas del cuestionario, solo las que falten. El sexo falta a menudo; la edad, casi nunca.
 - Tensión arterial: dato opcional para afinar, nunca obligatorio.
-- Solo adultos, dentro del rango de edad de los datos de entrenamiento (18 a 79 años). La portada lo dice en una línea y la app comprueba la edad del PDF. (Rubén, de acuerdo) Descartado: pop-up al entrar, añade un clic.
+- Solo adultos, dentro del rango de edad de los datos de entrenamiento (18 a 79 años). La portada lo dice en una línea. (Rubén, de acuerdo) Descartado: pop-up al entrar, añade un clic.
+- Edad real fuera de 18-79: se calcula igualmente, con un aviso rojo debajo de la frase de la diferencia que diga que está fuera del rango de los datos. Por debajo de 16 años no se calcula: los valores normales de una analítica son otros y extrapolar ya no tiene sentido. (Rubén, de acuerdo) Descartado: bloquear a los menores de 18, a los 16-17 la extrapolación es corta.
+- Solo se admiten PDFs: cualquier otro archivo da el error de "no podemos leer este PDF".
+- Errores (PDF ilegible o que no es una analítica, faltan demasiados datos, valor imposible confirmado, menor de 16): pantalla propia al estilo de la portada, con el título grande ("No podemos / calcular tu edad"), el icono en un círculo debajo, la explicación y qué puede hacer el usuario en texto gris, sin viñetas ni recuadro, "Subir otro PDF" y "Volver al inicio". (Rubén, de acuerdo) Descartado: aviso en la portada, en móvil se pasa por alto; tarjeta con borde rosa; viñetas en recuadros.
+- Valor imposible: el resultado se ve difuminado detrás de una ventana que muestra el valor y deja corregirlo en la misma casilla, con el botón o tocándola, con los mismos decimales con que lo da el laboratorio, o confirmarlo. Si se confirma, no se calcula: pantalla de error con "Si el valor es real, acude a un médico con urgencia" en una franja amarilla como la del aviso, con texto negro y un triángulo de alerta. (Rubén, de acuerdo)
 - Las analíticas no traen siempre los mismos parámetros: si falta algún dato, se calcula igualmente con menos fiabilidad; si faltan demasiados, se avisa de que no se puede calcular.
-- **Valor fuera del rango posible:** en la pantalla de revisión se pide al usuario que lo compruebe (puede ser una mala lectura del PDF); si lo confirma, la app no calcula la edad biológica y avisa de ir al médico cuanto antes. Son valores de emergencia o de una muestra defectuosa: dar una edad ahí sería engañoso.
+- **Valor fuera del rango posible:** se pide al usuario que lo compruebe (puede ser una mala lectura del PDF); si lo confirma, la app no calcula la edad biológica y avisa de ir al médico cuanto antes. Son valores de emergencia o de una muestra defectuosa: dar una edad ahí sería engañoso.
 
 ### Resultado
 Siempre:
@@ -67,14 +71,14 @@ Cuando la edad biológica está 10 o más años por encima de la real (haya o no
 - La UX tiene prioridad sobre afinar el modelo: el modelo es fácil de iterar, y una UX mal planteada obliga a rehacerla.
 - Usable por cualquier persona: flujo corto, lenguaje claro sin jerga, responsive y pensado para móvil.
 - Estados de carga y errores de parseo comprensibles y accionables: qué ha fallado y qué puede hacer el usuario.
-- Portada: título, los dos botones y, en una franja inferior muy visible, el aviso de que no es consejo médico.
+- Portada: título, "Para adultos de 18 a 79 años" como subtítulo, los dos botones, la línea "No guardamos nada: tu analítica se procesa y se descarta" con una llamada ¹ y, en una franja inferior muy visible, el aviso de que no es consejo médico. La llamada baja a la letra pequeña, debajo de la franja, como en las webs de bancos: qué se hace con los datos (consentimiento al subir el PDF, sin conservación), responsable, cómo se calcula y qué no es. (Rubén, de acuerdo) Descartado: solo la frase "no guardamos nada", el RGPD pide más; pop-up.
+- La app abre siempre arriba, en la portada, aunque se recargue.
 - La franja está en la portada y en el resultado, no en el cuestionario ni en la carga: si está siempre, pasa a ser parte del fondo y deja de leerse. (Rubén, de acuerdo)
 - Estética "microscopio": oscuro, verde profundo con acentos esmeralda, titulares en Fraunces y el aviso en amarillo de peligro con el símbolo de riesgo biológico. (Rubén, de acuerdo) Descartado: neón con red de partículas, no evoca biología; mezclar la hélice de ADN con las células en el fondo, recargado.
 - Fondo animado en todas las pantallas: células flotando como bajo la lente. Manda la fluidez sobre la estética: si no va fluido, imagen fija.
 - Al tocar el fondo salen destellos y nacen o explotan células; al pulsar botones, no.
 - Pantalla de carga cosmética antes del resultado, de 1,5 a 2 segundos: una hélice de ADN verde que se construye de arriba abajo, "Calculando tu edad" y un porcentaje que sube rápido de 0 a 100. (Rubén, de acuerdo) Descartado: frases que cambian y lista de pasos; hélice bicolor, cansa la vista.
 - En la portada, "solo analítica" va a la izquierda y "analítica + hábitos", destacado, a la derecha.
-- Resto del diseño visual (cuestionario, carga, errores y resultado): se afina en la fase de app.
 
 ## Restricciones
 - **Privacidad:** son datos de salud (categoría especial en el RGPD).
