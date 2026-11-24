@@ -1,36 +1,23 @@
 /** Share the result as a picture (phone share sheet) or download it; the picture is made in the browser, nothing is uploaded. */
 
 import { IconDownload, IconShare } from '@tabler/icons-react'
-import { toBlob } from 'html-to-image'
-import { useState, type RefObject } from 'react'
+import { useRef, useState, type RefObject } from 'react'
+import { makePicture } from '../utils/picture'
+import Logo from './Logo'
 
 type Props = { cardRef: RefObject<HTMLDivElement | null> }
 
-const FILE_NAME = 'mi-edad-biologica.png'
-const BACKGROUND = '#06120d'
-
 export default function ShareButtons({ cardRef }: Props) {
+  const watermarkRef = useRef<HTMLDivElement>(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const canShareFiles = typeof navigator.canShare === 'function'
-
-  async function picture(): Promise<File> {
-    const card = cardRef.current!
-    card.dataset.capture = ''
-    try {
-      const blob = await toBlob(card, { backgroundColor: BACKGROUND, pixelRatio: 2 })
-      if (!blob) throw new Error('empty picture')
-      return new File([blob], FILE_NAME, { type: 'image/png' })
-    } finally {
-      delete card.dataset.capture
-    }
-  }
 
   async function run(action: (file: File) => Promise<void>) {
     setBusy(true)
     setError('')
     try {
-      await action(await picture())
+      await action(await makePicture(cardRef.current!, watermarkRef.current!))
     } catch (caught) {
       if (!(caught instanceof DOMException && caught.name === 'AbortError')) setError('No he podido crear la imagen. Prueba otra vez.')
     } finally {
@@ -65,6 +52,16 @@ export default function ShareButtons({ cardRef }: Props) {
         )}
       </div>
       {error && <p className="text-xs text-rose">{error}</p>}
+
+      {/* Off screen: only drawn in the picture */}
+      <div aria-hidden="true" className="pointer-events-none fixed top-0 -left-[9999px]">
+        <div ref={watermarkRef} className="flex w-fit items-center gap-2.5 font-display text-2xl text-mist">
+          <Logo size={44} />
+          <span>
+            Bio<em className="text-emerald">Age</em>
+          </span>
+        </div>
+      </div>
     </div>
   )
 }

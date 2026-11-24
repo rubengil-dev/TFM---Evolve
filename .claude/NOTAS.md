@@ -15,11 +15,15 @@ Lo que no encaje en esta descripción no va aquí.
 # Contenido
 
 ## Decisiones pendientes
+- Tensión arterial: es un dato opcional según REQUISITOS, pero ninguna pantalla la pide. O una pregunta que se pueda saltar, o fuera.
 - La tabla de mejores y peores parámetros puede quedar fuera de la primera versión de la app si vamos justos.
 - Almacén remoto de DVC: DagsHub o una carpeta local. Hay que elegirlo antes de montar DVC (fase 6).
 - Versión del modelo: registro de MLflow, o etiqueta de git con las huellas de datos y modelo (fase 6).
 - Monitorización: si se hace, qué se puede contar sin almacenar datos de salud (fase 6).
 
 ## Ideas y dudas
+- Entrega 04: queda como borrador y se reescribe al acabar el resto (se entrega el domingo 29). A Rubén no le cuadran varias cosas, que dirá entonces.
+- Entrega 04, esquema del flujo: rehacerlo simple, sin repetir el modo. Elegir modo y PDF → preguntas → carga → ¿se puede calcular? Sí: resultado. No: de ahí salen los errores. Si el PDF no se lee, se vuelve a la portada.
+- Entrega 04, capturas: muchas menos, sin duplicar móvil y ordenador, y remitir a ejecutar la app. El enunciado exige al menos una imagen guardada en el repo y enlazada.
 - Mirar el histograma de la diferencia entre edad biológica y real del notebook de edad biológica.
 - Al desplegar: `ROOT` se calcula desde la ruta de `paths.py`, así que `models/` solo se encuentra si el hosting ejecuta desde el repo (instalación editable), no desde un paquete construido.

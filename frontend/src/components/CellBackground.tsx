@@ -1,6 +1,7 @@
 /** Cells floating behind every screen, as if under a microscope; a tap on the background bursts a cell or makes a new one. */
 
 import { useEffect, useRef } from 'react'
+import { drawCellAt } from '../utils/cells'
 
 type Cell = { x: number; y: number; r: number; vx: number; vy: number; phase: number; grow: number }
 type Spark = { x: number; y: number; vx: number; vy: number; life: number }
@@ -11,9 +12,6 @@ const MAX_CELLS = 24
 const SPARKS_PER_TAP = 12
 const SPARK_LIFE = 40 // frames
 const GROW_FRAMES = 30
-const STROKE = 'rgba(52, 211, 153, 0.22)'
-const FILL = 'rgba(52, 211, 153, 0.05)'
-const NUCLEUS = 'rgba(52, 211, 153, 0.25)'
 const SPARK = '167, 243, 208'
 const INTERACTIVE = 'button, a, input, label, [role="radio"]' // taps here stay quiet
 
@@ -137,17 +135,7 @@ function fly(spark: Spark) {
 
 function drawCell(ctx: CanvasRenderingContext2D, cell: Cell, tick: number) {
   const r = (cell.r + Math.sin(tick * 0.02 + cell.phase) * 2) * easeOut(cell.grow)
-  ctx.lineWidth = 1.2
-  ctx.strokeStyle = STROKE
-  ctx.fillStyle = FILL
-  ctx.beginPath()
-  ctx.arc(cell.x, cell.y, r, 0, Math.PI * 2)
-  ctx.fill()
-  ctx.stroke()
-  ctx.fillStyle = NUCLEUS
-  ctx.beginPath()
-  ctx.arc(cell.x + r * 0.2, cell.y - r * 0.1, r * 0.28, 0, Math.PI * 2)
-  ctx.fill()
+  drawCellAt(ctx, cell.x, cell.y, r)
 }
 
 function drawSpark(ctx: CanvasRenderingContext2D, spark: Spark) {

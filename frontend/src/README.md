@@ -8,3 +8,4 @@ The app code (React + TypeScript):
 - `config/`: Settings written by hand (the questions).
 - `pages/`: One file per screen.
 - `components/`: Pieces shared by several screens.
+- `utils/`: Functions used by the components.

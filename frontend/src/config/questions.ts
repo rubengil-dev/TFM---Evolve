@@ -57,7 +57,7 @@ export const QUESTIONS: Question[] = [
     hint: 'Cualquier forma de tabaco o vapeo.',
     modes: ['full'],
     options: [
-      { value: 'never', label: 'Nunca he fumado', detail: 'Si solo lo has probado o lo haces muy ocasionalmente', icon: 'never' },
+      { value: 'never', label: 'Nunca he fumado', detail: 'Si solo lo has probado', icon: 'never' },
       { value: 'former', label: 'Fumaba, pero lo dejé', detail: 'Llevas al menos 2 meses sin fumar', icon: 'former' },
       { value: 'current', label: 'Sí, fumo', detail: 'Incluso si es solo una vez al mes', icon: 'current' },
     ],

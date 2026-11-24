@@ -63,8 +63,9 @@ Cuando se hace el cuestionario:
 
 Diseño del resultado:
 - La pestaña del navegador se llama "BioAge".
+- Logo: una hoja en trazo esmeralda dentro de un círculo verde apagado, con una red de IA en lugar de nervios. Va en la marca de agua de la imagen y, simplificado para que se lea a 16 px, en el icono de la pestaña. (Rubén, de acuerdo) Descartado: ADN como red neuronal, célula reloj, anillos, reloj de arena.
 - El resultado va dentro de un recuadro de bordes redondeados. La edad biológica en grande, sin título encima, con el ± en pequeño a su lado (no debajo), y debajo la frase "X años menos/más que tu edad real", sin repetir la edad. (Rubén, de acuerdo) Descartado: medidor en arco, no aporta; tarjetas y pastillas.
-- Al final, compartir (en el móvil) y descargar el resultado como imagen, sin texto adjunto y con la marca "BioAge"; la imagen se crea en el navegador, sin subir nada. (Rubén, de acuerdo) Descartado: "calcular otra vez"; texto pequeño de aviso bajo las tablas, ya lo hace la franja amarilla.
+- Al final, compartir (en el móvil) y descargar el resultado como imagen, sin texto adjunto. La imagen enseña el recuadro entero con margen alrededor y las células por detrás y por los lados, y el logo con "BioAge" abajo a la derecha, fuera del recuadro, como marca de agua; se crea en el navegador, sin subir nada. (Rubén, de acuerdo) Descartado: "calcular otra vez"; texto pequeño de aviso bajo las tablas, ya lo hace la franja amarilla.
 - Iconos anatómicos de Healthicons para corazón, hígado y riñón; gota para glóbulos rojos, escudo para defensas, diamante para vitaminas y minerales, un montoncito de azúcar y "kg" para el peso.
 
 Cuando la edad biológica está 10 o más años por encima de la real (haya o no cuestionario):

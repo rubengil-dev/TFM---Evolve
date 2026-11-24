@@ -24,7 +24,7 @@ export default function Result({ result, blurred = false }: Props) {
       aria-hidden={blurred}
       className={`mx-auto w-full max-w-2xl px-6 pt-8 pb-32 ${blurred ? 'pointer-events-none blur-md select-none' : ''}`}
     >
-      <div ref={cardRef} className="group rounded-3xl border border-line/70 bg-deep/80 px-5 py-8 sm:px-8">
+      <div ref={cardRef} className="rounded-3xl border border-line/70 bg-deep/80 px-5 py-8 sm:px-8">
         <div className="flex items-baseline justify-center gap-3">
           <span className="font-display text-[8rem] leading-none font-medium text-mist sm:text-[10rem]">{shownAge(bioAge)}</span>
           <span className="text-xl text-moss">± {Math.round(margin)}</span>
@@ -44,9 +44,6 @@ export default function Result({ result, blurred = false }: Props) {
 
         <YearsTable title="Tu analítica" groups={BLOOD_GROUPS} years={result.blood} />
         {result.habits && <YearsTable title="Tus hábitos" groups={HABIT_GROUPS} years={result.habits} />}
-
-        {/* Only in the shared picture */}
-        <p className="mt-8 hidden justify-center font-display text-lg text-emerald group-data-[capture]:flex">BioAge</p>
       </div>
 
       <ShareButtons cardRef={cardRef} />

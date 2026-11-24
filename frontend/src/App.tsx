@@ -32,7 +32,8 @@ export default function App() {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' })
   }, [screen])
-  const result = { ...EXAMPLE_RESULT, ...demo.result, habits: mode === 'full' ? EXAMPLE_RESULT.habits : undefined }
+  const example = { ...EXAMPLE_RESULT, ...demo.result }
+  const result = mode === 'full' ? example : { ...example, habits: undefined }
 
   return (
     <>

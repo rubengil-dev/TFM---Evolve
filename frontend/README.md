@@ -19,6 +19,7 @@ frontend/
 │   ├── components/       # Pieces shared by several screens
 │   ├── config/           # Settings written by hand (questions)
 │   ├── pages/            # One file per screen
+│   ├── utils/            # Functions used by the components
 │   ├── App.tsx           # Decides which screen to show
 │   ├── index.css         # Design colors and fonts
 │   ├── main.tsx          # Entry point

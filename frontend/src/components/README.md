@@ -6,6 +6,7 @@ Pieces shared by several screens:
 - `OrganIcons.tsx`: Heart, liver and kidney icons from Healthicons (CC0), plus a sugar pile and a kg label.
 - `ImpossibleValue.tsx`: Window over the blurred result when a value is impossible: correct it or confirm it.
 - `ChoiceCards.tsx`: Answer options as large cards with an icon and a clarification.
+- `Logo.tsx`: Leaf inside a circle whose veins are an AI network.
 - `NumberSlider.tsx`: Number picker: slider for the rough value, − / + for the fine tuning.
 - `ProgressBar.tsx`: Back arrow and "question X of N" bar of the questionnaire.
 - `ShareButtons.tsx`: Share (phone) or download the result as a picture made in the browser.

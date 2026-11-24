@@ -36,6 +36,8 @@ TFM/
 │       ├── 02_datos_y_preparacion.md # Entrega 02
 │       ├── 02_gold_sample.csv        # Muestra de Gold
 │       ├── 03_machine_learning.md    # Entrega 03
+│       ├── 04_diseno_frontal_ux.md   # Entrega 04
+│       ├── 04_capturas/              # Capturas de la Entrega 04
 │       ├── enunciado3.pdf            # Enunciado 03 (fuera de git)
 │       └── enunciado4.pdf            # Enunciado 04 (fuera de git)
 ├── frontend/                         # Web (React)
@@ -47,6 +49,7 @@ TFM/
 │   │   │   ├── ChoiceCards.tsx       # Tarjetas de opciones
 │   │   │   ├── GroupIcon.tsx         # Icono de cada grupo
 │   │   │   ├── ImpossibleValue.tsx   # Ventana de valor imposible
+│   │   │   ├── Logo.tsx              # Logo
 │   │   │   ├── NumberSlider.tsx      # Barra de números
 │   │   │   ├── OrganIcons.tsx        # Iconos anatómicos
 │   │   │   ├── ProgressBar.tsx       # Barra de progreso
@@ -64,6 +67,9 @@ TFM/
 │   │   │   ├── Loading.tsx           # Carga
 │   │   │   ├── Questionnaire.tsx     # Cuestionario
 │   │   │   └── Result.tsx            # Resultado
+│   │   ├── utils/
+│   │   │   ├── cells.ts              # Dibujo de una célula
+│   │   │   └── picture.ts            # Imagen para compartir
 │   │   ├── App.tsx                   # Pantalla activa
 │   │   ├── index.css                 # Colores y fuentes
 │   │   ├── main.tsx                  # Arranque
