@@ -39,6 +39,7 @@ Lo que no encaje en esta descripción no va aquí. Las decisiones pendientes no 
   - [x] Preguntas de sexo y edad, solo si el PDF no las trae.
   - [x] Pantallas de error: PDF ilegible o que no es una analítica, faltan demasiados datos y valor imposible; aviso rojo de edad fuera de 18-79 en el resultado.
   - [x] Letra pequeña de la portada (privacidad y cómo se calcula).
+  - [ ] Logo (mañana, 25 nov): icono de la pestaña, el mismo en la marca de agua de la imagen compartida y en una cabecera junto a "BioAge".
   - [/] Validación de lo que entra al modelo, en el módulo de predicción: columnas, tipos, categorías, rangos posibles y edad, con errores con código que el front traduce. Hoy una columna ausente o un número como texto dan un error técnico, y un valor imposible devuelve una edad sin avisar.
   - [ ] Cuestionario de hábitos.
   - [ ] Pantalla de resultado, presentada como edad equivalente según la referencia de NHANES: edad ± X, tabla de grupos y, con cuestionario, tabla de hábitos.

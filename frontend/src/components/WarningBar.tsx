@@ -14,7 +14,7 @@ export default function WarningBar({ placement = 'screen', urgent }: Props) {
       className={`${position} inset-x-0 bottom-0 flex min-h-12 items-center justify-center gap-2 bg-hazard px-4 py-2 text-center text-sm font-medium text-hazard-ink`}
     >
       <Icon aria-hidden="true" size={20} stroke={1.8} className="shrink-0" />
-      <span>{urgent ?? 'Esto no es consejo médico ni un diagnóstico'}</span>
+      <span>{urgent ?? 'No es consejo médico ni diagnóstico. Ante cualquier duda sobre tu analítica, acude a un profesional.'}</span>
     </div>
   )
 }

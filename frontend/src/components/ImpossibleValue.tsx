@@ -58,22 +58,22 @@ export default function ImpossibleValue({ odd, onCorrected, onConfirmed }: Props
               {decimals > 0 && `: por ejemplo ${example(decimals)}`}
             </p>
             <div className="mt-6 flex gap-3">
+              <Button onClick={() => setEditing(false)}>Atrás</Button>
               <Button primary onClick={() => isValid && onCorrected(Number(typed.replace(',', '.')))}>
                 Guardar
               </Button>
-              <Button onClick={() => setEditing(false)}>Atrás</Button>
             </div>
           </>
         ) : (
           <>
             <p className="mt-4 text-sm leading-relaxed text-moss">
-              Está fuera de lo posible en una analítica normal. Puede que lo hayamos leído mal del PDF.
+              Está fuera de lo posible en una analítica normal. Puede que lo haya leído mal del PDF.
             </p>
             <div className="mt-6 flex gap-3">
+              <Button onClick={onConfirmed}>Es correcto</Button>
               <Button primary onClick={() => setEditing(true)}>
                 Corregirlo
               </Button>
-              <Button onClick={onConfirmed}>Es correcto</Button>
             </div>
           </>
         )}

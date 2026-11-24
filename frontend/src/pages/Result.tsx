@@ -24,18 +24,18 @@ export default function Result({ result, blurred = false }: Props) {
       aria-hidden={blurred}
       className={`mx-auto w-full max-w-2xl px-6 pt-8 pb-32 ${blurred ? 'pointer-events-none blur-md select-none' : ''}`}
     >
-      <div ref={cardRef} className="rounded-3xl border border-line/70 bg-deep/80 px-5 py-8 sm:px-8">
+      <div ref={cardRef} className="group rounded-3xl border border-line/70 bg-deep/80 px-5 py-8 sm:px-8">
         <div className="flex items-baseline justify-center gap-3">
           <span className="font-display text-[8rem] leading-none font-medium text-mist sm:text-[10rem]">{shownAge(bioAge)}</span>
           <span className="text-xl text-moss">± {Math.round(margin)}</span>
         </div>
         <p className="mt-4 text-center text-base">
-          <Gap age={age} bioAge={bioAge} /> que tu edad real ({age})
+          <Gap age={age} bioAge={bioAge} /> que tu edad real
         </p>
         {(age < DATA_MIN_AGE || age > DATA_MAX_AGE) && (
           <p className="mx-auto mt-3 flex w-fit max-w-sm items-center gap-2 rounded-2xl border border-rose/40 bg-rose/10 px-3 py-2 text-left text-xs text-rose">
             <IconAlertCircle aria-hidden="true" size={16} className="shrink-0" />
-            Tienes {age} años, fuera de las edades de nuestros datos (18-79): el resultado puede ser menos preciso
+            Tienes {age} años, fuera de las edades de mis datos (18-79): el resultado puede ser menos preciso
           </p>
         )}
         {age >= DATA_MIN_AGE && age <= DATA_MAX_AGE && bioAge > DATA_MAX_AGE && bioAge <= HIGHEST_AGE && (
@@ -44,9 +44,12 @@ export default function Result({ result, blurred = false }: Props) {
 
         <YearsTable title="Tu analítica" groups={BLOOD_GROUPS} years={result.blood} />
         {result.habits && <YearsTable title="Tus hábitos" groups={HABIT_GROUPS} years={result.habits} />}
+
+        {/* Only in the shared picture */}
+        <p className="mt-8 hidden justify-center font-display text-lg text-emerald group-data-[capture]:flex">BioAge</p>
       </div>
 
-      <ShareButtons cardRef={cardRef} bioAge={shownAge(bioAge)} />
+      <ShareButtons cardRef={cardRef} />
     </main>
   )
 }

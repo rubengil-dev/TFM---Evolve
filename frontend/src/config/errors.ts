@@ -10,8 +10,8 @@ export const MIN_AGE = 16
 // unreadable also covers a file that is not a PDF or a PDF that is not a blood test
 export const ERRORS: Record<ErrorKind, ErrorText> = {
   unreadable: {
-    title: ['No podemos', 'leer este PDF'],
-    text: 'No encontramos en él los valores de una analítica de sangre.',
+    title: ['No puedo', 'leer este PDF'],
+    text: 'No encuentro en él los valores de una analítica de sangre.',
     steps: [
       'Descarga el PDF original desde la web o la app de tu laboratorio',
       'No uses fotos, capturas ni escaneos',
@@ -20,21 +20,21 @@ export const ERRORS: Record<ErrorKind, ErrorText> = {
     canRetry: true,
   },
   too_few: {
-    title: ['No podemos', 'calcular tu edad'],
+    title: ['No puedo', 'calcular tu edad'],
     text: 'Tu analítica no trae suficientes valores para calcularla con fiabilidad.',
     steps: ['Prueba con una analítica más completa: hemograma y bioquímica', 'Comprueba que el PDF tiene todas sus páginas'],
     canRetry: true,
   },
   impossible: {
-    title: ['No podemos', 'calcular tu edad'],
+    title: ['No puedo', 'calcular tu edad'],
     text: 'Con un valor así, darte una edad sería engañoso: no es lo habitual en una analítica de rutina.',
-    steps: ['Comprueba que el valor es el que aparece en tu analítica', 'Si lo hemos leído mal, sube el PDF otra vez y corrígelo'],
+    steps: ['Comprueba que el valor es el que aparece en tu analítica', 'Si lo he leído mal, sube el PDF otra vez y corrígelo'],
     warning: 'Si el valor es real, acude a un médico con urgencia.',
     canRetry: true,
   },
   too_young: {
-    title: ['No podemos', 'calcular tu edad'],
-    text: `La calculadora es para mayores de ${MIN_AGE} años: antes, los valores normales de una analítica son otros.`,
+    title: ['No puedo', 'calcular tu edad'],
+    text: `La calculadora es a partir de ${MIN_AGE} años: antes, los valores normales de una analítica son otros.`,
     steps: [],
     canRetry: false,
   },

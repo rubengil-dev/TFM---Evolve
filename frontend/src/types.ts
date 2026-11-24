@@ -16,10 +16,9 @@ export type ChoiceOption = {
 type BaseQuestion = {
   id: string
   title: string
-  hint: string
+  hint?: string
   modes: Mode[]
   onlyIfMissing?: boolean
-  note?: string
 }
 
 export type ChoiceQuestion = BaseQuestion & { kind: 'choice'; options: ChoiceOption[] }

@@ -4,20 +4,26 @@ import { IconDownload, IconShare } from '@tabler/icons-react'
 import { toBlob } from 'html-to-image'
 import { useState, type RefObject } from 'react'
 
-type Props = { cardRef: RefObject<HTMLDivElement | null>; bioAge: string }
+type Props = { cardRef: RefObject<HTMLDivElement | null> }
 
 const FILE_NAME = 'mi-edad-biologica.png'
 const BACKGROUND = '#06120d'
 
-export default function ShareButtons({ cardRef, bioAge }: Props) {
+export default function ShareButtons({ cardRef }: Props) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const canShareFiles = typeof navigator.canShare === 'function'
 
   async function picture(): Promise<File> {
-    const blob = await toBlob(cardRef.current!, { backgroundColor: BACKGROUND, pixelRatio: 2 })
-    if (!blob) throw new Error('empty picture')
-    return new File([blob], FILE_NAME, { type: 'image/png' })
+    const card = cardRef.current!
+    card.dataset.capture = ''
+    try {
+      const blob = await toBlob(card, { backgroundColor: BACKGROUND, pixelRatio: 2 })
+      if (!blob) throw new Error('empty picture')
+      return new File([blob], FILE_NAME, { type: 'image/png' })
+    } finally {
+      delete card.dataset.capture
+    }
   }
 
   async function run(action: (file: File) => Promise<void>) {
@@ -26,14 +32,14 @@ export default function ShareButtons({ cardRef, bioAge }: Props) {
     try {
       await action(await picture())
     } catch (caught) {
-      if (!(caught instanceof DOMException && caught.name === 'AbortError')) setError('No se ha podido crear la imagen. Prueba otra vez.')
+      if (!(caught instanceof DOMException && caught.name === 'AbortError')) setError('No he podido crear la imagen. Prueba otra vez.')
     } finally {
       setBusy(false)
     }
   }
 
   async function share(file: File) {
-    const data = { files: [file], title: 'Mi edad biológica', text: `Mi edad biológica: ${bioAge}` }
+    const data = { files: [file] }
     if (navigator.canShare(data)) await navigator.share(data)
     else download(file)
   }
@@ -41,12 +47,7 @@ export default function ShareButtons({ cardRef, bioAge }: Props) {
   return (
     <div className="mt-10 flex flex-col items-center gap-3">
       <div className="flex gap-3">
-        {canShareFiles && (
-          <button type="button" disabled={busy} onClick={() => run(share)} className={`${BUTTON} bg-emerald font-medium text-emerald-ink hover:brightness-110`}>
-            <IconShare aria-hidden="true" size={18} />
-            Compartir
-          </button>
-        )}
+        {/* The highlighted button goes on the right, closer to the thumb */}
         <button
           type="button"
           disabled={busy}
@@ -56,6 +57,12 @@ export default function ShareButtons({ cardRef, bioAge }: Props) {
           <IconDownload aria-hidden="true" size={18} />
           Descargar
         </button>
+        {canShareFiles && (
+          <button type="button" disabled={busy} onClick={() => run(share)} className={`${BUTTON} bg-emerald font-medium text-emerald-ink hover:brightness-110`}>
+            <IconShare aria-hidden="true" size={18} />
+            Compartir
+          </button>
+        )}
       </div>
       {error && <p className="text-xs text-rose">{error}</p>}
     </div>

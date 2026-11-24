@@ -31,14 +31,17 @@ Se carga siempre, así que si crece demasiado (unas 300 líneas), avísame para 
 - El modo se elige con dos botones en la portada, y el de analítica + cuestionario es el destacado porque da la mejor respuesta. Al pulsar cualquiera se abre el selector de archivos. (Rubén, de acuerdo) Descartado: dos pestañas.
 - El cuestionario va una pregunta por pantalla, al estilo Typeform: las opciones en tarjetas con icono y aclaración, que pasan solas a la siguiente pregunta; los números en una barra deslizable para el valor grueso con − y + en los extremos para el ajuste fino, y una barra de progreso fina arriba. Peso y talla siguen el mismo estilo. Los rangos de las barras son los rangos posibles del modelo. (Rubén, de acuerdo) Descartado: hélice como barra de progreso; fichas que se deslizan, demasiados toques para peso y talla.
 - El cuestionario pregunta por tabaco, actividad física, horas sentado y horas de sueño.
+- El tabaco incluye el vapeo. (Rubén, en desacuerdo) Descartado: solo tabaco, el modelo aprendió con fumadores de cigarrillos y no hay datos de mortalidad del vapeo.
+- El ejercicio se pregunta como "al menos una vez por semana", intenso o suave, que es la definición de NHANES.
+- Las horas de sueño se piden en promedio semanal. (Rubén, en desacuerdo) Descartado: entre semana, que es lo que preguntaba NHANES; la diferencia es pequeña y la media es como la gente piensa su sueño.
 - Preguntas sin inputs escritos y solo de datos objetivos: nada de autovaloraciones ("¿cómo de sana es tu dieta?", "¿cómo es tu salud?").
-- **El alcohol no se pregunta, y la app explica por qué falta, en la pregunta del tabaco:** el modelo no lo usa (en los datos, beber sale protector por causalidad inversa) y el usuario espera verlo en un cuestionario de hábitos.
+- **El alcohol no se pregunta, y la app no explica por qué:** al usuario le importa su edad, no los límites del modelo. (Rubén, de acuerdo) Descartado: explicarlo en la pregunta del tabaco.
 
 ### Datos de entrada
 - Usa lo que trae una analítica de rutina española, lo que se pide a menudo (p. ej. vitamina D) y lo que el usuario sabe sin pensar (edad, sexo, peso, talla), siempre que exista en NHANES.
 - Edad y sexo se extraen del PDF si vienen (la edad, de la fecha de nacimiento si no viene directa); si no, se piden como primeras preguntas del cuestionario, solo las que falten. El sexo falta a menudo; la edad, casi nunca.
 - Tensión arterial: dato opcional para afinar, nunca obligatorio.
-- Solo adultos, dentro del rango de edad de los datos de entrenamiento (18 a 79 años). La portada lo dice en una línea. (Rubén, de acuerdo) Descartado: pop-up al entrar, añade un clic.
+- Solo adultos, dentro del rango de edad de los datos de entrenamiento (18 a 79 años). La portada dice "A partir de 16 años". (Rubén, de acuerdo) Descartado: pop-up al entrar, añade un clic; "para adultos", suena raro y no es verdad.
 - Edad real fuera de 18-79: se calcula igualmente, con un aviso rojo debajo de la frase de la diferencia que diga que está fuera del rango de los datos. Por debajo de 16 años no se calcula: los valores normales de una analítica son otros y extrapolar ya no tiene sentido. (Rubén, de acuerdo) Descartado: bloquear a los menores de 18, a los 16-17 la extrapolación es corta.
 - Solo se admiten PDFs: cualquier otro archivo da el error de "no podemos leer este PDF".
 - Errores (PDF ilegible o que no es una analítica, faltan demasiados datos, valor imposible confirmado, menor de 16): pantalla propia al estilo de la portada, con el título grande ("No podemos / calcular tu edad"), el icono en un círculo debajo, la explicación y qué puede hacer el usuario en texto gris, sin viñetas ni recuadro, "Subir otro PDF" y "Volver al inicio". (Rubén, de acuerdo) Descartado: aviso en la portada, en móvil se pasa por alto; tarjeta con borde rosa; viñetas en recuadros.
@@ -51,7 +54,7 @@ Siempre:
 - Edad biológica estimada ± X años y la diferencia con la edad cronológica. X depende de la precisión de cada caso: más ancho si faltan datos o en jóvenes de riesgo bajo.
 - [pendiente: cómo se calcula el ±. Descartado: bootstrap del modelo con relleno de huecos, a Rubén no le convence; si no hay un método claro, se quita.]
 - Edades fuera de 18-79: por debajo de 18, "menos de 18"; de 79 a 90, el número con la nota "orientativo"; por encima de 90, "más de 90". (Rubén, de acuerdo)
-- Una tabla fija, igual para todos, con los grupos que la gente entiende: vitaminas y minerales, azúcar, corazón (HDL y tensión), glóbulos rojos, defensas (con un escudo), hígado, riñón y peso (IMC). Cada fila dice cuántos años suma o resta frente a una persona típica de su edad y sexo, sin ±. Se parte en dos columnas, "te quitan años" y "te suman años", cada una ordenada por valor absoluto de mayor a menor; los grupos sin datos van en una línea aparte. (Rubén, de acuerdo) Descartado: los mejores y peores parámetros de cada persona, la tabla cambiaría de un usuario a otro; porcentajes por órgano, escala inventada
+- Una tabla fija, igual para todos, con los grupos que la gente entiende: vitaminas y minerales, azúcar, corazón (HDL y tensión), glóbulos rojos, defensas (con un escudo), hígado, riñón y peso (IMC). Cada fila dice cuántos años suma o resta frente a una persona típica de su edad y sexo, sin ± ni signo: la columna y el color ya lo dicen. Se parte en dos columnas, "te quitan años" y "te suman años", cada una ordenada por valor absoluto de mayor a menor; los grupos sin datos van en una línea aparte. (Rubén, de acuerdo) Descartado: los mejores y peores parámetros de cada persona, la tabla cambiaría de un usuario a otro; porcentajes por órgano, escala inventada
 - Aviso de que no es consejo médico ni diagnóstico. No se dan recomendaciones (suplementos, tratamientos…), solo observaciones de los datos.
 - Aviso asimétrico: salir por encima es señal para consultar, pero salir bien no significa estar sano. De momento no se muestra: la franja amarilla ya avisa y Rubén no quiere más mensajes. (Rubén, en desacuerdo)
 
@@ -60,8 +63,8 @@ Cuando se hace el cuestionario:
 
 Diseño del resultado:
 - La pestaña del navegador se llama "BioAge".
-- El resultado va dentro de un recuadro de bordes redondeados. La edad biológica en grande, sin título encima, con el ± en pequeño a su lado (no debajo), y debajo la frase "X años menos/más que tu edad real (Y)". (Rubén, de acuerdo) Descartado: medidor en arco, no aporta; tarjetas y pastillas.
-- Al final, compartir (en el móvil) y descargar el resultado como imagen; la imagen se crea en el navegador, sin subir nada. (Rubén, de acuerdo) Descartado: "calcular otra vez"; texto pequeño de aviso bajo las tablas, ya lo hace la franja amarilla.
+- El resultado va dentro de un recuadro de bordes redondeados. La edad biológica en grande, sin título encima, con el ± en pequeño a su lado (no debajo), y debajo la frase "X años menos/más que tu edad real", sin repetir la edad. (Rubén, de acuerdo) Descartado: medidor en arco, no aporta; tarjetas y pastillas.
+- Al final, compartir (en el móvil) y descargar el resultado como imagen, sin texto adjunto y con la marca "BioAge"; la imagen se crea en el navegador, sin subir nada. (Rubén, de acuerdo) Descartado: "calcular otra vez"; texto pequeño de aviso bajo las tablas, ya lo hace la franja amarilla.
 - Iconos anatómicos de Healthicons para corazón, hígado y riñón; gota para glóbulos rojos, escudo para defensas, diamante para vitaminas y minerales, un montoncito de azúcar y "kg" para el peso.
 
 Cuando la edad biológica está 10 o más años por encima de la real (haya o no cuestionario):
@@ -71,14 +74,15 @@ Cuando la edad biológica está 10 o más años por encima de la real (haya o no
 - La UX tiene prioridad sobre afinar el modelo: el modelo es fácil de iterar, y una UX mal planteada obliga a rehacerla.
 - Usable por cualquier persona: flujo corto, lenguaje claro sin jerga, responsive y pensado para móvil.
 - Estados de carga y errores de parseo comprensibles y accionables: qué ha fallado y qué puede hacer el usuario.
-- Portada: título, "Para adultos de 18 a 79 años" como subtítulo, los dos botones, la línea "No guardamos nada: tu analítica se procesa y se descarta" con una llamada ¹ y, en una franja inferior muy visible, el aviso de que no es consejo médico. La llamada baja a la letra pequeña, debajo de la franja, como en las webs de bancos: qué se hace con los datos (consentimiento al subir el PDF, sin conservación), responsable, cómo se calcula y qué no es. (Rubén, de acuerdo) Descartado: solo la frase "no guardamos nada", el RGPD pide más; pop-up.
+- Portada: título, "A partir de 16 años" como subtítulo, los dos botones, la línea "Sube un PDF con tu analítica y calcula tu edad" con una llamada ¹ (dice qué hacer antes de que se abra el selector de archivos) y, en una franja inferior muy visible, el aviso de que no es consejo médico. La llamada baja a la letra pequeña, debajo de la franja, como en las webs de bancos, en tres preguntas que cualquiera entienda: qué hago con tus datos (no se guardan ni se envían, enlace al repositorio y "IMPORTANTE: al subir el PDF con tu analítica aceptas que lo use para esto"), cómo calculo la edad biológica y por qué no es un diagnóstico. (Rubén, de acuerdo) Descartado: solo la frase "no guardamos nada", el RGPD pide más; pop-up.
+- La app habla en primera persona del singular, como el autor ("No puedo leer este PDF"). (Rubén, de acuerdo)
 - La app abre siempre arriba, en la portada, aunque se recargue.
 - La franja está en la portada y en el resultado, no en el cuestionario ni en la carga: si está siempre, pasa a ser parte del fondo y deja de leerse. (Rubén, de acuerdo)
 - Estética "microscopio": oscuro, verde profundo con acentos esmeralda, titulares en Fraunces y el aviso en amarillo de peligro con el símbolo de riesgo biológico. (Rubén, de acuerdo) Descartado: neón con red de partículas, no evoca biología; mezclar la hélice de ADN con las células en el fondo, recargado.
 - Fondo animado en todas las pantallas: células flotando como bajo la lente. Manda la fluidez sobre la estética: si no va fluido, imagen fija.
 - Al tocar el fondo salen destellos y nacen o explotan células; al pulsar botones, no.
 - Pantalla de carga cosmética antes del resultado, de 1,5 a 2 segundos: una hélice de ADN verde que se construye de arriba abajo, "Calculando tu edad" y un porcentaje que sube rápido de 0 a 100. (Rubén, de acuerdo) Descartado: frases que cambian y lista de pasos; hélice bicolor, cansa la vista.
-- En la portada, "solo analítica" va a la izquierda y "analítica + hábitos", destacado, a la derecha.
+- En cualquier pareja de botones, el destacado va a la derecha, más cerca del pulgar: en la portada, "solo analítica" a la izquierda y "analítica y hábitos" a la derecha; en el resultado, "descargar" y "compartir"; en el valor imposible, "es correcto" y "corregirlo". (Rubén, de acuerdo)
 
 ## Restricciones
 - **Privacidad:** son datos de salud (categoría especial en el RGPD).

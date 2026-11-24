@@ -45,7 +45,7 @@ function Column({ heading, tone, groups, value }: { heading: string; tone: Tone;
               </span>
               <span className="leading-tight">{group.label}</span>
             </span>
-            <span className={`shrink-0 tabular-nums ${color}`}>{signed(value(group))}</span>
+            <span className={`shrink-0 tabular-nums ${color}`}>{plain(value(group))}</span>
           </li>
         ))}
       </ul>
@@ -53,7 +53,7 @@ function Column({ heading, tone, groups, value }: { heading: string; tone: Tone;
   )
 }
 
-function signed(value: number): string {
-  const text = Math.abs(value).toLocaleString('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
-  return `${value < 0 ? '−' : '+'}${text}`
+// No sign: the column and its colour already say whether it adds or takes away
+function plain(value: number): string {
+  return Math.abs(value).toLocaleString('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
 }

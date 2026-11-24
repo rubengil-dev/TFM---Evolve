@@ -31,7 +31,7 @@ export default function Landing({ onStart, onWrongFile }: Props) {
           <br />
           <em className="text-emerald">edad biológica</em>
         </h1>
-        <p className="mt-4 text-base text-moss">Para adultos de 18 a 79 años.</p>
+        <p className="mt-4 text-base text-moss">A partir de 16 años.</p>
 
         <div className="mt-8 flex w-full max-w-md flex-col-reverse gap-3 sm:w-auto sm:max-w-none sm:flex-row">
           <button
@@ -46,15 +46,16 @@ export default function Landing({ onStart, onWrongFile }: Props) {
             onClick={() => pick('full')}
             className="rounded-full bg-emerald px-6 py-3 text-sm font-medium text-emerald-ink transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint"
           >
-            Analítica + hábitos
+            Analítica y hábitos
           </button>
         </div>
         <p className="mt-4 text-xs text-moss">
-          No guardamos nada: tu analítica se procesa y se descarta
+          Sube un PDF con tu analítica y calcula tu edad
           <a
             href="#letra-pequena"
             onClick={showFinePrint}
-            aria-label="Ver la letra pequeña" className="ml-0.5 align-super text-[10px] text-emerald hover:underline">
+            aria-label="Ver la letra pequeña"
+            className="ml-0.5 align-super text-[10px] text-emerald hover:underline">
             1
           </a>
         </p>
@@ -70,31 +71,40 @@ export default function Landing({ onStart, onWrongFile }: Props) {
 
 function FinePrint() {
   return (
-    <footer id="letra-pequena" className="mx-auto max-w-2xl px-6 pt-10 pb-16 text-[11px] leading-relaxed text-moss/80">
-      <h2 className="mb-3 text-xs font-medium text-moss">(1) Letra pequeña</h2>
-      <ul className="list-disc space-y-2 pl-4">
-        <li>
-          <b className="font-medium text-moss">Qué hacemos con tus datos.</b> Al subir tu analítica y responder las preguntas aceptas que las
-          procesemos con un único fin: calcular tu edad biológica. Son datos de salud: se procesan en memoria y se descartan al terminar. No
-          los guardamos, no creamos cuentas y no los compartimos con nadie.
-        </li>
-        <li>
-          <b className="font-medium text-moss">Responsable.</b> Proyecto académico (Trabajo Fin de Máster en Data Science e IA, EVOLVE).
-          Como no conservamos nada, no hay datos tuyos que consultar, corregir ni borrar después.
-        </li>
-        <li>
-          <b className="font-medium text-moss">Cómo se calcula.</b> Un modelo entrenado con datos públicos de salud de Estados Unidos
-          (NHANES, 1999-2018) en adultos de 18 a 79 años estima tu riesgo a 10 años y lo traduce a la edad de una persona típica con ese
-          riesgo.
-        </li>
-        <li>
-          <b className="font-medium text-moss">Qué no es.</b> No es un consejo médico ni un diagnóstico, y no sustituye la opinión de un
-          profesional sanitario.
-        </li>
-      </ul>
+    <footer id="letra-pequena" className="mx-auto max-w-2xl space-y-5 px-6 pt-10 pb-16 text-xs leading-relaxed text-moss/80">
+      <h2 className="text-xs font-medium tracking-widest text-moss uppercase">Lo que debes saber acerca de tus datos</h2>
+      <section>
+        <h3 className="mb-1 font-medium text-moss">¿Qué hago con tus datos?</h3>
+        <p>
+          Esto es un proyecto personal y académico. Tus datos solo se usan para calcular tu edad biológica: no se guardan ni se envían a
+          terceros. Si quieres comprobarlo tú mismo, el código está en{' '}
+          <a href={REPOSITORY} target="_blank" rel="noreferrer" className="text-emerald underline">
+            GitHub
+          </a>
+          .
+        </p>
+        <p className="mt-3 font-medium text-moss">IMPORTANTE: al subir el PDF con tu analítica aceptas que lo use para esto.</p>
+      </section>
+      <section>
+        <h3 className="mb-1 font-medium text-moss">¿Cómo calculo la edad biológica?</h3>
+        <p>
+          Con datos de encuestas públicas de salud de EE. UU. (NHANES, 1999-2018) he entrenado un modelo de IA que predice el riesgo de
+          morir en los próximos 10 años. Ese riesgo se traduce a edad biológica comparándolo con el de una persona típica de tu mismo sexo
+          en cada edad.
+        </p>
+      </section>
+      <section>
+        <h3 className="mb-1 font-medium text-moss">¿Por qué no es un diagnóstico médico?</h3>
+        <p>
+          En el proceso no han intervenido médicos ni lo ha revisado ninguna autoridad sanitaria. Esta predicción no sustituye el consejo
+          médico.
+        </p>
+      </section>
     </footer>
   )
 }
+
+const REPOSITORY = 'https://github.com/rubengil-dev/TFM---Evolve'
 
 /** Scrolls to the fine print without leaving #letra-pequena in the address, so a reload opens at the top. */
 function showFinePrint(event: MouseEvent<HTMLAnchorElement>) {

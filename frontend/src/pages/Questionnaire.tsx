@@ -1,6 +1,5 @@
 /** Questions one per screen, Typeform style: options move on by themselves, numbers need "Siguiente". */
 
-import { IconGlass } from '@tabler/icons-react'
 import { useState } from 'react'
 import ChoiceCards from '../components/ChoiceCards'
 import NumberSlider from '../components/NumberSlider'
@@ -43,7 +42,7 @@ export default function Questionnaire({ mode, missing, onDone, onExit }: Props) 
 
       <section key={question.id} className="animate-enter mt-10 flex flex-1 flex-col">
         <h1 className="font-display text-3xl leading-tight font-medium text-mist">{question.title}</h1>
-        <p className="mt-2 mb-8 text-sm text-moss">{question.hint}</p>
+        {question.hint ? <p className="mt-2 mb-8 text-sm text-moss">{question.hint}</p> : <div className="mb-8" />}
 
         {question.kind === 'choice' ? (
           <ChoiceCards options={question.options} selected={answers[question.id] as string | undefined} onPick={(value) => answer(value, true)} />
@@ -55,17 +54,11 @@ export default function Questionnaire({ mode, missing, onDone, onExit }: Props) 
               onClick={() => next(answers)}
               className="mx-auto mt-10 rounded-full bg-emerald px-8 py-3 text-sm font-medium text-emerald-ink transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint"
             >
-              {isLast ? 'Ver mi resultado' : 'Siguiente'}
+              {isLast ? 'Ver mi edad biológica' : 'Continuar'}
             </button>
           </>
         )}
 
-        {question.note && (
-          <p className="mt-8 flex gap-3 rounded-2xl border border-dashed border-line p-4 text-xs leading-relaxed text-moss">
-            <IconGlass aria-hidden="true" size={18} className="shrink-0 text-emerald" />
-            {question.note}
-          </p>
-        )}
       </section>
     </main>
   )
