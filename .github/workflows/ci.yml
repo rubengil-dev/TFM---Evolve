@@ -3,6 +3,8 @@
 #   - tests: only the app dependencies plus pytest, which proves they are enough to load the
 #     models and predict; without data/ (not in git) its tests are skipped, models/ is in git;
 #     the tests of training code are not collected (tests/conftest.py)
+#   - frontend: exact versions of package-lock.json, linter (a warning fails too) and build,
+#     which also checks the types
 name: ci
 
 on: [push, pull_request]
@@ -27,3 +29,19 @@ jobs:
           enable-cache: true
       - run: uv sync --locked --no-default-groups --group test
       - run: uv run --no-sync pytest
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint -- --deny-warnings
+      - run: npm run build
