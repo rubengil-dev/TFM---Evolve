@@ -40,7 +40,7 @@ Se carga siempre, así que si crece demasiado (unas 300 líneas), avísame para 
 ### Datos de entrada
 - Usa lo que trae una analítica de rutina española, lo que se pide a menudo (p. ej. vitamina D) y lo que el usuario sabe sin pensar (edad, sexo, peso, talla), siempre que exista en NHANES.
 - Edad y sexo se extraen del PDF si vienen (la edad, de la fecha de nacimiento si no viene directa); si no, se piden como primeras preguntas del cuestionario, solo las que falten. El sexo falta a menudo; la edad, casi nunca.
-- Tensión arterial: dato opcional para afinar, nunca obligatorio.
+- La tensión arterial no se usa ni se pregunta: casi nadie la sabe de memoria. (Rubén, de acuerdo)
 - Solo adultos, dentro del rango de edad de los datos de entrenamiento (18 a 79 años). La portada dice "A partir de 16 años". (Rubén, de acuerdo) Descartado: pop-up al entrar, añade un clic; "para adultos", suena raro y no es verdad.
 - Edad real fuera de 18-79: se calcula igualmente, con un aviso rojo debajo de la frase de la diferencia que diga que está fuera del rango de los datos. Por debajo de 16 años no se calcula: los valores normales de una analítica son otros y extrapolar ya no tiene sentido. (Rubén, de acuerdo) Descartado: bloquear a los menores de 18, a los 16-17 la extrapolación es corta.
 - Solo se admiten PDFs: cualquier otro archivo da el error de "no podemos leer este PDF".
