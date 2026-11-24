@@ -16,7 +16,6 @@ ROUTINE = [
 EXTRAS = [
     "ggt", "alkaline_phosphatase", "albumin", "vitamin_d",
     "chloride", "phosphorus", "ldh", "urine_acr",
-    "systolic_bp", "diastolic_bp",
 ]
 
 # Level 3: added to Routine in questionnaire mode
@@ -53,6 +52,8 @@ DISCARDED = {
     "non_hdl":           "total_cholesterol - hdl",
     "globulin":          "total_protein - albumin",
     "pulse_pressure":    "systolic_bp - diastolic_bp",
+    "systolic_bp":       "rarely on the PDF or known by heart; removing it does not lower the C-index",
+    "diastolic_bp":      "rarely on the PDF or known by heart; removing it does not lower the C-index",
     "egfr":              "follows from creatinine, age and sex",
     "insulin":           "47% coverage, unexplained jump in 2009, rarely requested",
     "homa_ir":           "47% coverage, built from insulin",
