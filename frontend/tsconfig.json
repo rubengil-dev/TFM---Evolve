@@ -1,0 +1,8 @@
+// TypeScript entry config: points to the app and the tooling configs.
+{
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ]
+}

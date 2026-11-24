@@ -21,18 +21,11 @@ Sesiones desde la última: 0
 ## Bloqueos
 Todos son decisiones pendientes. Los de la fase 4 se cierran al empezarla, pensando en la Entrega 04 y empezando por el stack y el flujo de pantallas.
 
-- **Stack de front y backend.** Frena todas las casillas de la fase 4: sin él no se puede escribir la app. Lo desbloquea: elegirlo.
-- **Cómo elige el usuario el modo.** Frena el flujo de pantallas. Idea: dos pestañas, "solo analítica" por defecto y "analítica + cuestionario". Lo desbloquea: decidirlo con el flujo.
 - **Diseño del parser y de la normalización de nombres y unidades.** Frena el parser. Lo desbloquea: decidirlo, y antes decidir cómo anonimizar los PDFs de `private/` para que Claude pueda leerlos (la app sí puede leerlos sin anonimizar, en local).
 - **Mínimo viable de variables:** con qué datos faltantes se deja de calcular. Frena la validación de lo que entra al modelo. Lo desbloquea: decidirlo.
-- **Resultado.** Frena la pantalla de resultado. Lo desbloquea: decidir estos cinco puntos.
-  - Cómo calcular y mostrar el margen ± X años.
-  - Cómo mostrar las edades biológicas fuera de 18-79 y la cola de personas muy por encima de su edad.
-  - Cómo agrupar las variables ligadas (serie roja, transaminasas) en los mejores y peores parámetros, para que los signos se entiendan.
-  - Cuántos parámetros mejores y peores se muestran.
-  - Umbral de años por encima para remitir al médico.
 - **Qué pide el profesor de MLOps** (registro de modelos, CI, monitorización). Frena DVC y MLflow, en la fase 6. Lo desbloquea: preguntárselo (me toca a mí).
 
 ## Me toca a mí
 - Preguntar al profesor qué hay que demostrar de MLOps.
+- Preguntar al profesor si, con la edad biológica 10 o más años por encima, se recomienda comentarla con el médico.
 - Conseguir analíticas de ejemplo de distintos laboratorios españoles para probar el parser (tengo PDFs propios).

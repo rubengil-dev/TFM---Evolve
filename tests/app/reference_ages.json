@@ -8,12 +8,12 @@
         "older_than_79": 80.8964
     },
     "extras": {
-        "healthy_young": 23.6527,
-        "typical_middle": 49.6681,
-        "unhealthy_old": 98.2631,
-        "partial_data": 62.4814,
-        "age_sex_only": 50.4157,
-        "older_than_79": 86.9042
+        "healthy_young": 23.8269,
+        "typical_middle": 49.6716,
+        "unhealthy_old": 99.4989,
+        "partial_data": 62.9693,
+        "age_sex_only": 50.4167,
+        "older_than_79": 87.6118
     },
     "questionnaire": {
         "healthy_young": 18.4415,
@@ -24,11 +24,11 @@
         "older_than_79": 80.1469
     },
     "full": {
-        "healthy_young": 20.4042,
-        "typical_middle": 50.6269,
-        "unhealthy_old": 104.201,
-        "partial_data": 61.4252,
-        "age_sex_only": 49.6984,
-        "older_than_79": 86.6082
+        "healthy_young": 20.6474,
+        "typical_middle": 50.6283,
+        "unhealthy_old": 105.0905,
+        "partial_data": 61.7856,
+        "age_sex_only": 49.7153,
+        "older_than_79": 87.0809
     }
 }

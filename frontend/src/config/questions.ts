@@ -1,0 +1,101 @@
+/** Questions asked after the PDF, in order: sex and age only if the PDF lacks them, body measures, habits in the full mode. */
+
+import type { Question } from '../types'
+
+// Answer values match the categories the model was trained with (study.py);
+// number ranges match the plausible ranges of the model (plausible_ranges.py)
+export const QUESTIONS: Question[] = [
+  {
+    id: 'sex',
+    kind: 'choice',
+    title: '¿Cuál es tu sexo?',
+    modes: ['quick', 'full'],
+    onlyIfMissing: true,
+    options: [
+      { value: 'female', label: 'Mujer', icon: 'female' },
+      { value: 'male', label: 'Hombre', icon: 'male' },
+    ],
+  },
+  {
+    id: 'age',
+    kind: 'number',
+    title: '¿Qué edad tienes?',
+    modes: ['quick', 'full'],
+    onlyIfMissing: true,
+    min: 16,
+    max: 100,
+    step: 1,
+    start: 45,
+    unit: 'años',
+  },
+  {
+    id: 'weight',
+    kind: 'number',
+    title: '¿Cuánto pesas?',
+    modes: ['quick', 'full'],
+    min: 30,
+    max: 300,
+    step: 1,
+    start: 70,
+    unit: 'kg',
+  },
+  {
+    id: 'height',
+    kind: 'number',
+    title: '¿Cuánto mides?',
+    modes: ['quick', 'full'],
+    min: 120,
+    max: 220,
+    step: 1,
+    start: 170,
+    unit: 'cm',
+  },
+  {
+    id: 'smoking',
+    kind: 'choice',
+    title: '¿Fumas?',
+    hint: 'Cualquier forma de tabaco o vapeo.',
+    modes: ['full'],
+    options: [
+      { value: 'never', label: 'Nunca he fumado', detail: 'Si solo lo has probado', icon: 'never' },
+      { value: 'former', label: 'Fumaba, pero lo dejé', detail: 'Llevas al menos 2 meses sin fumar', icon: 'former' },
+      { value: 'current', label: 'Sí, fumo', detail: 'Incluso si es solo una vez al mes', icon: 'current' },
+    ],
+  },
+  {
+    id: 'physical_activity',
+    kind: 'choice',
+    title: '¿Haces ejercicio?',
+    hint: 'Cualquier tipo: fuerza, cardio, deportes de equipo, caminar a paso ligero…',
+    modes: ['full'],
+    options: [
+      { value: 'intense', label: 'Intenso, al menos una vez por semana', icon: 'intense' },
+      { value: 'moderate', label: 'Suave, al menos una vez por semana', icon: 'moderate' },
+      { value: 'sedentary', label: 'Menos de una vez por semana', icon: 'none' },
+    ],
+  },
+  {
+    id: 'sedentary_hours',
+    kind: 'number',
+    title: '¿Cuántas horas pasas sentado al día?',
+    hint: 'Tumbado, sin dormir, también cuenta. Piensa en tu trabajo, estudio, coche, tiempo libre…',
+    modes: ['full'],
+    min: 0,
+    max: 24,
+    step: 0.5,
+    start: 8,
+    unit: 'h',
+  },
+  {
+    id: 'sleep_hours',
+    kind: 'number',
+    title: '¿Cuántas horas duermes normalmente?',
+    hint: 'En promedio semanal.',
+    modes: ['full'],
+    min: 2,
+    max: 16,
+    step: 0.5,
+    start: 8,
+    unit: 'h',
+  },
+]

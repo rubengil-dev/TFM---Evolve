@@ -36,7 +36,53 @@ TFM/
 │       ├── 02_datos_y_preparacion.md # Entrega 02
 │       ├── 02_gold_sample.csv        # Muestra de Gold
 │       ├── 03_machine_learning.md    # Entrega 03
-│       └── enunciado3.pdf            # Enunciado (fuera de git)
+│       ├── 04_diseno_frontal_ux.md   # Entrega 04
+│       ├── 04_capturas/              # Capturas de la Entrega 04
+│       ├── enunciado3.pdf            # Enunciado 03 (fuera de git)
+│       └── enunciado4.pdf            # Enunciado 04 (fuera de git)
+├── frontend/                         # Web (React)
+│   ├── public/
+│   │   └── favicon.svg               # Icono
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── CellBackground.tsx    # Fondo de células
+│   │   │   ├── ChoiceCards.tsx       # Tarjetas de opciones
+│   │   │   ├── GroupIcon.tsx         # Icono de cada grupo
+│   │   │   ├── ImpossibleValue.tsx   # Ventana de valor imposible
+│   │   │   ├── Logo.tsx              # Logo
+│   │   │   ├── NumberSlider.tsx      # Barra de números
+│   │   │   ├── OrganIcons.tsx        # Iconos anatómicos
+│   │   │   ├── ProgressBar.tsx       # Barra de progreso
+│   │   │   ├── ShareButtons.tsx      # Compartir y descargar
+│   │   │   ├── WarningBar.tsx        # Franja del aviso
+│   │   │   └── YearsTable.tsx        # Tabla de años
+│   │   ├── config/
+│   │   │   ├── errors.ts             # Textos de error
+│   │   │   ├── example.ts            # Datos de ejemplo y demos
+│   │   │   ├── groups.ts             # Grupos del resultado
+│   │   │   └── questions.ts          # Preguntas
+│   │   ├── pages/
+│   │   │   ├── ErrorScreen.tsx       # Errores
+│   │   │   ├── Landing.tsx           # Portada
+│   │   │   ├── Loading.tsx           # Carga
+│   │   │   ├── Questionnaire.tsx     # Cuestionario
+│   │   │   └── Result.tsx            # Resultado
+│   │   ├── utils/
+│   │   │   ├── cells.ts              # Dibujo de una célula
+│   │   │   └── picture.ts            # Imagen para compartir
+│   │   ├── App.tsx                   # Pantalla activa
+│   │   ├── index.css                 # Colores y fuentes
+│   │   ├── main.tsx                  # Arranque
+│   │   └── types.ts                  # Tipos comunes
+│   ├── .gitignore                    # Fuera de git
+│   ├── .oxlintrc.json                # Linter
+│   ├── index.html                    # Página única
+│   ├── package.json                  # Dependencias y comandos
+│   ├── package-lock.json             # Versiones exactas (npm)
+│   ├── tsconfig.app.json             # TypeScript de la app
+│   ├── tsconfig.json                 # TypeScript raíz
+│   ├── tsconfig.node.json            # TypeScript de Vite
+│   └── vite.config.ts                # Vite
 ├── models/                           # Modelos entrenados
 │   ├── routine.joblib                # Nivel 1
 │   ├── extras.joblib                 # Nivel 2
@@ -51,6 +97,7 @@ TFM/
 │   ├── models_lvl3.ipynb             # Nivel 3
 │   ├── models_lvl4.ipynb             # Nivel 4
 │   ├── biological_age.ipynb          # Riesgo a edad
+│   ├── blood_pressure.ipynb          # Quitar la tensión
 │   ├── phenoage.ipynb                # Comparación PhenoAge
 │   └── final_evaluation.ipynb        # Evaluación en test
 ├── private/                          # Analíticas reales en PDF (fuera de git)

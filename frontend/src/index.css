@@ -1,0 +1,91 @@
+/* Global styles: Tailwind, the design colors and fonts, and the page background. */
+
+@import 'tailwindcss';
+
+/* Design tokens: colors and fonts of the "microscope" look */
+@theme {
+  --color-deep: #06120d;
+  --color-emerald: #34d399;
+  --color-emerald-ink: #052e1f;
+  --color-mist: #ecfdf5;
+  --color-moss: #9db5aa;
+  --color-line: #2f5c49;
+  --color-mint: #a7f3d0;
+  --color-rose: #fb7185;
+  --color-hazard: #facc15;
+  --color-hazard-ink: #1a1500;
+
+  --font-display: 'Fraunces Variable', Georgia, serif;
+  --font-sans: 'Inter Variable', system-ui, sans-serif;
+
+  --animate-enter: enter 0.35s ease-out;
+  @keyframes enter {
+    from {
+      opacity: 0;
+      transform: translateX(24px);
+    }
+  }
+}
+
+/* Slider: thin visible track, but a 48px tall invisible touch area and a big thumb */
+.range-slider {
+  appearance: none;
+  height: 48px;
+  background: transparent;
+  cursor: pointer;
+  touch-action: pan-y;
+}
+.range-slider::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(to right, var(--color-emerald) var(--fill, 0%), var(--color-line) var(--fill, 0%));
+}
+.range-slider::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(to right, var(--color-emerald) var(--fill, 0%), var(--color-line) var(--fill, 0%));
+}
+.range-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 28px;
+  height: 28px;
+  margin-top: -11px;
+  border-radius: 50%;
+  border: 4px solid var(--color-emerald);
+  background: var(--color-mist);
+}
+.range-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 4px solid var(--color-emerald);
+  background: var(--color-mist);
+}
+.range-slider:focus-visible {
+  outline: 2px solid var(--color-emerald);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-enter {
+    animation: none;
+  }
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-deep);
+  color: var(--color-mist);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
