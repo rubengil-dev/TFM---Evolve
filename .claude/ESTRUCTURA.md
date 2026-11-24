@@ -97,6 +97,7 @@ TFM/
 │   ├── models_lvl3.ipynb             # Nivel 3
 │   ├── models_lvl4.ipynb             # Nivel 4
 │   ├── biological_age.ipynb          # Riesgo a edad
+│   ├── blood_pressure.ipynb          # Quitar la tensión
 │   ├── phenoage.ipynb                # Comparación PhenoAge
 │   └── final_evaluation.ipynb        # Evaluación en test
 ├── private/                          # Analíticas reales en PDF (fuera de git)
