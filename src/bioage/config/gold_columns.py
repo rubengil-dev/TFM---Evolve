@@ -1,4 +1,10 @@
-"""Role of each Gold column: identification, outcome, candidate predictor (by type) or derived feature."""
+"""Role of each Gold column.
+
+- Identification and survey weight
+- Outcome
+- Candidate predictors, by type
+- Derived features
+"""
 
 # Identification and survey weight (not model inputs)
 ID_COLUMNS = ["seqn", "cycle", "weight_exam"]

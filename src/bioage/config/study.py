@@ -1,4 +1,13 @@
-"""Project design parameters: population included, cleaning, split, models, optimizing, evaluation and preprocessing."""
+"""Project design parameters.
+
+- Population included
+- Cleaning: fasting, alcohol, smoking and follow-up
+- Split
+- Models: first settings and tuning
+- Evaluation
+- Preprocessing
+- Categories: text variables and their answers
+"""
 
 # Population
 AGE_MIN = 18    # Mortality follow-up only for adults
