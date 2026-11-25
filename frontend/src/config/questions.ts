@@ -1,9 +1,9 @@
 /** Questions asked after the PDF, in order: sex and age only if the PDF lacks them, body measures, habits in the full mode. */
 
 import type { Question } from '../types'
+import { HEIGHT, MAX_AGE, MIN_AGE, SEDENTARY_HOURS, SLEEP_HOURS, WEIGHT } from './limits'
 
-// Answer values match the categories the model was trained with (study.py);
-// number ranges match the plausible ranges of the model (plausible_ranges.py)
+// Answer values match the categories the model was trained with (study.py)
 export const QUESTIONS: Question[] = [
   {
     id: 'sex',
@@ -22,8 +22,8 @@ export const QUESTIONS: Question[] = [
     title: '¿Qué edad tienes?',
     modes: ['quick', 'full'],
     onlyIfMissing: true,
-    min: 16,
-    max: 100,
+    min: MIN_AGE,
+    max: MAX_AGE,
     step: 1,
     start: 45,
     unit: 'años',
@@ -33,8 +33,8 @@ export const QUESTIONS: Question[] = [
     kind: 'number',
     title: '¿Cuánto pesas?',
     modes: ['quick', 'full'],
-    min: 30,
-    max: 300,
+    min: WEIGHT[0],
+    max: WEIGHT[1],
     step: 1,
     start: 70,
     unit: 'kg',
@@ -44,8 +44,8 @@ export const QUESTIONS: Question[] = [
     kind: 'number',
     title: '¿Cuánto mides?',
     modes: ['quick', 'full'],
-    min: 120,
-    max: 220,
+    min: HEIGHT[0],
+    max: HEIGHT[1],
     step: 1,
     start: 170,
     unit: 'cm',
@@ -80,8 +80,8 @@ export const QUESTIONS: Question[] = [
     title: '¿Cuántas horas pasas sentado al día?',
     hint: 'Tumbado, sin dormir, también cuenta. Piensa en tu trabajo, estudio, coche, tiempo libre…',
     modes: ['full'],
-    min: 0,
-    max: 24,
+    min: SEDENTARY_HOURS[0],
+    max: SEDENTARY_HOURS[1],
     step: 0.5,
     start: 8,
     unit: 'h',
@@ -92,8 +92,8 @@ export const QUESTIONS: Question[] = [
     title: '¿Cuántas horas duermes normalmente?',
     hint: 'En promedio semanal.',
     modes: ['full'],
-    min: 2,
-    max: 16,
+    min: SLEEP_HOURS[0],
+    max: SLEEP_HOURS[1],
     step: 0.5,
     start: 8,
     unit: 'h',

@@ -1,11 +1,11 @@
-/** Short cosmetic wait before the result: a DNA helix builds itself from top to bottom while a percentage climbs. */
+/** Wait while the backend works: a DNA helix builds itself from top to bottom and, if the wait has a length, a percentage climbs. */
 
 import { useEffect, useRef, useState } from 'react'
 
-type Props = { onDone: () => void }
+type Props = { title: string; durationMs?: number }
 
 // Settings
-const DURATION_MS = 1000
+const BUILD_MS = 1000
 const RUNGS = 16
 const WIDTH = 90
 const HEIGHT = 220
@@ -13,14 +13,9 @@ const STRAND_A = '#34d399'
 const STRAND_B = '#a7f3d0'
 const RUNG = 'rgba(157, 181, 170, 0.25)'
 
-export default function Loading({ onDone }: Props) {
+export default function Loading({ title, durationMs }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [percent, setPercent] = useState(0)
-  const onDoneRef = useRef(onDone)
-
-  useEffect(() => {
-    onDoneRef.current = onDone
-  }, [onDone])
 
   useEffect(() => {
     const canvas = canvasRef.current!
@@ -36,22 +31,21 @@ export default function Loading({ onDone }: Props) {
 
     function loop(now: number) {
       const elapsed = now - start
-      const progress = still ? 1 : Math.min(1, elapsed / DURATION_MS)
+      const progress = still ? 1 : Math.min(1, elapsed / (durationMs ?? BUILD_MS))
       drawHelix(ctx, progress, still ? 0 : elapsed)
       setPercent(Math.round(progress * 100))
-      if (elapsed >= DURATION_MS) onDoneRef.current()
-      else frame = requestAnimationFrame(loop)
+      frame = requestAnimationFrame(loop)
     }
 
     frame = requestAnimationFrame(loop)
     return () => cancelAnimationFrame(frame)
-  }, [])
+  }, [durationMs])
 
   return (
     <main className="flex min-h-full flex-col items-center justify-center px-6 text-center" aria-live="polite">
       <canvas ref={canvasRef} aria-hidden="true" style={{ width: WIDTH, height: HEIGHT }} />
-      <h1 className="mt-6 font-display text-3xl font-medium text-mist">Calculando tu edad</h1>
-      <p className="mt-2 text-sm text-moss tabular-nums">{percent} %</p>
+      <h1 className="mt-6 font-display text-3xl font-medium text-mist">{title}</h1>
+      {durationMs !== undefined && <p className="mt-2 text-sm text-moss tabular-nums">{percent} %</p>}
     </main>
   )
 }

@@ -1,0 +1,27 @@
+/** Name shown for each value of the blood test. */
+
+export const VARIABLE_NAMES: Record<string, string> = {
+  hemoglobin:           'Hemoglobina',
+  erythrocytes:         'Hematíes',
+  mchc:                 'CHCM',
+  neutrophils:          'Neutrófilos',
+  lymphocytes:          'Linfocitos',
+  monocytes:            'Monocitos',
+  glucose:              'Glucosa',
+  creatinine:           'Creatinina',
+  urea:                 'Urea',
+  uric_acid:            'Ácido úrico',
+  hdl:                  'Colesterol HDL',
+  ast:                  'AST (GOT)',
+  alt:                  'ALT (GPT)',
+  sodium:               'Sodio',
+  potassium:            'Potasio',
+  ggt:                  'GGT',
+  alkaline_phosphatase: 'Fosfatasa alcalina',
+  albumin:              'Albúmina',
+  vitamin_d:            'Vitamina D',
+  chloride:             'Cloro',
+  phosphorus:           'Fósforo',
+  ldh:                  'LDH',
+  urine_acr:            'Albúmina/creatinina en orina',
+}

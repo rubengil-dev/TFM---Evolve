@@ -2,11 +2,12 @@
 
 import { useRef, type ChangeEvent, type MouseEvent } from 'react'
 import WarningBar from '../components/WarningBar'
+import { MAX_AGE, MIN_AGE } from '../config/limits'
 import type { Mode } from '../types'
 
-type Props = { onStart: (mode: Mode, file: File) => void; onWrongFile: () => void }
+type Props = { onStart: (mode: Mode, file: File) => void }
 
-export default function Landing({ onStart, onWrongFile }: Props) {
+export default function Landing({ onStart }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const modeRef = useRef<Mode>('full')
 
@@ -18,9 +19,7 @@ export default function Landing({ onStart, onWrongFile }: Props) {
   function handleFile(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]
     event.target.value = ''
-    if (!file) return
-    if (isPdf(file)) onStart(modeRef.current, file)
-    else onWrongFile()
+    if (file) onStart(modeRef.current, file)
   }
 
   return (
@@ -31,7 +30,7 @@ export default function Landing({ onStart, onWrongFile }: Props) {
           <br />
           <em className="text-emerald">edad biológica</em>
         </h1>
-        <p className="mt-4 text-base text-moss">A partir de 16 años.</p>
+        <p className="mt-4 text-base text-moss">De {MIN_AGE} a {MAX_AGE} años.</p>
 
         <div className="mt-8 flex w-full max-w-md flex-col-reverse gap-3 sm:w-auto sm:max-w-none sm:flex-row">
           <button
@@ -110,8 +109,4 @@ const REPOSITORY = 'https://github.com/rubengil-dev/TFM---Evolve'
 function showFinePrint(event: MouseEvent<HTMLAnchorElement>) {
   event.preventDefault()
   document.getElementById('letra-pequena')?.scrollIntoView({ behavior: 'smooth' })
-}
-
-function isPdf(file: File): boolean {
-  return file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')
 }

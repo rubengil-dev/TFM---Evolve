@@ -33,19 +33,23 @@ Lo que no encaje en esta descripción no va aquí. Las decisiones pendientes no 
   - [x] Entrega 03: Machine Learning.
 - [*] **Fase 4, app:** lectura del PDF, pantalla de revisión, cuestionario, resultado y front.
   - [*] Front en React, completo: portada con la elección de modo, preguntas, revisión, carga, errores y resultado, con el diseño visual definitivo. Primero con datos de ejemplo y después conectado al backend.
+  - [x] API: leer el PDF (de momento, una persona inventada) y calcular, conectada al front.
+  - [ ] Elección del modelo, con un notebook que esconde valores: desde cuántos Extras compensa su modelo y con cuántos datos se deja de calcular.
+  - [ ] Edad por encima de 79: el modelo la recorta a 79, así que la diferencia se calcula como si tuviera 79 y se suma a la edad real.
   - [ ] Entrega 04: `docs/entregas/04_diseno_frontal_ux.md` con capturas de la app.
   - [/] Parser del PDF, con la normalización de nombres y unidades, probado con mis PDFs.
+  - [ ] Corrección de un valor imposible en el backend (`POST /api/correct`, con el contrato ya escrito): pasa el valor a la unidad del modelo con su factor, comprueba que ya es posible y, si no, se vuelve a preguntar. Con el parser, porque usa su tabla de unidades; `factor` deja de viajar al front.
   - [ ] Pantalla de revisión, solo para los valores que el parser marca como dudosos, y solo si las pruebas del parser muestran que hace falta.
   - [x] Preguntas de sexo y edad, solo si el PDF no las trae.
   - [x] Pantallas de error: PDF ilegible o que no es una analítica, faltan demasiados datos y valor imposible; aviso rojo de edad fuera de 18-79 en el resultado.
   - [x] Letra pequeña de la portada (privacidad y cómo se calcula).
   - [x] Logo: icono de la pestaña y marca de agua de la imagen compartida.
-  - [/] Validación de lo que entra al modelo, en el módulo de predicción: columnas, tipos, categorías, rangos posibles y edad, con errores con código que el front traduce. Hoy una columna ausente o un número como texto dan un error técnico, y un valor imposible devuelve una edad sin avisar.
+  - [/] Validación de lo que entra al modelo, en el módulo de predicción: columnas, tipos, categorías, rangos posibles y edad, con errores con código que el front traduce. La API ya rechaza columnas, tipos y categorías; falta el valor imposible (también el IMC que sale de peso y talla) y el mínimo de datos.
   - [ ] Cuestionario de hábitos.
   - [ ] Pantalla de resultado, presentada como edad equivalente según la referencia de NHANES: edad ± X, tabla de grupos y, con cuestionario, tabla de hábitos.
   - [ ] Aportación en años de cada grupo de variables frente a la persona típica de su edad y sexo.
   - [ ] Margen ± de la edad y de cada grupo (método por decidir; si no hay uno claro, se quita).
-  - [x] Línea "de 18 a 79 años" en la portada.
+  - [x] Línea "De 16 a 90 años" en la portada.
   - [ ] Logs de la app en JSON, sin valores de salud: modelo, nivel, variables recibidas, latencia, estado y código de error.
   - [ ] Añadir las librerías del stack a las dependencias del proyecto (`pyproject.toml`) y completar el README.
 - [ ] **Fase 5, despliegue:** web pública en un hosting gratuito *(se afina al llegar)*
