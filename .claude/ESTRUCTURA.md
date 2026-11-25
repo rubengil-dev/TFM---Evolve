@@ -58,9 +58,11 @@ TFM/
 │   │   │   └── YearsTable.tsx        # Tabla de años
 │   │   ├── config/
 │   │   │   ├── errors.ts             # Textos de error
-│   │   │   ├── example.ts            # Datos de ejemplo y demos
+│   │   │   ├── example.ts            # Demos
 │   │   │   ├── groups.ts             # Grupos del resultado
-│   │   │   └── questions.ts          # Preguntas
+│   │   │   ├── limits.ts             # Límites repetidos
+│   │   │   ├── questions.ts          # Preguntas
+│   │   │   └── variables.ts          # Nombres de los valores
 │   │   ├── pages/
 │   │   │   ├── ErrorScreen.tsx       # Errores
 │   │   │   ├── Landing.tsx           # Portada
@@ -68,7 +70,9 @@ TFM/
 │   │   │   ├── Questionnaire.tsx     # Cuestionario
 │   │   │   └── Result.tsx            # Resultado
 │   │   ├── utils/
+│   │   │   ├── api.ts                # Peticiones al backend
 │   │   │   ├── cells.ts              # Dibujo de una célula
+│   │   │   ├── person.ts             # Datos para calcular
 │   │   │   └── picture.ts            # Imagen para compartir
 │   │   ├── App.tsx                   # Pantalla activa
 │   │   ├── index.css                 # Colores y fuentes
@@ -107,9 +111,16 @@ TFM/
 │       ├── main.py                   # Punto de entrada
 │       ├── app/
 │       │   ├── __init__.py
-│       │   └── predict.py            # Predicción
+│       │   ├── api.py                # Servidor web
+│       │   ├── calculate.py          # Cálculo del resultado
+│       │   ├── predict.py            # Predicción
+│       │   ├── read_pdf.py           # Lectura del PDF
+│       │   ├── schemas.py            # Contrato de la API
+│       │   ├── utils.py              # Apoyo a la app
+│       │   └── validation.py         # Comprobaciones
 │       ├── config/
 │       │   ├── __init__.py
+│       │   ├── app.py                # Límites y errores
 │       │   ├── corrections.py        # Correcciones CDC
 │       │   ├── gold_columns.py       # Columnas de Gold
 │       │   ├── model_levels.py       # Variables por nivel

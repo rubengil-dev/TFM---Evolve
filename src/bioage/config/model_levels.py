@@ -1,4 +1,14 @@
-"""Variables of each model block, and the Gold predictors left out with their reason."""
+"""Variables and algorithm of each model level.
+
+- Blocks: BASELINE, ROUTINE, EXTRAS and QUESTIONNAIRE
+- Variables that come from the PDF
+- Variables of each level
+- Algorithm kept for each level
+- Gold predictors left out, with their reason
+"""
+
+# Imports
+from typing import Literal
 
 # Level 0: baseline
 BASELINE = ["age", "sex"]
@@ -24,6 +34,9 @@ QUESTIONNAIRE = [
 ]
 
 # Level 4: Routine + Extras + Questionnaire
+
+# Variables that come from the PDF
+LabVariable = Literal[*(column for column in ROUTINE + EXTRAS if column not in ("age", "sex", "bmi"))]
 
 # Variables of each level
 LEVEL_COLUMNS = {
