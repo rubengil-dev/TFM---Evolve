@@ -34,14 +34,41 @@ export type NumberQuestion = BaseQuestion & {
 
 export type Question = ChoiceQuestion | NumberQuestion
 
-/** Years a group adds (+) or takes away (−) against a typical person of the same age and sex; null = no data. */
+/** Years a group adds (+) or takes away (−) against a typical person of the same age and sex; null = not in the blood test. */
 export type GroupYears = Record<string, number | null>
 
-/** What the backend returns for one person. */
+/** A value outside what is possible, as the PDF shows it; `text` keeps its decimals, e.g. "9,8". */
+export type OddValue = {
+  variable: string
+  text: string
+  unit: string
+  /** Lab unit → model unit. */
+  factor: number
+}
+
+/** What the backend reads from a PDF (schemas.py); null = the PDF lacks it. */
+export type Reading = {
+  lab_values: Record<string, number>
+  age: number | null
+  sex: string | null
+  odd: OddValue[]
+}
+
+/** What the backend needs to calculate (schemas.py, which checks it); habits only in the full mode. */
+export type Person = {
+  lab_values: Record<string, number>
+  age: number | string
+  sex: number | string
+  weight: number | string
+  height: number | string
+  habits: Answers | null
+}
+
+/** What the backend returns for one person (schemas.py). */
 export type Result = {
   age: number
-  bioAge: number
-  margin: number
+  bio_age: number
+  margin: number | null
   blood: GroupYears
-  habits?: GroupYears
+  habits: Record<string, number> | null
 }

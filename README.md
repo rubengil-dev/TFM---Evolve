@@ -26,12 +26,14 @@ It needs [uv](https://docs.astral.sh/uv/), which installs Python 3.11 and every 
 uv sync
 uv run python -m bioage.main
 uv run pytest
+uv run uvicorn bioage.app.api:app
 ```
 
 - `uv sync` creates `.venv` with the exact versions of `uv.lock`.
 - `bioage.main` downloads NHANES (about 400 MB, resumable), builds the data layers and trains the models in `models/`.
+- `uvicorn` starts the backend of the app; the web interface runs apart (see `frontend/`).
 - Tests that need `data/` are skipped if it does not exist; the rest run with what is in git.
-- The project dependencies are only what the app needs to load a model and predict; the analysis and training libraries are in the `dev` group.
+- The project dependencies are only what the app needs to load a model and predict; the web server is in the `web` group and the analysis and training libraries are in the `dev` group.
 
 To check the code before committing, install the hooks once with `uv run pre-commit install`.
 

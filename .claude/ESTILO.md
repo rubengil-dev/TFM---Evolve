@@ -41,6 +41,7 @@ Lo que no encaje en esta descripción no va aquí. Las decisiones propias del pr
 
 ### README
 - En inglés. El de la raíz: qué es, para quién y cómo se instala y ejecuta. Cada carpeta lleva el suyo, mínimo.
+- El de una carpeta: su nombre como título, una frase y una lista con lo que contiene, una línea cada uno (nombre y qué hace). Debajo, solo si hace falta, cómo se ejecuta o una `NOTE`.
 - Se actualiza el de una carpeta cuando cambia lo que contiene, y el de la raíz cuando cambia cómo se instala o se usa.
 
 ### Estructura del código (Python)
@@ -79,6 +80,7 @@ Lo que no encaje en esta descripción no va aquí. Las decisiones propias del pr
 
 ### Python
 - **Comentarios:** títulos de bloque de una o pocas palabras (`# Imports`, `# Root`). Sin comentarios al final de la línea, salvo para aclarar algo no evidente (unidades, ejemplos, qué significa cada fila de una tabla).
+- **Cabeceras:** la docstring de un archivo es una frase si hace una sola cosa; si contiene varias, la frase y debajo una lista con todas.
 - **Flechas `→`** para transformaciones o flujos, solo en docstrings y comentarios: la consola de Windows no las muestra en un `print`.
 - **Archivos:** cada archivo hace una sola cosa y su docstring lo dice. La función principal va arriba y se lee como un índice (solo llamadas con nombre claro). Las de apoyo, debajo, en el orden en que se llaman, aunque se usen una sola vez.
 - **Un único punto de entrada** por programa (`main`), el único con `if __name__ == "__main__":`.

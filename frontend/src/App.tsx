@@ -1,56 +1,109 @@
-/** Root of the app: keeps the user's choices and decides which screen to show. */
+/** Root of the app: keeps the user's data between screens, asks the backend and decides which screen to show. */
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import CellBackground from './components/CellBackground'
-import ImpossibleValue from './components/ImpossibleValue'
+import ImpossibleValue, { type Corrections } from './components/ImpossibleValue'
 import WarningBar from './components/WarningBar'
 import { ERRORS, type ErrorKind } from './config/errors'
-import { EXAMPLE_MISSING, EXAMPLE_ODD_VALUE, EXAMPLE_RESULT, startingDemo } from './config/example'
+import { startingDemo } from './config/example'
 import ErrorScreen from './pages/ErrorScreen'
 import Landing from './pages/Landing'
 import Loading from './pages/Loading'
 import Questionnaire from './pages/Questionnaire'
 import Result from './pages/Result'
-import type { Mode } from './types'
+import type { Answers, Mode, Reading, Result as ResultData } from './types'
+import { ApiError, calculate, isPdf, readPdf } from './utils/api'
+import { buildPerson, missingFrom, withCorrections } from './utils/person'
 
-export type Screen = 'landing' | 'questions' | 'loading' | 'result' | 'odd_value' | ErrorKind
+export type Screen = 'landing' | 'reading' | 'odd_value' | 'questions' | 'calculating' | 'result' | ErrorKind
 
-// Until the backend is connected, the PDF and the answers are not sent anywhere and the result is an example
+// Shortest time the loading screen before the result is shown; the one of the PDF lasts what reading it takes
+const CALCULATING_MS = 1000
+
 export default function App() {
-  const demo = startingDemo()
+  const [demo] = useState(startingDemo)
   const [screen, setScreen] = useState<Screen>(demo.screen)
   const [mode, setMode] = useState<Mode>('full')
-
-  function start(chosenMode: Mode) {
-    setMode(chosenMode)
-    setScreen('questions')
-  }
+  const [reading, setReading] = useState<Reading | null>(demo.reading ?? null)
+  const [result, setResult] = useState<ResultData | null>(demo.result ?? null)
 
   const home = () => setScreen('landing')
+  // What to repeat if the backend does not answer; it lives in this tab, nothing is stored
+  const retryRef = useRef<() => void>(home)
 
   // Every screen opens at the top, also after a reload
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' })
   }, [screen])
-  const example = { ...EXAMPLE_RESULT, ...demo.result }
-  const result = mode === 'full' ? example : { ...example, habits: undefined }
+
+  async function start(chosenMode: Mode, file: File) {
+    setMode(chosenMode)
+    if (!isPdf(file)) return setScreen('unreadable')
+    retryRef.current = () => start(chosenMode, file)
+    setScreen('reading')
+    try {
+      const read = await readPdf(file)
+      setReading(read)
+      setScreen(read.odd.length > 0 ? 'odd_value' : 'questions')
+    } catch (error) {
+      setScreen(errorScreen(error))
+    }
+  }
+
+  // Values not corrected stay in the window
+  function correct(corrections: Corrections) {
+    if (!reading) return
+    const corrected = withCorrections(reading, corrections)
+    setReading(corrected)
+    if (corrected.odd.length === 0) setScreen('questions')
+  }
+
+  async function finish(answers: Answers) {
+    if (!reading) return
+    retryRef.current = () => finish(answers)
+    setScreen('calculating')
+    try {
+      setResult(await atLeast(CALCULATING_MS, calculate(buildPerson(reading, answers, mode))))
+      setScreen('result')
+    } catch (error) {
+      setScreen(errorScreen(error))
+    }
+  }
 
   return (
     <>
       <CellBackground />
-      {screen === 'landing' && <Landing onStart={start} onWrongFile={() => setScreen('unreadable')} />}
-      {screen === 'questions' && <Questionnaire mode={mode} missing={EXAMPLE_MISSING} onDone={() => setScreen('loading')} onExit={home} />}
-      {screen === 'loading' && <Loading onDone={() => setScreen('result')} />}
-      {(screen === 'result' || screen === 'odd_value') && <Result result={result} blurred={screen === 'odd_value'} />}
-      {screen === 'odd_value' && (
-        <ImpossibleValue odd={EXAMPLE_ODD_VALUE} onCorrected={() => setScreen('loading')} onConfirmed={() => setScreen('impossible')} />
+      {screen === 'landing' && <Landing onStart={start} />}
+      {screen === 'reading' && <Loading title="Leyendo tu analítica" />}
+      {screen === 'odd_value' && reading && (
+        <ImpossibleValue odds={reading.odd} onCorrected={correct} onConfirmed={() => setScreen('impossible')} />
       )}
-      {isError(screen) && <ErrorScreen kind={screen} onRetry={() => setScreen('questions')} onHome={home} />}
-      {(screen === 'result' || screen === 'odd_value') && <WarningBar />}
+      {screen === 'questions' && reading && (
+        <Questionnaire mode={mode} missing={missingFrom(reading)} onDone={finish} onExit={home} />
+      )}
+      {screen === 'calculating' && <Loading title="Calculando tu edad" durationMs={CALCULATING_MS} />}
+      {screen === 'result' && result && (
+        <>
+          <Result result={result} />
+          <WarningBar />
+        </>
+      )}
+      {isError(screen) && <ErrorScreen kind={screen} onUpload={(file) => start(mode, file)} onRetry={() => retryRef.current()} onHome={home} />}
     </>
   )
 }
 
 function isError(screen: Screen): screen is ErrorKind {
   return screen in ERRORS
+}
+
+function errorScreen(error: unknown): ErrorKind {
+  if (error instanceof ApiError) return error.kind
+  throw error
+}
+
+/** Waits for the task, and at least that time. */
+async function atLeast<T>(milliseconds: number, task: Promise<T>): Promise<T> {
+  const [done] = await Promise.all([task, new Promise((resolve) => setTimeout(resolve, milliseconds))])
+  return done
 }

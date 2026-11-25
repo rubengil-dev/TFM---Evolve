@@ -1,6 +1,7 @@
 # config/
 Files within this folder contain internal configuration.
 
+- `app.py`              : Limits and error codes of the app.
 - `paths.py`            : Internal project paths.
 - `sources.py`          : Data download paths and config.
 - `study.py`            : Project design parameters.

@@ -1,23 +1,30 @@
-/** Error screen in the style of the home page: big title, icon, what to do in one box, and buttons. */
+/** Error screen in the style of the home page: big title, icon, what to do in one box, and buttons (upload another PDF, or try again). */
 
-import { IconAlertTriangle, IconFileAlert, IconListSearch, IconMoodKid } from '@tabler/icons-react'
+import { IconAlertTriangle, IconFileAlert, IconInfinity, IconListSearch, IconMoodKid, IconPlugConnectedX } from '@tabler/icons-react'
 import { useRef, type ChangeEvent } from 'react'
 import WarningBar from '../components/WarningBar'
 import { ERRORS, type ErrorKind } from '../config/errors'
 
-type Props = { kind: ErrorKind; onRetry: (file: File) => void; onHome: () => void }
+type Props = { kind: ErrorKind; onUpload: (file: File) => void; onRetry: () => void; onHome: () => void }
 
-const ICONS = { unreadable: IconFileAlert, too_few: IconListSearch, impossible: IconAlertTriangle, too_young: IconMoodKid }
+const ICONS = {
+  unreadable: IconFileAlert,
+  too_few: IconListSearch,
+  impossible: IconAlertTriangle,
+  too_young: IconMoodKid,
+  too_old: IconInfinity,
+  unavailable: IconPlugConnectedX,
+}
 
-export default function ErrorScreen({ kind, onRetry, onHome }: Props) {
+export default function ErrorScreen({ kind, onUpload, onRetry, onHome }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
-  const { title, text, steps, warning, canRetry } = ERRORS[kind]
+  const { title, text, steps, warning, action } = ERRORS[kind]
   const Icon = ICONS[kind]
 
   function handleFile(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]
     event.target.value = ''
-    if (file) onRetry(file)
+    if (file) onUpload(file)
   }
 
   return (
@@ -34,7 +41,7 @@ export default function ErrorScreen({ kind, onRetry, onHome }: Props) {
       <p className="mt-4 text-base text-moss">{text}</p>
 
       {steps.length > 0 && (
-        <div className="mt-3 space-y-1 text-sm text-moss">
+        <div className="mt-4 space-y-3 text-sm text-moss">
           {steps.map((step) => (
             <p key={step}>{step}</p>
           ))}
@@ -42,13 +49,13 @@ export default function ErrorScreen({ kind, onRetry, onHome }: Props) {
       )}
 
       <div className="mt-8 flex w-full flex-col gap-3">
-        {canRetry && (
+        {action && (
           <button
             type="button"
-            onClick={() => inputRef.current?.click()}
+            onClick={() => (action === 'retry' ? onRetry() : inputRef.current?.click())}
             className="rounded-full bg-emerald px-6 py-3 text-sm font-medium text-emerald-ink transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint"
           >
-            Subir otro PDF
+            {action === 'retry' ? 'Reintentar' : 'Subir otro PDF'}
           </button>
         )}
         <button

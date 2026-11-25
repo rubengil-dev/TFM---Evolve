@@ -9,7 +9,7 @@ npm install
 npm run dev
 ```
 
-Then open http://localhost:5173. `npm run build` leaves the static site in `dist/`, which FastAPI will serve, and `npm run lint` checks the code.
+Then open http://localhost:5173. The backend has to be running too (`uv run uvicorn bioage.app.api:app` from the root): Vite sends it the `/api` requests. `npm run build` leaves the static site in `dist/`, which FastAPI will serve, and `npm run lint` checks the code.
 
 ## Structure
 ```
@@ -17,9 +17,9 @@ frontend/
 ├── public/               # Served as they are (favicon)
 ├── src/
 │   ├── components/       # Pieces shared by several screens
-│   ├── config/           # Settings written by hand (questions)
+│   ├── config/           # Settings written by hand (questions, texts)
 │   ├── pages/            # One file per screen
-│   ├── utils/            # Functions used by the components
+│   ├── utils/            # Requests to the backend and shared functions
 │   ├── App.tsx           # Decides which screen to show
 │   ├── index.css         # Design colors and fonts
 │   ├── main.tsx          # Entry point
@@ -32,7 +32,7 @@ frontend/
 ├── tsconfig.json         # TypeScript entry config
 ├── tsconfig.app.json     # TypeScript rules for src/
 ├── tsconfig.node.json    # TypeScript rules for vite.config.ts
-└── vite.config.ts        # Vite plugins
+└── vite.config.ts        # Vite plugins and where the backend is
 ```
 
 Not in git, rebuilt by npm: `node_modules/` (installed libraries, like `.venv`) and `dist/` (the built site).

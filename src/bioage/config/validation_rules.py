@@ -1,4 +1,11 @@
-"""Gold data validation thresholds."""
+"""Gold data validation thresholds.
+
+- Size
+- Follow-up
+- Coverage
+- Required values
+- Consistency between variables
+"""
 
 # Size
 MIN_PERSONS = 45000            # one lost cycle drops 4000-5600 persons

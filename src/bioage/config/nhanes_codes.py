@@ -1,4 +1,10 @@
-"""NHANES questionnaire answer codes."""
+"""NHANES questionnaire answer codes.
+
+- Alcohol frequency
+- Refused / don't know
+- Fast food
+- Youth smoking
+"""
 
 # Alcohol frequency
 ALCOHOL_UNIT_DAYS = {1: 52, 2: 12, 3: 1}    # ALQ120U (until 2016): week, month, year
