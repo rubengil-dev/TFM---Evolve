@@ -18,8 +18,10 @@ dependencies = [
 ]
 
 [dependency-groups]
-# Tests: what CI installs on top of the app dependencies
-test = ["pytest==9.2.0"]
+# Web: server of the app; apart from the dependencies because a model does not depend on it
+web = ["fastapi==0.165.0", "uvicorn==0.54.0"]
+# Tests: what CI installs on top of the app dependencies (httpx: requests to the server in tests)
+test = [{ include-group = "web" }, "httpx==0.28.1", "pytest==9.2.0"]
 # Lint: what the CI lint job installs, without the project
 lint = ["ruff==0.17.5"]
 # Analysis: data pipeline, training and notebooks
