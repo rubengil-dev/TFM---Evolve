@@ -31,10 +31,10 @@ def calculate(person: Person, bundles: dict[str, dict]) -> Result:
     bundle = bundles[choose_level(person, bundles)]
     row = model_row(person, bundle["columns"])
     years = predict_groups(bundle, row)
-    return Result(
+    return Result(  # age and margin unrounded: the front rounds them once, to whole years
         age=person.age,
-        bio_age=one_decimal(predict_age(bundle, row)[0] + person.age - study_age(person.age)),
-        margin=one_decimal(margin(person, bundle, predict_risk(bundle, row)[0])),
+        bio_age=float(predict_age(bundle, row)[0] + person.age - study_age(person.age)),
+        margin=float(margin(person, bundle, predict_risk(bundle, row)[0])),
         blood={group: one_decimal(years.get(group)) for group in BLOOD_GROUPS},
         habits=None if person.habits is None else {group: one_decimal(years[group]) for group in HABIT_GROUPS},
     )

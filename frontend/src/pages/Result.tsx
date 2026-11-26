@@ -18,8 +18,9 @@ const CAUTION_MARGIN = 5
 
 export default function Result({ result }: Props) {
   const { age, bio_age, margin } = result
-  // Whole years, .5 up; a margin of 0 is not shown
-  const shownMargin = margin === null ? 0 : Math.round(margin)
+  // Whole years, .5 up; a margin of 0, or next to a limit ("<18", ">90"), is not shown
+  const roundMargin = margin === null ? 0 : Math.round(margin)
+  const shownMargin = isLimit(bio_age) ? 0 : roundMargin
   const cardRef = useRef<HTMLDivElement>(null)
 
   return (
@@ -38,7 +39,7 @@ export default function Result({ result }: Props) {
             Tienes {age} años, fuera de las edades de mis datos ({DATA_MIN_AGE}-{DATA_MAX_AGE}): el resultado puede ser menos preciso
           </p>
         )}
-        {shownMargin >= CAUTION_MARGIN && (
+        {roundMargin >= CAUTION_MARGIN && (
           <p className="mx-auto mt-3 flex w-fit max-w-sm items-center gap-2 rounded-2xl border border-line bg-line/20 px-3 py-2 text-left text-xs text-moss">
             <IconInfoCircle aria-hidden="true" size={16} className="shrink-0" />
             Este resultado es menos preciso de lo normal: tómalo con más precaución
@@ -63,6 +64,10 @@ function Gap({ age, bio_age }: { age: number; bio_age: number }) {
   const unit = Math.abs(years) === 1 ? 'año' : 'años'
   if (years < 0) return <span className="text-emerald">{`${-years} ${unit} menos`}</span>
   return <span className="text-rose">{`${years} ${unit} más`}</span>
+}
+
+function isLimit(bio_age: number): boolean {
+  return bio_age < LOWEST_AGE || bio_age > HIGHEST_AGE
 }
 
 function shownAge(bio_age: number): string {

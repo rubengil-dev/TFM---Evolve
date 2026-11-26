@@ -14,6 +14,7 @@ import pytest
 
 from bioage.config.app import EXTRAS_LEVELS, MIN_GAIN, MOVE_YEARS
 from bioage.config.model_levels import EXTRAS, LEVEL_COLUMNS
+from bioage.modeling import s7_margin
 from bioage.modeling.s1_split import split_data
 from bioage.modeling.s7_margin import (
     base_margin,
@@ -75,7 +76,8 @@ def test_base_margin_splits_at_the_low_half_of_risk(gold: pd.DataFrame) -> None:
     assert base["low_risk"] >= 0 and base["rest"] >= 0
 
 
-def test_margins_of_every_level(gold: pd.DataFrame) -> None:
+def test_margins_of_every_level(gold: pd.DataFrame, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(s7_margin, "MARGIN_REPEATS", 1)  # one draw is enough to check the structure
     margins = fit_margins(gold)
     assert set(margins) == set(LEVEL_COLUMNS)
     for level, with_extras in EXTRAS_LEVELS.items():

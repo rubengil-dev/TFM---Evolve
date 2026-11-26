@@ -2,7 +2,7 @@
 
 - Row for the model: its columns in its order, BMI and habits in their place
 - Unknown values → gaps; values the model does not use → left out
-- Result: real age, biological age with one decimal
+- Result: real age, biological age unrounded (the front rounds it once), years with one decimal
 - Impossible data are refused before calculating
 - Ages out of the study: the difference of the nearest age, added to the real one
 - Years: a value for every group, None only without data; they add up to the difference
@@ -58,10 +58,11 @@ def test_values_the_model_does_not_use_are_left_out() -> None:
     assert "ggt" not in model_row(person, LEVEL_COLUMNS["routine"])
 
 
-def test_result_has_the_real_age_and_one_decimal() -> None:
+def test_result_has_the_real_age_and_the_unrounded_bio_age() -> None:
     result = calculate(Person(**PERSON), BUNDLES)
     exact = predict_age(BUNDLES["routine"], model_row(Person(**PERSON), LEVEL_COLUMNS["routine"]))[0]
-    assert (result.age, result.bio_age) == (52, round(float(exact), 1))
+    assert (result.age, result.bio_age) == (52, pytest.approx(float(exact), abs=1e-9))
+    assert all(years is None or years == round(years, 1) for years in result.blood.values())
 
 
 def test_impossible_data_are_refused_before_calculating() -> None:

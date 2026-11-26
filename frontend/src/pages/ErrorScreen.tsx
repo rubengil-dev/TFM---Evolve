@@ -1,6 +1,6 @@
 /** Error screen in the style of the home page: big title, icon, what to do in one box, and buttons (upload another PDF, try again or correct the answers). */
 
-import { IconAlertTriangle, IconFileAlert, IconInfinity, IconListSearch, IconMoodKid, IconPlugConnectedX } from '@tabler/icons-react'
+import { IconAlertTriangle, IconBug, IconFileAlert, IconInfinity, IconListSearch, IconMoodKid, IconPlugConnectedX } from '@tabler/icons-react'
 import { useRef, type ChangeEvent } from 'react'
 import OgreIcon from '../components/OgreIcon'
 import WarningBar from '../components/WarningBar'
@@ -17,6 +17,7 @@ const ICONS = {
   too_young: IconMoodKid,
   too_old: IconInfinity,
   unavailable: IconPlugConnectedX,
+  failed: IconBug,
 }
 
 const LONG_TITLE = 16 // letters

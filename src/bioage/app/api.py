@@ -26,7 +26,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, Response
 
 from bioage.app.calculate import calculate, choose_level
-from bioage.app.logs import note, setup_logs, write_line
+from bioage.app.logs import crash_place, note, setup_logs, write_line
 from bioage.app.predict import load_bundle
 from bioage.app.read_pdf import read_pdf
 from bioage.app.schemas import AppError, Correction, Mode, OddValue, Person, Reading, Result
@@ -65,11 +65,13 @@ async def log_requests(request: Request, call_next: Callable[[Request], Awaitabl
     """
     if not request.url.path.startswith("/api/") or request.url.path == "/api/health":
         return await call_next(request)
+    if request.url.path not in {route.path for route in app.routes}:
+        note(request, endpoint="unknown")  # the path is written by whoever calls
     started = time.perf_counter()
     try:
         response = await call_next(request)
-    except Exception:
-        note(request, error="crash")
+    except Exception as error:
+        note(request, error="crash", where=crash_place(error))
         write_line(request, 500, started)
         raise
     write_line(request, response.status_code, started)
@@ -128,7 +130,9 @@ def post_calculate(person: Person, request: Request) -> Result:
     """
     known = set(person.lab_values)
     level = choose_level(person, request.app.state.bundles)
-    note(request, mode=person.mode, level=level, missing=routine_missing(known), extras=extras_known(known))
+    model = request.app.state.bundles[level]["trained_on"]["code"]
+    note(request, mode=person.mode, level=level, model=model)
+    note(request, missing=routine_missing(known), extras=extras_known(known))
     return calculate(person, request.app.state.bundles)
 
 

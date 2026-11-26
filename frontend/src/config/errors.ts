@@ -2,12 +2,12 @@
 
 import { MAX_AGE, MIN_AGE } from './limits'
 
-export type ErrorKind = 'unreadable' | 'too_few' | 'impossible' | 'impossible_bmi' | 'too_young' | 'too_old' | 'unavailable'
+export type ErrorKind = 'unreadable' | 'too_few' | 'impossible' | 'impossible_bmi' | 'too_young' | 'too_old' | 'unavailable' | 'failed'
 
 type ErrorText = { title: [string, string]; text: string; steps: string[]; warning?: string; action?: 'upload' | 'retry' | 'correct' }
 
 // unreadable also covers a file that is not a PDF or a PDF that is not a blood test;
-// unavailable (no answer from the backend) is the only one the backend does not send
+// The backend does not send unavailable (no answer, worth retrying) nor failed (it answered with an error it cannot explain)
 export const ERRORS: Record<ErrorKind, ErrorText> = {
   unreadable: {
     title: ['No puedo', 'leer este PDF'],
@@ -53,5 +53,11 @@ export const ERRORS: Record<ErrorKind, ErrorText> = {
     text: 'Ups, ha ocurrido un error.',
     steps: ['Vuelve a intentarlo.', 'Si sigue sin funcionar, te sugiero que le des un golpe al ordenador.'],
     action: 'retry',
+  },
+  failed: {
+    title: ['No puedo', 'calcular tu edad'],
+    text: 'Ups, ha ocurrido un error.',
+    steps: ['Prueba con otro PDF.', 'Si sigue sin funcionar, te sugiero que le des un golpe al ordenador.'],
+    action: 'upload',
   },
 }

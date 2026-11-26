@@ -48,7 +48,7 @@ def test_front_error_codes_match_the_config() -> None:
     text = front_text("config/errors.ts")
     line = re.search(r"^export type ErrorKind = (.+)$", text, flags=re.MULTILINE)
     assert line is not None
-    assert set(re.findall(r"'(\w+)'", line[1])) == {*get_args(ErrorCode), "unavailable"}
+    assert set(re.findall(r"'(\w+)'", line[1])) == {*get_args(ErrorCode), "unavailable", "failed"}
 
 
 @pytest.mark.parametrize("schema", [Reading, OddValue, Person, Result])
