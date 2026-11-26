@@ -9,16 +9,17 @@ import type { Answers, Mode, Question } from '../types'
 import { isPossibleBmi } from '../utils/person'
 import ErrorScreen from './ErrorScreen'
 
-type Props = { mode: Mode; missing: string[]; onDone: (answers: Answers) => void; onExit: () => void }
+// startAt: id of the question to open at (demos); the first one if not given
+type Props = { mode: Mode; missing: string[]; startAt?: string; onDone: (answers: Answers) => void; onExit: () => void }
 
 const AUTO_ADVANCE_MS = 280
 const BODY_MEASURES = ['weight', 'height']
 
-export default function Questionnaire({ mode, missing, onDone, onExit }: Props) {
+export default function Questionnaire({ mode, missing, startAt, onDone, onExit }: Props) {
   const questions = QUESTIONS.filter(
     (question) => question.modes.includes(mode) && (!question.onlyIfMissing || missing.includes(question.id)),
   )
-  const [index, setIndex] = useState(0)
+  const [index, setIndex] = useState(() => Math.max(0, questions.findIndex(({ id }) => id === startAt)))
   const [answers, setAnswers] = useState<Answers>(() => startingAnswers(questions))
   const [isImpossible, setIsImpossible] = useState(false)
   const question = questions[index]

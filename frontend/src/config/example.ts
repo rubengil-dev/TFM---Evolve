@@ -1,7 +1,8 @@
 /** ?demo=... links that open a screen directly, with made-up data and without the backend. */
 
 import type { Screen } from '../App'
-import type { Answers, Reading, Result } from '../types'
+import type { Answers, Mode, Reading, Result } from '../types'
+import { QUESTIONS } from './questions'
 
 // The groups add up to bio_age − age
 const EXAMPLE_RESULT: Result = {
@@ -22,10 +23,21 @@ const EXAMPLE_READING: Reading = {
   ],
 }
 
-type Demo = { screen: Screen; result?: Result; reading?: Reading; answers?: Answers }
+// Without age nor sex, so every question is asked
+const QUESTIONS_READING: Reading = { lab_values: {}, age: null, sex: null, odd: [] }
+
+type Demo = { screen: Screen; result?: Result; reading?: Reading; answers?: Answers; mode?: Mode; question?: string }
+
+// ?demo=<question id> → that question, in the mode with habits
+const QUESTION_DEMOS: Record<string, Demo> = Object.fromEntries(
+  QUESTIONS.map(({ id }) => [id, { screen: 'questions', reading: QUESTIONS_READING, mode: 'full', question: id }]),
+)
 
 // ?demo=<name> → screen it opens and its data
 const DEMOS: Record<string, Demo> = {
+  ...QUESTION_DEMOS,
+  reading: { screen: 'reading' },
+  calculating: { screen: 'calculating' },
   result: { screen: 'result', result: EXAMPLE_RESULT },
   older: {
     screen: 'result',
@@ -45,6 +57,7 @@ const DEMOS: Record<string, Demo> = {
   unreadable: { screen: 'unreadable' },
   too_few: { screen: 'too_few' },
   unavailable: { screen: 'unavailable' },
+  failed: { screen: 'failed' },
 }
 
 export function startingDemo(): Demo {

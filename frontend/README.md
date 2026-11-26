@@ -11,6 +11,34 @@ npm run dev
 
 Then open http://localhost:5173. The backend has to be running too (`uv run uvicorn bioage.app.api:app` from the root): Vite sends it the `/api` requests. `npm run build` leaves the static site in `dist/`, which FastAPI will serve, and `npm run lint` checks the code.
 
+## Screens
+Every screen opens directly with `?demo=<name>`, with made-up data and without the backend. Best seen at phone size (in the browser's developer tools, device toolbar).
+
+| Screen | Link |
+|---|---|
+| Landing, with the fine print at the bottom | http://localhost:5173 |
+| Question: sex | http://localhost:5173/?demo=sex |
+| Question: age | http://localhost:5173/?demo=age |
+| Question: weight | http://localhost:5173/?demo=weight |
+| Question: height | http://localhost:5173/?demo=height |
+| Question: smoking | http://localhost:5173/?demo=smoking |
+| Question: exercise | http://localhost:5173/?demo=physical_activity |
+| Question: hours sitting | http://localhost:5173/?demo=sedentary_hours |
+| Question: hours of sleep | http://localhost:5173/?demo=sleep_hours |
+| Loading: reading the PDF | http://localhost:5173/?demo=reading |
+| Loading: calculating | http://localhost:5173/?demo=calculating |
+| Impossible value window | http://localhost:5173/?demo=odd_value |
+| Result | http://localhost:5173/?demo=result |
+| Result with the red and grey warnings | http://localhost:5173/?demo=older |
+| Error: unreadable PDF | http://localhost:5173/?demo=unreadable |
+| Error: too few values | http://localhost:5173/?demo=too_few |
+| Error: impossible value confirmed | http://localhost:5173/?demo=impossible |
+| Error: impossible BMI | http://localhost:5173/?demo=impossible_bmi |
+| Error: under 16 | http://localhost:5173/?demo=too_young |
+| Error: over 90 | http://localhost:5173/?demo=too_old |
+| Error: no answer from the server | http://localhost:5173/?demo=unavailable |
+| Error: the server failed | http://localhost:5173/?demo=failed |
+
 ## Structure
 ```
 frontend/

@@ -23,7 +23,9 @@ const CALCULATING_MS = 1000
 export default function App() {
   const [demo] = useState(startingDemo)
   const [screen, setScreen] = useState<Screen>(demo.screen)
-  const [mode, setMode] = useState<Mode>('full')
+  const [mode, setMode] = useState<Mode>(demo.mode ?? 'full')
+  // Only the first time: a new start begins at the first question
+  const [startAt, setStartAt] = useState(demo.question)
   const [reading, setReading] = useState<Reading | null>(demo.reading ?? null)
   const [answers, setAnswers] = useState<Answers>(demo.answers ?? {})
   const [result, setResult] = useState<ResultData | null>(demo.result ?? null)
@@ -39,6 +41,7 @@ export default function App() {
 
   async function start(chosenMode: Mode, file: File) {
     setMode(chosenMode)
+    setStartAt(undefined)
     if (!isPdf(file)) return setScreen('unreadable')
     retryRef.current = () => start(chosenMode, file)
     setScreen('reading')
@@ -93,7 +96,7 @@ export default function App() {
         <ImpossibleValue odds={reading.odd} onCorrected={correctValues} onConfirmed={() => setScreen('impossible')} />
       )}
       {screen === 'questions' && reading && (
-        <Questionnaire mode={mode} missing={missingFrom(reading)} onDone={finish} onExit={home} />
+        <Questionnaire mode={mode} missing={missingFrom(reading)} startAt={startAt} onDone={finish} onExit={home} />
       )}
       {screen === 'calculating' && <Loading title="Calculando tu edad" durationMs={CALCULATING_MS} />}
       {screen === 'result' && result && (
