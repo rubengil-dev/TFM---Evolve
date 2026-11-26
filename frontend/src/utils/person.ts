@@ -1,6 +1,7 @@
 /** Puts together what the backend needs to calculate: what the PDF gave plus the answers. */
 
 import type { Corrections } from '../components/ImpossibleValue'
+import { BMI } from '../config/limits'
 import type { Answers, Mode, Person, Reading } from '../types'
 
 export function missingFrom(reading: Reading): string[] {
@@ -12,6 +13,12 @@ export function withCorrections(reading: Reading, corrections: Corrections): Rea
   const lab_values = { ...reading.lab_values }
   for (const odd of reading.odd) if (odd.variable in corrections) lab_values[odd.variable] = corrections[odd.variable] * odd.factor
   return { ...reading, lab_values, odd: reading.odd.filter((odd) => !(odd.variable in corrections)) }
+}
+
+/** Kilos and centimetres that can go together; the backend checks it too. */
+export function isPossibleBmi(weight: number, height: number): boolean {
+  const bmi = weight / (height / 100) ** 2
+  return bmi >= BMI[0] && bmi <= BMI[1]
 }
 
 export function buildPerson(reading: Reading, answers: Answers, mode: Mode): Person {

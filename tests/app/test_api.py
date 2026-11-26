@@ -1,10 +1,12 @@
 """Tests: App - Web server, with the saved models.
 
-- /api/read: a PDF gives the fields the front expects; not a PDF, an empty file or one too large → unreadable
+- /api/read: needs the mode, which decides how many values can be missing; a PDF gives the fields the front expects
+- /api/read: not a PDF, an empty file or one too large → unreadable
 - /api/correct: only its contract, until it is built
 - /api/calculate: same age as the model called directly, with the level of each mode; the answers change it
 - One person does not affect the next; every level is loaded
-- Too young or too old → its code; data from the browser that cannot be right → refused
+- Result: every group of the front, habits only in the full mode
+- Too young or too old, impossible values or BMI → its code; data from the browser that cannot be right → refused
 - Nothing of the user in the errors, not even when the code fails
 - Contract: habits and their categories are the ones of the model
 """
@@ -23,7 +25,7 @@ from bioage.app.calculate import model_row
 from bioage.app.predict import load_bundle, predict_age
 from bioage.app.read_pdf import EXAMPLE_READING
 from bioage.app.schemas import Habits, Person
-from bioage.config.app import MAX_AGE, MAX_PDF_MB, MIN_AGE
+from bioage.config.app import BLOOD_GROUPS, HABIT_GROUPS, MAX_AGE, MAX_PDF_MB, MIN_AGE
 from bioage.config.model_levels import LEVEL_COLUMNS, QUESTIONNAIRE, LabVariable
 
 PDF = b"%PDF-1.7\nmade up"
@@ -49,16 +51,29 @@ def test_health_answers(client: TestClient) -> None:
 
 
 def test_read_gives_the_fields_of_the_front(client: TestClient) -> None:
-    answer = client.post("/api/read", content=PDF)
+    answer = client.post("/api/read?mode=full", content=PDF)
     assert answer.status_code == 200
     assert set(answer.json()) == {"lab_values", "age", "sex", "odd"}
+
+
+@pytest.mark.parametrize("path", ["/api/read", "/api/read?mode=slow"])
+def test_read_needs_a_known_mode(client: TestClient, path: str) -> None:
+    answer = client.post(path, content=PDF)
+    assert answer.status_code == 422 and answer.json()["invalid"]
+
+
+def test_read_uses_the_mode(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
+    kept = dict(list(EXAMPLE_READING.lab_values.items())[6:])
+    monkeypatch.setattr(read_pdf, "EXAMPLE_READING", EXAMPLE_READING.model_copy(update={"lab_values": kept}))
+    assert client.post("/api/read?mode=quick", content=PDF).json() == {"error": "too_few"}
+    assert client.post("/api/read?mode=full", content=PDF).status_code == 200
 
 
 @pytest.mark.parametrize(
     "body", [b"", b"plain text", b"%PDF-" + b"0" * MAX_PDF_MB * 1024**2], ids=["empty", "text", "large"]
 )
 def test_read_refuses_what_is_not_a_pdf(client: TestClient, body: bytes) -> None:
-    answer = client.post("/api/read", content=body)
+    answer = client.post("/api/read?mode=full", content=body)
     assert (answer.status_code, answer.json()) == (422, {"error": "unreadable"})
 
 
@@ -94,12 +109,13 @@ def test_values_change_the_age(client: TestClient) -> None:
 
 
 def test_missing_values_still_give_an_age(client: TestClient) -> None:
-    assert 18 < bio_age(client, lab_values={"glucose": 98}) < 79
+    some = dict(list(EXAMPLE_READING.lab_values.items())[5:])
+    assert 18 < bio_age(client, lab_values=some) < 79
 
 
 def test_one_person_does_not_affect_the_next(client: TestClient) -> None:
     before = bio_age(client)
-    bio_age(client, age=80, sex="female", lab_values={"glucose": 250}, habits=HABITS)
+    bio_age(client, age=80, sex="female", lab_values={**EXAMPLE_READING.lab_values, "glucose": 250}, habits=HABITS)
     assert bio_age(client) == before
 
 
@@ -113,6 +129,25 @@ def test_age_out_of_limits_gives_its_code(client: TestClient, age: int, code: st
     assert (answer.status_code, answer.json()) == (422, {"error": code})
 
 
+@pytest.mark.parametrize(
+    ("changes", "code"),
+    [
+        ({"lab_values": {"potassium": 9.8}}, "impossible"),
+        ({"weight": 300, "height": 120}, "impossible_bmi"),
+    ],
+)
+def test_impossible_data_give_their_code(client: TestClient, changes: dict, code: str) -> None:
+    answer = client.post("/api/calculate", json={**PERSON, **changes})
+    assert (answer.status_code, answer.json()) == (422, {"error": code})
+
+
+def test_result_has_every_group(client: TestClient) -> None:
+    result = client.post("/api/calculate", json={**PERSON, "habits": HABITS}).json()
+    assert list(result["blood"]) == list(BLOOD_GROUPS)
+    assert list(result["habits"]) == list(HABIT_GROUPS)
+    assert all(isinstance(years, float) for years in result["habits"].values())
+
+
 @pytest.mark.parametrize("age", [MIN_AGE, MAX_AGE])
 def test_age_limits_are_accepted(client: TestClient, age: int) -> None:
     assert client.post("/api/calculate", json={**PERSON, "age": age}).status_code == 200
@@ -121,7 +156,7 @@ def test_age_limits_are_accepted(client: TestClient, age: int) -> None:
 @pytest.mark.parametrize(("age", "code"), [(MIN_AGE - 1, "too_young"), (MAX_AGE + 1, "too_old")])
 def test_age_of_the_pdf_is_checked(client: TestClient, monkeypatch: pytest.MonkeyPatch, age: int, code: str) -> None:
     monkeypatch.setattr(read_pdf, "EXAMPLE_READING", EXAMPLE_READING.model_copy(update={"age": age}))
-    assert client.post("/api/read", content=PDF).json() == {"error": code}
+    assert client.post("/api/read?mode=full", content=PDF).json() == {"error": code}
 
 
 @pytest.mark.parametrize(

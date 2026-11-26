@@ -1,7 +1,7 @@
 """Web server of the app: receives the requests and hands them to the code that does the work.
 
 Endpoints:
-- POST /api/read: PDF → Reading
+- POST /api/read?mode=quick|full: PDF → Reading
 - POST /api/correct: list of OddValue → Correction (TODO)
 - POST /api/calculate: Person → Result
 - GET /api/health: the server is running
@@ -25,7 +25,7 @@ from fastapi.responses import JSONResponse
 from bioage.app.calculate import calculate
 from bioage.app.predict import load_bundle
 from bioage.app.read_pdf import read_pdf
-from bioage.app.schemas import AppError, Correction, OddValue, Person, Reading, Result
+from bioage.app.schemas import AppError, Correction, Mode, OddValue, Person, Reading, Result
 from bioage.app.utils import body_in_memory
 from bioage.config.model_levels import LEVEL_COLUMNS
 
@@ -48,16 +48,17 @@ app = FastAPI(title="BioAge", lifespan=load_models)
 
 
 @app.post("/api/read")
-async def post_read(request: Request) -> Reading:
+async def post_read(request: Request, mode: Mode) -> Reading:
     """PDF (raw body) → what was read from it.
 
     Args:
         request: Request with the PDF as its body.
+        mode: Mode the user chose.
 
     Returns:
         What was read.
     """
-    return await run_in_threadpool(read_pdf, await body_in_memory(request))
+    return await run_in_threadpool(read_pdf, await body_in_memory(request), mode)
 
 
 @app.post("/api/correct")

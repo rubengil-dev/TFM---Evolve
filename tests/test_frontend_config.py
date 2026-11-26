@@ -3,6 +3,8 @@
 - Every number of frontend/src/config/limits.ts is the one of the config
 - The front has a screen for every error code, and only one code of its own
 - What travels has the same fields on both sides, and the front calls endpoints that exist
+- The same groups in the result, in the same order
+- The same modes on both sides
 - A name for every lab variable; a question, with its categories, for every answer
 """
 
@@ -15,15 +17,15 @@ import pytest
 from pydantic import BaseModel
 
 from bioage.app.api import app
-from bioage.app.schemas import Habits, OddValue, Person, Reading, Result
-from bioage.config.app import MAX_AGE, MIN_AGE, ErrorCode
+from bioage.app.schemas import Habits, Mode, OddValue, Person, Reading, Result
+from bioage.config.app import BLOOD_GROUPS, HABIT_GROUPS, MAX_AGE, MIN_AGE, ErrorCode
 from bioage.config.model_levels import LabVariable
 from bioage.config.paths import ROOT
 from bioage.config.plausible_ranges import PLAUSIBLE_RANGES
 from bioage.config.study import AGE_MAX, AGE_MIN, CATEGORICAL_LEVELS
 
 FRONT = ROOT / "frontend" / "src"
-RANGES = ["weight", "height", "sedentary_hours", "sleep_hours"]
+RANGES = ["weight", "height", "bmi", "sedentary_hours", "sleep_hours"]
 
 
 def front_text(name: str) -> str:
@@ -65,7 +67,7 @@ def test_front_sends_every_habit() -> None:
 
 
 def test_front_calls_endpoints_that_exist() -> None:
-    called = set(re.findall(r"'(/api/\w+)'", front_text("utils/api.ts")))
+    called = set(re.findall(r"['`](/api/\w+)", front_text("utils/api.ts")))
     assert called and called <= set(app.openapi()["paths"])
 
 
@@ -81,3 +83,17 @@ def test_front_asks_every_answer_with_its_categories() -> None:
     assert set(questions) == (set(Person.model_fields) | set(Habits.model_fields)) - {"lab_values", "habits"}
     for name, values in questions.items():
         assert values == set(CATEGORICAL_LEVELS.get(name, []))
+
+
+def test_front_has_the_groups_of_the_result() -> None:
+    blood, habits = (
+        front_text("config/groups.ts").split("export const BLOOD_GROUPS")[1].split("export const HABIT_GROUPS")
+    )
+    assert re.findall(r"id: '(\w+)'", blood) == list(BLOOD_GROUPS)
+    assert re.findall(r"id: '(\w+)'", habits) == list(HABIT_GROUPS)
+
+
+def test_front_has_the_modes_of_the_backend() -> None:
+    line = re.search(r"^export type Mode = (.+)$", front_text("types.ts"), flags=re.MULTILINE)
+    assert line is not None
+    assert set(re.findall(r"'(\w+)'", line[1])) == set(get_args(Mode))

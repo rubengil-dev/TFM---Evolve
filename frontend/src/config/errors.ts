@@ -1,10 +1,10 @@
-/** Texts of each error screen: title (plain and highlighted line), what happened, what to do and an optional warning. */
+/** Texts of each error screen: title (plain and highlighted line), what happened, what to do and an optional warning; {weight} and {height} are filled in. */
 
 import { MAX_AGE, MIN_AGE } from './limits'
 
-export type ErrorKind = 'unreadable' | 'too_few' | 'impossible' | 'too_young' | 'too_old' | 'unavailable'
+export type ErrorKind = 'unreadable' | 'too_few' | 'impossible' | 'impossible_bmi' | 'too_young' | 'too_old' | 'unavailable'
 
-type ErrorText = { title: [string, string]; text: string; steps: string[]; warning?: string; action?: 'upload' | 'retry' }
+type ErrorText = { title: [string, string]; text: string; steps: string[]; warning?: string; action?: 'upload' | 'retry' | 'correct' }
 
 // unreadable also covers a file that is not a PDF or a PDF that is not a blood test;
 // unavailable (no answer from the backend) is the only one the backend does not send
@@ -31,6 +31,12 @@ export const ERRORS: Record<ErrorKind, ErrorText> = {
     steps: ['Comprueba que el valor es el que aparece en tu analítica.', 'Si lo he leído mal, sube el PDF otra vez y corrígelo.'],
     warning: 'Si el valor es real, acude a un médico con urgencia.',
     action: 'upload',
+  },
+  impossible_bmi: {
+    title: ['¿De verdad tienes', 'esas proporciones?'],
+    text: 'Esa combinación de peso ({weight} kg) y altura ({height} cm) es extremadamente inusual.',
+    steps: ['Si son reales... ¡Felicidades! Eres tan único que no puedo calcular tu edad.', 'Si no lo son, reintrodúcelos bien :)'],
+    action: 'correct',
   },
   too_young: {
     title: ['No puedo', 'calcular tu edad'],

@@ -6,10 +6,13 @@ import NumberSlider from '../components/NumberSlider'
 import ProgressBar from '../components/ProgressBar'
 import { QUESTIONS } from '../config/questions'
 import type { Answers, Mode, Question } from '../types'
+import { isPossibleBmi } from '../utils/person'
+import ErrorScreen from './ErrorScreen'
 
 type Props = { mode: Mode; missing: string[]; onDone: (answers: Answers) => void; onExit: () => void }
 
 const AUTO_ADVANCE_MS = 280
+const BODY_MEASURES = ['weight', 'height']
 
 export default function Questionnaire({ mode, missing, onDone, onExit }: Props) {
   const questions = QUESTIONS.filter(
@@ -17,12 +20,25 @@ export default function Questionnaire({ mode, missing, onDone, onExit }: Props) 
   )
   const [index, setIndex] = useState(0)
   const [answers, setAnswers] = useState<Answers>(() => startingAnswers(questions))
+  const [isImpossible, setIsImpossible] = useState(false)
   const question = questions[index]
   const isLast = index === questions.length - 1
 
   function next(updated: Answers) {
-    if (isLast) onDone(updated)
+    if (completesBmi() && !isPossibleBmi(Number(updated.weight), Number(updated.height))) setIsImpossible(true)
+    else if (isLast) onDone(updated)
     else setIndex(index + 1)
+  }
+
+  // Last body measure asked: both are known
+  function completesBmi() {
+    const later = questions.slice(index + 1)
+    return BODY_MEASURES.includes(question.id) && !later.some(({ id }) => BODY_MEASURES.includes(id))
+  }
+
+  function correctMeasures() {
+    setIsImpossible(false)
+    setIndex(questions.findIndex(({ id }) => BODY_MEASURES.includes(id)))
   }
 
   function answer(value: number | string, advance: boolean) {
@@ -35,6 +51,8 @@ export default function Questionnaire({ mode, missing, onDone, onExit }: Props) 
     if (index === 0) onExit()
     else setIndex(index - 1)
   }
+
+  if (isImpossible) return <ErrorScreen kind="impossible_bmi" answers={answers} onUpload={onExit} onRetry={correctMeasures} onHome={onExit} />
 
   return (
     <main className="mx-auto flex min-h-full w-full max-w-md flex-col px-6 pt-6 pb-10">

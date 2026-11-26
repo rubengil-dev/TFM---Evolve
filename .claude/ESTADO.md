@@ -22,7 +22,6 @@ Sesiones desde la última: 0
 Todos son decisiones pendientes. Los de la fase 4 se cierran al empezarla, pensando en la Entrega 04 y empezando por el stack y el flujo de pantallas.
 
 - **Diseño del parser y de la normalización de nombres y unidades.** Frena el parser. Lo desbloquea: hablarlo, como tarde el 1 de diciembre de 2026. Claude puede leer los PDFs de `private/` sin anonimizar (decidido por Rubén).
-- **Mínimo viable de variables:** con qué datos faltantes se deja de calcular. Frena la validación de lo que entra al modelo. Lo desbloquea: el notebook de elección del modelo, y antes que Rubén decida cuántos años puede moverse la edad por los datos que faltan (propuesta: 3).
 - **Qué pide el profesor de MLOps** (registro de modelos, CI, monitorización). Frena DVC y MLflow, en la fase 6. Lo desbloquea: preguntárselo (me toca a mí).
 
 ## Me toca a mí

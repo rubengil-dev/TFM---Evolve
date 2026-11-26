@@ -34,8 +34,8 @@ Lo que no encaje en esta descripción no va aquí. Las decisiones pendientes no 
 - [*] **Fase 4, app:** lectura del PDF, pantalla de revisión, cuestionario, resultado y front.
   - [*] Front en React, completo: portada con la elección de modo, preguntas, revisión, carga, errores y resultado, con el diseño visual definitivo. Primero con datos de ejemplo y después conectado al backend.
   - [x] API: leer el PDF (de momento, una persona inventada) y calcular, conectada al front.
-  - [ ] Elección del modelo, con un notebook que esconde valores: desde cuántos Extras compensa su modelo y con cuántos datos se deja de calcular.
-  - [ ] Edad por encima de 79: el modelo la recorta a 79, así que la diferencia se calcula como si tuviera 79 y se suma a la edad real.
+  - [x] Elección del modelo (`notebooks/missing_values.ipynb`): Extras desde 3, o 4 con cuestionario.
+  - [x] Edad fuera de 18-79: la diferencia se calcula como si tuviera 18 o 79 y se suma a la edad real.
   - [ ] Entrega 04: `docs/entregas/04_diseno_frontal_ux.md` con capturas de la app.
   - [/] Parser del PDF, con la normalización de nombres y unidades, probado con mis PDFs.
   - [ ] Corrección de un valor imposible en el backend (`POST /api/correct`, con el contrato ya escrito): pasa el valor a la unidad del modelo con su factor, comprueba que ya es posible y, si no, se vuelve a preguntar. Con el parser, porque usa su tabla de unidades; `factor` deja de viajar al front.
@@ -44,14 +44,15 @@ Lo que no encaje en esta descripción no va aquí. Las decisiones pendientes no 
   - [x] Pantallas de error: PDF ilegible o que no es una analítica, faltan demasiados datos y valor imposible; aviso rojo de edad fuera de 18-79 en el resultado.
   - [x] Letra pequeña de la portada (privacidad y cómo se calcula).
   - [x] Logo: icono de la pestaña y marca de agua de la imagen compartida.
-  - [/] Validación de lo que entra al modelo, en el módulo de predicción: columnas, tipos, categorías, rangos posibles y edad, con errores con código que el front traduce. La API ya rechaza columnas, tipos y categorías; falta el valor imposible (también el IMC que sale de peso y talla) y el mínimo de datos.
+  - [x] Validación de lo que entra al modelo: columnas, tipos, categorías, edades, valores imposibles, IMC imposible y mínimo de datos (5 valores de Routine que faltan, u 8 con cuestionario), también al leer el PDF.
   - [ ] Cuestionario de hábitos.
   - [ ] Pantalla de resultado, presentada como edad equivalente según la referencia de NHANES: edad ± X, tabla de grupos y, con cuestionario, tabla de hábitos.
-  - [ ] Aportación en años de cada grupo de variables frente a la persona típica de su edad y sexo.
-  - [ ] Margen ± de la edad y de cada grupo (método por decidir; si no hay uno claro, se quita).
+  - [*] Aportación en años de cada grupo de variables frente a la persona típica de su edad y sexo: hecha y revisada; falta reentrenar con el código commiteado.
+  - [x] Margen ± de la edad (`notebooks/margin.ipynb` y `missing_values.ipynb`), con el aviso gris si llega a 5 años.
   - [x] Línea "De 16 a 90 años" en la portada.
   - [ ] Logs de la app en JSON, sin valores de salud: modelo, nivel, variables recibidas, latencia, estado y código de error.
   - [ ] Añadir las librerías del stack a las dependencias del proyecto (`pyproject.toml`) y completar el README.
+  - [ ] Revisión completa de todos los textos de todas las pantallas, también las de error. Lo último, con la app acabada.
 - [ ] **Fase 5, despliegue:** web pública en un hosting gratuito *(se afina al llegar)*
 - [ ] **Fase 6, MLOps:** versionado de datos y de modelos; los tests, la CI y la trazabilidad ya están hechos en la fase 3. Va después de la Entrega 04, salvo que el profesor lo pida antes *(se afina al llegar)*
   - [/] DVC para los datos y el pipeline: una etapa por paso, llamando al código actual; los modelos siguen en git y DVC solo anota su huella; la descarga no se borra al repetir. Es el versionado de datos que pide el máster: liga cada modelo a sus datos y detecta cambios en los ficheros de la CDC. Al añadirlo, quitar `code_version` de `utils/provenance.py`: DVC ya anota la huella del código.

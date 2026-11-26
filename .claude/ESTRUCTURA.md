@@ -51,6 +51,7 @@ TFM/
 │   │   │   ├── ImpossibleValue.tsx   # Ventana de valor imposible
 │   │   │   ├── Logo.tsx              # Logo
 │   │   │   ├── NumberSlider.tsx      # Barra de números
+│   │   │   ├── OgreIcon.tsx          # Ogro
 │   │   │   ├── OrganIcons.tsx        # Iconos anatómicos
 │   │   │   ├── ProgressBar.tsx       # Barra de progreso
 │   │   │   ├── ShareButtons.tsx      # Compartir y descargar
@@ -102,6 +103,8 @@ TFM/
 │   ├── models_lvl4.ipynb             # Nivel 4
 │   ├── biological_age.ipynb          # Riesgo a edad
 │   ├── blood_pressure.ipynb          # Quitar la tensión
+│   ├── margin.ipynb                  # Error base del ±
+│   ├── missing_values.ipynb          # Valores que faltan
 │   ├── phenoage.ipynb                # Comparación PhenoAge
 │   └── final_evaluation.ipynb        # Evaluación en test
 ├── private/                          # Analíticas reales en PDF (fuera de git)
@@ -120,7 +123,7 @@ TFM/
 │       │   └── validation.py         # Comprobaciones
 │       ├── config/
 │       │   ├── __init__.py
-│       │   ├── app.py                # Límites y errores
+│       │   ├── app.py                # Límites, errores y grupos
 │       │   ├── corrections.py        # Correcciones CDC
 │       │   ├── gold_columns.py       # Columnas de Gold
 │       │   ├── model_levels.py       # Variables por nivel
@@ -138,7 +141,8 @@ TFM/
 │       │   ├── s2_preprocessing.py   # Preprocesado
 │       │   ├── s3_algorithms.py      # Algoritmos
 │       │   ├── s4_biological_age.py  # Riesgo a edad
-│       │   └── s5_evaluation.py      # Evaluación
+│       │   ├── s5_evaluation.py      # Evaluación
+│       │   └── s6_group_years.py     # Años por grupo
 │       ├── pipeline/
 │       │   ├── __init__.py
 │       │   ├── s1_download_bronze.py # Descarga

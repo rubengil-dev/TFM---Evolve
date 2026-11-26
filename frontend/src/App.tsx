@@ -25,6 +25,7 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>(demo.screen)
   const [mode, setMode] = useState<Mode>('full')
   const [reading, setReading] = useState<Reading | null>(demo.reading ?? null)
+  const [answers, setAnswers] = useState<Answers>(demo.answers ?? {})
   const [result, setResult] = useState<ResultData | null>(demo.result ?? null)
 
   const home = () => setScreen('landing')
@@ -42,7 +43,7 @@ export default function App() {
     retryRef.current = () => start(chosenMode, file)
     setScreen('reading')
     try {
-      const read = await readPdf(file)
+      const read = await readPdf(file, chosenMode)
       setReading(read)
       setScreen(read.odd.length > 0 ? 'odd_value' : 'questions')
     } catch (error) {
@@ -58,15 +59,18 @@ export default function App() {
     if (corrected.odd.length === 0) setScreen('questions')
   }
 
-  async function finish(answers: Answers) {
+  async function finish(given: Answers) {
     if (!reading) return
-    retryRef.current = () => finish(answers)
+    setAnswers(given)
+    retryRef.current = () => finish(given)
     setScreen('calculating')
     try {
-      setResult(await atLeast(CALCULATING_MS, calculate(buildPerson(reading, answers, mode))))
+      setResult(await atLeast(CALCULATING_MS, calculate(buildPerson(reading, given, mode))))
       setScreen('result')
     } catch (error) {
-      setScreen(errorScreen(error))
+      const kind = errorScreen(error)
+      if (kind === 'impossible_bmi') retryRef.current = () => setScreen('questions')
+      setScreen(kind)
     }
   }
 
@@ -88,7 +92,7 @@ export default function App() {
           <WarningBar />
         </>
       )}
-      {isError(screen) && <ErrorScreen kind={screen} onUpload={(file) => start(mode, file)} onRetry={() => retryRef.current()} onHome={home} />}
+      {isError(screen) && <ErrorScreen kind={screen} answers={answers} onUpload={(file) => start(mode, file)} onRetry={() => retryRef.current()} onHome={home} />}
     </>
   )
 }

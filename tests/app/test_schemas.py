@@ -5,6 +5,7 @@
 - Nothing missing or empty, except what is optional
 - Every lab variable accepted
 - Every error code raised is in the list
+- Result: only known groups; a habit always has its years
 """
 
 # Imports
@@ -14,7 +15,7 @@ from typing import get_args
 import pytest
 from pydantic import BaseModel, ValidationError
 
-from bioage.app.schemas import Habits, OddValue, Person, Reading
+from bioage.app.schemas import Habits, OddValue, Person, Reading, Result
 from bioage.config.app import ErrorCode
 from bioage.config.model_levels import LabVariable
 from bioage.config.paths import ROOT
@@ -83,3 +84,12 @@ def test_error_codes_raised_are_in_the_list() -> None:
     files = (ROOT / "src" / "bioage" / "app").glob("*.py")
     raised = {code for file in files for code in re.findall(r'AppError\("(\w+)"\)', file.read_text(encoding="utf-8"))}
     assert raised and raised <= set(get_args(ErrorCode))
+
+
+@pytest.mark.parametrize(
+    "changes",
+    [{"blood": {"heart": 1.0}}, {"habits": {"alcohol": 1.0}}, {"habits": {"smoking": None}}],
+)
+def test_result_refuses_unknown_groups_and_habits_without_years(changes: dict) -> None:
+    with pytest.raises(ValidationError):
+        Result(**{"age": 45, "bio_age": 44.0, "blood": {"sugar": None}, **changes})

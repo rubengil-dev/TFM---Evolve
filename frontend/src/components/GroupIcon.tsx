@@ -1,8 +1,8 @@
 /** Icon of each result group: anatomical organs, a drop of blood, a shield for the defences, "kg" for weight. */
 
-import { IconArmchair, IconDiamond, IconDroplet, IconMoon, IconRun, IconShield, IconSmoking } from '@tabler/icons-react'
+import { IconArmchair, IconDiamond, IconDotsCircleHorizontal, IconDroplet, IconMoon, IconRun, IconShield, IconSmoking } from '@tabler/icons-react'
 import type { GroupId } from '../config/groups'
-import { HeartIcon, KgIcon, KidneyIcon, LiverIcon, SugarIcon } from './OrganIcons'
+import { KgIcon, KidneyIcon, LiverIcon, SugarIcon } from './OrganIcons'
 
 const SIZE = 20
 
@@ -12,8 +12,6 @@ export default function GroupIcon({ id }: { id: GroupId }) {
       return <IconDiamond aria-hidden="true" size={SIZE} stroke={1.7} />
     case 'sugar':
       return <SugarIcon size={SIZE} />
-    case 'heart':
-      return <HeartIcon size={SIZE} />
     case 'red_cells':
       return <IconDroplet aria-hidden="true" size={SIZE} stroke={1.7} />
     case 'defences':
@@ -24,6 +22,8 @@ export default function GroupIcon({ id }: { id: GroupId }) {
       return <KidneyIcon size={SIZE} />
     case 'weight':
       return <KgIcon size={SIZE} />
+    case 'other':
+      return <IconDotsCircleHorizontal aria-hidden="true" size={SIZE} stroke={1.7} />
     case 'smoking':
       return <IconSmoking aria-hidden="true" size={SIZE} stroke={1.7} />
     case 'exercise':

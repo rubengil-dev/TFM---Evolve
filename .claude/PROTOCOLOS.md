@@ -53,7 +53,8 @@ Cuando diga "cerrar", "cerramos", "hemos terminado por hoy" o similar:
 Cada 2 o 3 sesiones, según cuánto código hayamos avanzado. Lo nuevo puede funcionar y haberse cargado algo que no hemos mirado, así que la revisión mira todo el proyecto, no solo lo último.
 1. Ejecuta todos los tests y prueba de punta a punta lo que se pueda.
 2. Compara el código con los archivos de `.claude/` y dime cada discrepancia.
-3. Ordena `NOTAS.md`: cada nota va a `PLAN.md`, `REQUISITOS.md`, `TECNICO.md` o `FUTURO.md`, o se descarta.
-4. Propón las mejoras que salgan como casillas del `PLAN.md`.
-5. Pon a cero el contador de revisiones de `ESTADO.md`.
-6. Recuérdame hacer la copia a la NAS.
+3. Revisa que cada archivo de `.claude/` sigue siendo lo que debe ser: que solo contiene lo que dice su "Qué contiene", que no se contradice con otros y que `PLAN.md` y `ESTADO.md` reflejan la realidad.
+4. Ordena `NOTAS.md`: cada nota va a `PLAN.md`, `REQUISITOS.md`, `TECNICO.md` o `FUTURO.md`, o se descarta.
+5. Propón las mejoras que salgan como casillas del `PLAN.md`.
+6. Pon a cero el contador de revisiones de `ESTADO.md`.
+7. Recuérdame hacer la copia a la NAS.
