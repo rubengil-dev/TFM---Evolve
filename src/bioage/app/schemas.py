@@ -17,13 +17,13 @@ from typing import Annotated, Literal
 from pydantic import BaseModel, ConfigDict, Field, FiniteFloat
 from pydantic.fields import FieldInfo
 
-from bioage.config.app import BLOOD_GROUPS, HABIT_GROUPS, MAX_MISSING, ErrorCode
+from bioage.config.app import BLOOD_GROUPS, HABIT_GROUPS, MODE_LEVELS, ErrorCode
 from bioage.config.model_levels import LabVariable
 from bioage.config.plausible_ranges import PLAUSIBLE_RANGES
 from bioage.config.study import CATEGORICAL_LEVELS
 
 # quick = blood test only; full = blood test + habits
-Mode = Literal[*MAX_MISSING]
+Mode = Literal[*MODE_LEVELS]
 
 
 class RequestModel(BaseModel):

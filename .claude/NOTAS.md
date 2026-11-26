@@ -29,4 +29,4 @@ Lo que no encaje en esta descripción no va aquí.
 - Entrega 04, capturas: muchas menos, sin duplicar móvil y ordenador, y remitir a ejecutar la app. El enunciado exige al menos una imagen guardada en el repo y enlazada.
 - Mirar el histograma de la diferencia entre edad biológica y real del notebook de edad biológica.
 - Al desplegar: `ROOT` se calcula desde la ruta de `paths.py`, así que `models/` solo se encuentra si el hosting ejecuta desde el repo (instalación editable), no desde un paquete construido.
-- Revisión pendiente de `feat/calculations` (lo hecho el 26-11 sin Rubén): mínimo de datos y modo al leer el PDF, Extras en `choose_level`, margen ± con sus cifras y el aviso gris, conclusiones de `missing_values` y `margin`. Después, commit y reentrenar los modelos, que llevan la marca `-dirty`.
+- Sesgo en los de 18-29: con los bloques juntos, el modelo les quita de 5 a 7 años (mueren más de lo que predice; solo 81 muertes, quizá accidentes y sobredosis que la analítica no ve). Estudiarlo después de la entrega; corregirlo ahora sería ajustar al ruido.

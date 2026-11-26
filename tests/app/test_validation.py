@@ -2,7 +2,7 @@
 
 - Every lab variable: both limits of its range accepted, just outside refused
 - BMI: weights and heights valid on their own but impossible together are refused
-- Enough data: up to 5 Routine values missing in the quick mode, 8 in the full one
+- Enough data: up to the most Routine values missing given, and so for a whole person
 - Order: the age first, so each person is told the right reason
 """
 
@@ -18,6 +18,7 @@ from bioage.config.model_levels import LabVariable
 from bioage.config.plausible_ranges import PLAUSIBLE_RANGES
 
 ROUTINE_LAB = list(EXAMPLE_READING.lab_values)
+MOST = 5  # Routine values that can be missing in these tests
 PERSON = {"lab_values": EXAMPLE_READING.lab_values, "sex": "male", "age": 45, "weight": 80, "height": 175}
 
 
@@ -65,25 +66,23 @@ def test_possible_bmi_is_accepted(weight: float, height: float) -> None:
 )
 def test_first_reason_is_told(changes: dict, code: str) -> None:
     with pytest.raises(AppError, match=f"^{code}$"):
-        check_person(Person(**{**PERSON, **changes}))
+        check_person(Person(**{**PERSON, **changes}), MOST)
 
 
 def test_possible_person_is_accepted() -> None:
-    check_person(Person(**PERSON))
+    check_person(Person(**PERSON), MOST)
 
 
-@pytest.mark.parametrize(
-    ("missing", "mode", "fine"), [(5, "quick", True), (6, "quick", False), (8, "full", True), (9, "full", False)]
-)
-def test_enough_data_for_the_mode(missing: int, mode: str, fine: bool) -> None:
+@pytest.mark.parametrize(("missing", "most", "fine"), [(5, 5, True), (6, 5, False), (8, 8, True), (9, 8, False)])
+def test_enough_data_up_to_the_most_missing(missing: int, most: int, fine: bool) -> None:
     known = set(ROUTINE_LAB[missing:]) | {"ggt", "ldh"}
     if fine:
-        check_enough(known, mode)
+        check_enough(known, most)
     else:
         with pytest.raises(AppError, match="too_few"):
-            check_enough(known, mode)
+            check_enough(known, most)
 
 
 def test_person_with_too_few_values_is_refused() -> None:
     with pytest.raises(AppError, match="too_few"):
-        check_person(Person(**{**PERSON, "lab_values": {"glucose": 98}}))
+        check_person(Person(**{**PERSON, "lab_values": {"glucose": 98}}), MOST)

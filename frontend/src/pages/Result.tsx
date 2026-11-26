@@ -25,7 +25,7 @@ export default function Result({ result }: Props) {
       <div ref={cardRef} className="rounded-3xl border border-line/70 bg-deep/80 px-5 py-8 sm:px-8">
         <div className="flex items-baseline justify-center gap-3">
           <span className="font-display text-[8rem] leading-none font-medium text-mist sm:text-[10rem]">{shownAge(bio_age)}</span>
-          {margin !== null && <span className="text-xl text-moss">± {Math.round(margin)}</span>}
+          {margin !== null && <span className="text-xl text-moss">± {Math.ceil(margin)}</span>}
         </div>
         <p className="mt-4 text-center text-base">
           <Gap age={age} bio_age={bio_age} /> que tu edad real
@@ -36,7 +36,7 @@ export default function Result({ result }: Props) {
             Tienes {age} años, fuera de las edades de mis datos ({DATA_MIN_AGE}-{DATA_MAX_AGE}): el resultado puede ser menos preciso
           </p>
         )}
-        {margin !== null && margin >= CAUTION_MARGIN && (
+        {margin !== null && Math.ceil(margin) >= CAUTION_MARGIN && (
           <p className="mx-auto mt-3 flex w-fit max-w-sm items-center gap-2 rounded-2xl border border-line bg-line/20 px-3 py-2 text-left text-xs text-moss">
             <IconInfoCircle aria-hidden="true" size={16} className="shrink-0" />
             Este resultado es menos preciso de lo normal: tómalo con más precaución

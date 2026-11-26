@@ -1,7 +1,7 @@
 """Variables and algorithm of each model level.
 
 - Blocks: BASELINE, ROUTINE, EXTRAS and QUESTIONNAIRE
-- Variables that come from the PDF
+- Variables that come from the PDF: Routine lab values and Extras
 - Variables of each level
 - Algorithm kept for each level
 - Gold predictors left out, with their reason
@@ -36,7 +36,8 @@ QUESTIONNAIRE = [
 # Level 4: Routine + Extras + Questionnaire
 
 # Variables that come from the PDF
-LabVariable = Literal[*(column for column in ROUTINE + EXTRAS if column not in ("age", "sex", "bmi"))]
+ROUTINE_LAB = [column for column in ROUTINE if column not in ("age", "sex", "bmi")]
+LabVariable = Literal[*ROUTINE_LAB, *EXTRAS]
 
 # Variables of each level
 LEVEL_COLUMNS = {

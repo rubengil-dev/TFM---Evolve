@@ -26,7 +26,7 @@ from bioage.app.calculate import calculate
 from bioage.app.predict import load_bundle
 from bioage.app.read_pdf import read_pdf
 from bioage.app.schemas import AppError, Correction, Mode, OddValue, Person, Reading, Result
-from bioage.app.utils import body_in_memory
+from bioage.app.utils import body_in_memory, max_missing
 from bioage.config.model_levels import LEVEL_COLUMNS
 
 
@@ -58,7 +58,8 @@ async def post_read(request: Request, mode: Mode) -> Reading:
     Returns:
         What was read.
     """
-    return await run_in_threadpool(read_pdf, await body_in_memory(request), mode)
+    most = max_missing(request.app.state.bundles, mode)
+    return await run_in_threadpool(read_pdf, await body_in_memory(request), most)
 
 
 @app.post("/api/correct")

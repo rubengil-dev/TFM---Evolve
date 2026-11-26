@@ -4,14 +4,15 @@
 - `body_in_memory` : Body of a request, without writing it to disk.
 - `routine_missing`: Routine lab values missing.
 - `extras_known`   : Extras known.
+- `max_missing`    : Most Routine values that can be missing in a mode.
 """
 
 # Imports
 from fastapi import Request
 
-from bioage.app.schemas import AppError
-from bioage.config.app import MAX_PDF_MB
-from bioage.config.model_levels import EXTRAS, ROUTINE
+from bioage.app.schemas import AppError, Mode
+from bioage.config.app import MAX_PDF_MB, MODE_LEVELS
+from bioage.config.model_levels import EXTRAS, ROUTINE_LAB
 
 
 def bmi(weight: float, height: float) -> float:
@@ -56,7 +57,7 @@ def routine_missing(variables: set[str]) -> int:
     Returns:
         How many are missing.
     """
-    return len(set(ROUTINE) - {"age", "sex", "bmi"} - variables)
+    return len(set(ROUTINE_LAB) - variables)
 
 
 def extras_known(variables: set[str]) -> int:
@@ -69,3 +70,16 @@ def extras_known(variables: set[str]) -> int:
         How many there are.
     """
     return len(set(EXTRAS) & variables)
+
+
+def max_missing(bundles: dict[str, dict], mode: Mode) -> int:
+    """Most Routine values that can be missing in a mode, measured when its model was trained.
+
+    Args:
+        bundles: Bundle of each level.
+        mode: Mode of the person.
+
+    Returns:
+        How many can be missing.
+    """
+    return len(bundles[MODE_LEVELS[mode]]["margin"]["routine_missing"]) - 1

@@ -34,7 +34,7 @@ Lo que no encaje en esta descripción no va aquí. Las decisiones pendientes no 
 - [*] **Fase 4, app:** lectura del PDF, pantalla de revisión, cuestionario, resultado y front.
   - [*] Front en React, completo: portada con la elección de modo, preguntas, revisión, carga, errores y resultado, con el diseño visual definitivo. Primero con datos de ejemplo y después conectado al backend.
   - [x] API: leer el PDF (de momento, una persona inventada) y calcular, conectada al front.
-  - [x] Elección del modelo (`notebooks/missing_values.ipynb`): Extras desde 3, o 4 con cuestionario.
+  - [x] Elección del modelo: Extras desde 3, o 4 con cuestionario, medido al entrenar.
   - [x] Edad fuera de 18-79: la diferencia se calcula como si tuviera 18 o 79 y se suma a la edad real.
   - [ ] Entrega 04: `docs/entregas/04_diseno_frontal_ux.md` con capturas de la app.
   - [/] Parser del PDF, con la normalización de nombres y unidades, probado con mis PDFs.
@@ -48,7 +48,7 @@ Lo que no encaje en esta descripción no va aquí. Las decisiones pendientes no 
   - [ ] Cuestionario de hábitos.
   - [ ] Pantalla de resultado, presentada como edad equivalente según la referencia de NHANES: edad ± X, tabla de grupos y, con cuestionario, tabla de hábitos.
   - [*] Aportación en años de cada grupo de variables frente a la persona típica de su edad y sexo: hecha y revisada; falta reentrenar con el código commiteado.
-  - [x] Margen ± de la edad (`notebooks/margin.ipynb` y `missing_values.ipynb`), con el aviso gris si llega a 5 años.
+  - [x] Margen ± de la edad, medido al entrenar (`modeling/s7_margin.py`) y guardado en cada modelo, con el aviso gris si llega a 5 años.
   - [x] Línea "De 16 a 90 años" en la portada.
   - [ ] Logs de la app en JSON, sin valores de salud: modelo, nivel, variables recibidas, latencia, estado y código de error.
   - [ ] Añadir las librerías del stack a las dependencias del proyecto (`pyproject.toml`) y completar el README.

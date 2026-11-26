@@ -25,6 +25,7 @@ from bioage.app.calculate import model_row
 from bioage.app.predict import load_bundle, predict_age
 from bioage.app.read_pdf import EXAMPLE_READING
 from bioage.app.schemas import Habits, Person
+from bioage.app.utils import max_missing
 from bioage.config.app import BLOOD_GROUPS, HABIT_GROUPS, MAX_AGE, MAX_PDF_MB, MIN_AGE
 from bioage.config.model_levels import LEVEL_COLUMNS, QUESTIONNAIRE, LabVariable
 
@@ -63,7 +64,10 @@ def test_read_needs_a_known_mode(client: TestClient, path: str) -> None:
 
 
 def test_read_uses_the_mode(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
-    kept = dict(list(EXAMPLE_READING.lab_values.items())[6:])
+    bundles = {level: load_bundle(level) for level in LEVEL_COLUMNS}
+    quick, full = max_missing(bundles, "quick"), max_missing(bundles, "full")
+    assert quick < full
+    kept = dict(list(EXAMPLE_READING.lab_values.items())[quick + 1 :])
     monkeypatch.setattr(read_pdf, "EXAMPLE_READING", EXAMPLE_READING.model_copy(update={"lab_values": kept}))
     assert client.post("/api/read?mode=quick", content=PDF).json() == {"error": "too_few"}
     assert client.post("/api/read?mode=full", content=PDF).status_code == 200

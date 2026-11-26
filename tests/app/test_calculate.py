@@ -7,8 +7,9 @@
 - Ages out of the study: the difference of the nearest age, added to the real one
 - Years: a value for every group, None only without data; they add up to the difference
 - Worse habits and values → more years in their group
-- Level: with Extras from 3 known (4 with the questionnaire)
-- Margin: √(base² + what is missing²), with the base of the risk band
+- Level: with Extras from the fewest their bundle says
+- Margin: √(base² + what is missing²), with the base of the risk band, all from the bundle
+- Saved models: every part of the margin, Routine missing up to the same count with and without Extras
 """
 
 # Imports
@@ -17,13 +18,12 @@ import math
 import pandas as pd
 import pytest
 
-from bioage.app import calculate as calculate_module
 from bioage.app.calculate import calculate, choose_level, margin, model_row, one_decimal, study_age
 from bioage.app.predict import load_bundle, predict_age
 from bioage.app.read_pdf import EXAMPLE_READING
 from bioage.app.schemas import AppError, Person
-from bioage.config.app import BLOOD_GROUPS, EXTRAS_MARGIN, HABIT_GROUPS, MISSING_MARGIN
-from bioage.config.model_levels import LEVEL_COLUMNS
+from bioage.config.app import BLOOD_GROUPS, EXTRAS_LEVELS, HABIT_GROUPS
+from bioage.config.model_levels import EXTRAS, LEVEL_COLUMNS
 
 HABITS = {"smoking": "former", "physical_activity": "intense", "sedentary_hours": 9, "sleep_hours": 6.5}
 BUNDLES = {level: load_bundle(level) for level in LEVEL_COLUMNS}
@@ -66,7 +66,8 @@ def test_result_has_the_real_age_and_one_decimal() -> None:
 
 def test_impossible_data_are_refused_before_calculating() -> None:
     with pytest.raises(AppError, match="impossible_bmi"):
-        calculate(Person(**{**PERSON, "weight": 300, "height": 120}), {})
+        only_margins = {level: {"margin": bundle["margin"]} for level, bundle in BUNDLES.items()}  # no models
+        calculate(Person(**{**PERSON, "weight": 300, "height": 120}), only_margins)
 
 
 @pytest.mark.parametrize(("age", "nearest"), [(16, 18), (17, 18), (18, 18), (45, 45), (79, 79), (80, 79), (90, 79)])
@@ -144,25 +145,35 @@ def test_one_decimal(years: float | None, shown: float | None) -> None:
 )
 def test_extras_are_used_from_their_minimum(extras: int, habits: dict | None, level: str) -> None:
     values = dict(list({"ggt": 30, "albumin": 4.3, "vitamin_d": 24, "ldh": 180}.items())[:extras])
-    assert choose_level(Person(**{**PERSON, "lab_values": {**LAB, **values}}, habits=habits)) == level
+    fewest = {"extras": {"margin": {"min_extras": 3}}, "full": {"margin": {"min_extras": 4}}}
+    assert choose_level(Person(**{**PERSON, "lab_values": {**LAB, **values}}, habits=habits), fewest) == level
+
+
+MARGIN = {"low_risk_below": 0.05, "low_risk": 4, "rest": 0.5, "routine_missing": [0, 1, 2, 3, 4, 5]}
 
 
 @pytest.mark.parametrize(
-    ("risk", "dropped", "expected"),
-    [(0.01, 0, 4), (0.2, 0, 0.5), (0.2, 3, math.sqrt(0.5**2 + MISSING_MARGIN["quick"][3] ** 2))],
+    ("risk", "dropped", "expected"), [(0.01, 0, 4), (0.05, 0, 0.5), (0.2, 0, 0.5), (0.2, 3, math.sqrt(0.5**2 + 3**2))]
 )
-def test_margin_joins_base_and_what_is_missing(
-    monkeypatch: pytest.MonkeyPatch, risk: float, dropped: int, expected: float
-) -> None:
-    monkeypatch.setitem(calculate_module.BASE_MARGIN, "routine", (0.05, 4, 0.5))
+def test_margin_joins_base_and_what_is_missing(risk: float, dropped: int, expected: float) -> None:
     lab = dict(list(LAB.items())[dropped:])
-    assert margin(Person(**{**PERSON, "lab_values": lab}), "routine", risk) == pytest.approx(expected)
+    assert margin(Person(**{**PERSON, "lab_values": lab}), {"margin": MARGIN}, risk) == pytest.approx(expected)
 
 
-def test_margin_adds_the_extras_missing(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setitem(calculate_module.BASE_MARGIN, "extras", (0.05, 4, 0.5))
+def test_margin_adds_the_extras_missing() -> None:
+    bundle = {"margin": {**MARGIN, "extras_known": [8, 7, 6, 5, 4, 3, 2, 1, 0]}}
     person = Person(**{**PERSON, "lab_values": {**LAB, "ggt": 30, "albumin": 4.3, "ldh": 180}})
-    assert margin(person, "extras", 0.2) == pytest.approx(math.sqrt(0.5**2 + EXTRAS_MARGIN["extras"][3] ** 2))
+    assert margin(person, bundle, 0.2) == pytest.approx(math.sqrt(0.5**2 + 5**2))
+
+
+def test_saved_models_have_their_margin() -> None:
+    for level, with_extras in EXTRAS_LEVELS.items():
+        parts, extras = BUNDLES[level]["margin"], BUNDLES[with_extras]["margin"]
+        assert parts["routine_missing"][0] == extras["routine_missing"][0] == 0
+        assert len(parts["routine_missing"]) == len(extras["routine_missing"])
+        assert len(extras["extras_known"]) == len(EXTRAS) + 1 and extras["extras_known"][-1] == 0
+        assert 0 < extras["min_extras"] <= len(EXTRAS)
+    assert all(0 < bundle["margin"]["low_risk_below"] < 1 for bundle in BUNDLES.values())
 
 
 def test_result_has_a_margin() -> None:

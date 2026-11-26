@@ -142,7 +142,8 @@ TFM/
 │       │   ├── s3_algorithms.py      # Algoritmos
 │       │   ├── s4_biological_age.py  # Riesgo a edad
 │       │   ├── s5_evaluation.py      # Evaluación
-│       │   └── s6_group_years.py     # Años por grupo
+│       │   ├── s6_group_years.py     # Años por grupo
+│       │   └── s7_margin.py          # Margen ±
 │       ├── pipeline/
 │       │   ├── __init__.py
 │       │   ├── s1_download_bronze.py # Descarga

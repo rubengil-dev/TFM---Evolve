@@ -8,16 +8,9 @@ import pandas as pd
 
 from bioage.app.predict import predict_age, predict_groups, predict_risk
 from bioage.app.schemas import Person, Result
-from bioage.app.utils import bmi, extras_known, routine_missing
+from bioage.app.utils import bmi, extras_known, max_missing, routine_missing
 from bioage.app.validation import check_person
-from bioage.config.app import (
-    BASE_MARGIN,
-    BLOOD_GROUPS,
-    EXTRAS_MARGIN,
-    HABIT_GROUPS,
-    MIN_EXTRAS,
-    MISSING_MARGIN,
-)
+from bioage.config.app import BLOOD_GROUPS, EXTRAS_LEVELS, HABIT_GROUPS, MODE_LEVELS
 from bioage.config.study import AGE_MAX, AGE_MIN
 
 
@@ -34,50 +27,51 @@ def calculate(person: Person, bundles: dict[str, dict]) -> Result:
     Raises:
         AppError: If no age can be calculated with those data.
     """
-    check_person(person)
-    level = choose_level(person)
-    bundle = bundles[level]
+    check_person(person, max_missing(bundles, person.mode))
+    bundle = bundles[choose_level(person, bundles)]
     row = model_row(person, bundle["columns"])
     years = predict_groups(bundle, row)
     return Result(
         age=person.age,
         bio_age=one_decimal(predict_age(bundle, row)[0] + person.age - study_age(person.age)),
-        margin=one_decimal(margin(person, level, predict_risk(bundle, row)[0])),
+        margin=one_decimal(margin(person, bundle, predict_risk(bundle, row)[0])),
         blood={group: one_decimal(years.get(group)) for group in BLOOD_GROUPS},
         habits=None if person.habits is None else {group: one_decimal(years[group]) for group in HABIT_GROUPS},
     )
 
 
-def choose_level(person: Person) -> str:
-    """Level whose model is used: with Extras if there are enough of them.
+def choose_level(person: Person, bundles: dict[str, dict]) -> str:
+    """Level whose model is used: with Extras if there are enough of them to make it better.
 
     Args:
         person: Data of the person.
+        bundles: Bundle of each level.
 
     Returns:
         Name of the level.
     """
-    level = "routine" if person.habits is None else "questionnaire"
-    with_extras, fewest = MIN_EXTRAS[level]
-    return with_extras if extras_known(set(person.lab_values)) >= fewest else level
+    level = MODE_LEVELS[person.mode]
+    with_extras = EXTRAS_LEVELS[level]
+    is_enough = extras_known(set(person.lab_values)) >= bundles[with_extras]["margin"]["min_extras"]
+    return with_extras if is_enough else level
 
 
-def margin(person: Person, level: str, risk: float) -> float:
-    """Margin ± of the biological age: base error and error for what is missing.
+def margin(person: Person, bundle: dict, risk: float) -> float:
+    """Margin ± of the biological age: base error and error for what is missing, from the bundle of the level.
 
     Args:
         person: Data of the person.
-        level: Level of the model used.
+        bundle: Bundle of the level used.
         risk: 10-year risk of the person.
 
     Returns:
         Years.
     """
-    low_risk_below, low_risk, rest = BASE_MARGIN[level]
-    base = low_risk if risk < low_risk_below else rest
+    parts = bundle["margin"]
+    base = parts["low_risk"] if risk < parts["low_risk_below"] else parts["rest"]
     known = set(person.lab_values)
-    missing = MISSING_MARGIN[person.mode][routine_missing(known)]
-    extras = EXTRAS_MARGIN[level][extras_known(known)] if level in EXTRAS_MARGIN else 0
+    missing = parts["routine_missing"][routine_missing(known)]
+    extras = parts["extras_known"][extras_known(known)] if "extras_known" in parts else 0
     return math.sqrt(base**2 + missing**2 + extras**2)
 
 

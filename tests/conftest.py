@@ -24,6 +24,7 @@ TRAINING_TESTS = [
     "modeling/test_s3_algorithms.py",
     "modeling/test_s5_evaluation.py",
     "modeling/test_s6_group_years.py",
+    "modeling/test_s7_margin.py",
     "pipeline/test_s1_download_bronze.py",
     "pipeline/test_s5_build_model.py",
     "utils/test_data_download.py",

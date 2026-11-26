@@ -21,6 +21,7 @@ flowchart LR
     modeling_s4_biological_age[s4_biological_age]
     modeling_s5_evaluation[s5_evaluation]
     modeling_s6_group_years[s6_group_years]
+    modeling_s7_margin[s7_margin]
   end
   subgraph pipeline
     pipeline_s1_download_bronze[s1_download_bronze]
@@ -68,6 +69,11 @@ flowchart LR
   modeling_s5_evaluation --> modeling_s4_biological_age
   modeling_s5_evaluation --> utils_features
   modeling_s6_group_years --> modeling_s4_biological_age
+  modeling_s7_margin --> modeling_s1_split
+  modeling_s7_margin --> modeling_s3_algorithms
+  modeling_s7_margin --> modeling_s4_biological_age
+  modeling_s7_margin --> modeling_s5_evaluation
+  modeling_s7_margin --> utils_features
   pipeline_s1_download_bronze --> utils_data_download
   pipeline_s1_download_bronze --> utils_nhanes
   pipeline_s2_build_raw_silver --> utils_nhanes
@@ -81,6 +87,7 @@ flowchart LR
   pipeline_s5_build_model --> modeling_s4_biological_age
   pipeline_s5_build_model --> modeling_s5_evaluation
   pipeline_s5_build_model --> modeling_s6_group_years
+  pipeline_s5_build_model --> modeling_s7_margin
   pipeline_s5_build_model --> utils_provenance
   pipeline_s5_build_model --> utils_step_info
   utils_notebook_helpers --> modeling_s2_preprocessing
