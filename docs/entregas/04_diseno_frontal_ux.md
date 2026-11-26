@@ -40,7 +40,7 @@ Hasta el paso 3 el flujo es común a los dos modos. Las preguntas están pensada
 ### Errores en el flujo
 - **Al subir el PDF.** Se rechaza si no es un PDF, si es un escaneo (leerlo exige OCR, que queda para una versión futura), si no es una analítica o si no trae suficientes valores para calcular la edad con una fiabilidad mínima. También si la edad que trae es menor de 16 o mayor de 90.
 - **Si algún valor de la analítica es imposible.** Lo más probable es que se haya leído mal. Justo después de leer el PDF, se le enseña el valor para que lo corrija en esa misma pantalla o confirme que es correcto. Si lo confirma, no calculo y le digo que vaya al médico.
-- **Si el peso y la talla dan un IMC imposible.** El flujo se para al contestar el segundo de los dos, y se le pide que los corrija o confirme. Si lo confirma, no calculo: no puedo estimar con fiabilidad la edad de alguien con ese IMC.
+- **Si el peso y la talla dan un IMC imposible.** El flujo se para al contestar el segundo de los dos, y se le pide que los corrija en esa misma pantalla. Si son reales, no calculo: no puedo estimar con fiabilidad la edad de alguien con ese IMC.
 - **Si el servidor no responde.** Puede reintentarlo sin perder lo que ya ha contestado.
 
 ### Warnings
@@ -107,7 +107,7 @@ Así no hay tratamiento de datos, y es lo que explica la letra pequeña que va d
 ## 5. Continuidad hacia el MVP final
 
 ### Qué está implementado
-A 26 de noviembre de 2026, a las 23:30, esto es lo que ya funciona:
+A 27 de noviembre de 2026, a las 00:10, esto es lo que ya funciona:
 - **Todas las pantallas**, adaptadas al móvil: portada, preguntas, cargas, errores, ventana del valor imposible y resultado.
 - **Front conectado al backend y a los modelos.** Se calcula la edad de verdad, con el modelo del nivel que toque.
 - **Resultado completo:** edad biológica con su ±, años que suma o resta cada grupo de la analítica y de los hábitos, avisos rojo y gris, y descargar o compartir la imagen.
@@ -118,7 +118,6 @@ A 26 de noviembre de 2026, a las 23:30, esto es lo que ya funciona:
 ### Plan para el MVP completo y funcional
 - **Leer el PDF de verdad.** Es lo que más falta: ahora mismo cualquier PDF da los valores de una persona inventada. El parser normaliza los nombres (glucosa, gluc, GLU…) y las unidades de cada laboratorio, y se prueba con mis analíticas reales.
 - **Desplegar**, en un hosting gratuito, para que se entre con un enlace.
-- **Pequeñas mejoras:** corregir el IMC en la misma pantalla del ogro y dejar poner la edad de 10 a 100.
 - **Revisión final de todos los textos**, con el humor de los errores.
 - **MLOps completo:** ahora mismo hay cosas de MLOps implementadas (tests, CI y trazabilidad de los modelos), pero faltan MLflow y DVC.
 

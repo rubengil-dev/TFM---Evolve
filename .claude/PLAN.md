@@ -37,8 +37,8 @@ Lo que no encaje en esta descripción no va aquí. Las decisiones pendientes no 
   - [x] Elección del modelo: Extras desde 3, o 4 con cuestionario, medido al entrenar.
   - [x] Edad fuera de 18-79: la diferencia se calcula como si tuviera 18 o 79 y se suma a la edad real.
   - [x] Entrega 04: `docs/entregas/04_diseno_frontal_ux.md` con capturas de la app.
-  - [ ] IMC imposible: corregir peso y talla en la misma pantalla del ogro.
-  - [ ] Pregunta de la edad de 10 a 100 años, con el error al contestarla si queda fuera de 16-90.
+  - [x] IMC imposible: corregir peso y talla en la misma pantalla del ogro.
+  - [x] Pregunta de la edad de 10 a 100 años, con el error al contestarla si queda fuera de 16-90.
   - [x] Índice de pantallas: un `?demo=` por pantalla (también preguntas y cargas), listados en `frontend/README.md`.
   - [/] Parser del PDF, con la normalización de nombres y unidades, probado con mis PDFs.
   - [x] `POST /api/correct` mínimo, para la v1: el backend convierte lo corregido con el factor y comprueba que ya es posible; si no, se vuelve a preguntar en la misma ventana.

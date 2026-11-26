@@ -66,6 +66,7 @@ TFM/
 │   │   │   └── variables.ts          # Nombres de los valores
 │   │   ├── pages/
 │   │   │   ├── ErrorScreen.tsx       # Errores
+│   │   │   ├── ImpossibleBmi.tsx     # Ogro editable
 │   │   │   ├── Landing.tsx           # Portada
 │   │   │   ├── Loading.tsx           # Carga
 │   │   │   ├── Questionnaire.tsx     # Cuestionario

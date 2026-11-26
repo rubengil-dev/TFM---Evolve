@@ -35,7 +35,7 @@ export const ERRORS: Record<ErrorKind, ErrorText> = {
   impossible_bmi: {
     title: ['¿De verdad tienes', 'esas proporciones?'],
     text: 'Esa combinación de peso ({weight} kg) y altura ({height} cm) es extremadamente inusual.',
-    steps: ['Si son reales... ¡Felicidades! Eres tan único que no puedo calcular tu edad.', 'Si no lo son, reintrodúcelos bien :)'],
+    steps: ['Si son reales... ¡Felicidades! Eres tan único que no puedo calcular tu edad.', 'Si no lo son, corrígelos aquí abajo :)'],
     action: 'correct',
   },
   too_young: {

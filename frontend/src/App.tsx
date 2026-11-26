@@ -7,6 +7,7 @@ import WarningBar from './components/WarningBar'
 import { ERRORS, type ErrorKind } from './config/errors'
 import { startingDemo } from './config/example'
 import ErrorScreen from './pages/ErrorScreen'
+import ImpossibleBmi from './pages/ImpossibleBmi'
 import Landing from './pages/Landing'
 import Loading from './pages/Loading'
 import Questionnaire from './pages/Questionnaire'
@@ -81,9 +82,7 @@ export default function App() {
       setResult(await atLeast(CALCULATING_MS, calculate(buildPerson(reading, given, mode))))
       setScreen('result')
     } catch (error) {
-      const kind = errorScreen(error)
-      if (kind === 'impossible_bmi') retryRef.current = () => setScreen('questions')
-      setScreen(kind)
+      setScreen(errorScreen(error))
     }
   }
 
@@ -105,7 +104,10 @@ export default function App() {
           <WarningBar />
         </>
       )}
-      {isError(screen) && <ErrorScreen kind={screen} answers={answers} onUpload={(file) => start(mode, file)} onRetry={() => retryRef.current()} onHome={home} />}
+      {screen === 'impossible_bmi' && (
+        <ImpossibleBmi answers={answers} onCorrected={(weight, height) => finish({ ...answers, weight, height })} onHome={home} />
+      )}
+      {isError(screen) && screen !== 'impossible_bmi' && <ErrorScreen kind={screen} answers={answers} onUpload={(file) => start(mode, file)} onRetry={() => retryRef.current()} onHome={home} />}
     </>
   )
 }

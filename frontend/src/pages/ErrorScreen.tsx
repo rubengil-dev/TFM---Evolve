@@ -1,13 +1,22 @@
-/** Error screen in the style of the home page: big title, icon, what to do in one box, and buttons (upload another PDF, try again or correct the answers). */
+/** Error screen in the style of the home page: big title, icon, what to do, optional content (fields to correct) and buttons (upload another PDF, try again or continue). */
 
 import { IconAlertTriangle, IconBug, IconFileAlert, IconInfinity, IconListSearch, IconMoodKid, IconPlugConnectedX } from '@tabler/icons-react'
-import { useRef, type ChangeEvent } from 'react'
+import { useRef, type ChangeEvent, type ReactNode } from 'react'
 import OgreIcon from '../components/OgreIcon'
 import WarningBar from '../components/WarningBar'
 import { ERRORS, type ErrorKind } from '../config/errors'
 import type { Answers } from '../types'
 
-type Props = { kind: ErrorKind; answers?: Answers; onUpload: (file: File) => void; onRetry: () => void; onHome: () => void }
+// canRetry: whether the main button works yet (fields still wrong); children: shown above the buttons
+type Props = {
+  kind: ErrorKind
+  answers?: Answers
+  canRetry?: boolean
+  children?: ReactNode
+  onUpload: (file: File) => void
+  onRetry: () => void
+  onHome: () => void
+}
 
 const ICONS = {
   unreadable: IconFileAlert,
@@ -21,9 +30,9 @@ const ICONS = {
 }
 
 const LONG_TITLE = 16 // letters
-const BUTTONS = { upload: 'Subir otro PDF', retry: 'Reintentar', correct: 'Corregirlos' }
+const BUTTONS = { upload: 'Subir otro PDF', retry: 'Reintentar', correct: 'Continuar' }
 
-export default function ErrorScreen({ kind, answers = {}, onUpload, onRetry, onHome }: Props) {
+export default function ErrorScreen({ kind, answers = {}, canRetry = true, children, onUpload, onRetry, onHome }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const { title, text, steps, warning, action } = ERRORS[kind]
   const Icon = ICONS[kind]
@@ -55,12 +64,15 @@ export default function ErrorScreen({ kind, answers = {}, onUpload, onRetry, onH
         </div>
       )}
 
+      {children}
+
       <div className="mt-8 flex w-full flex-col gap-3">
         {action && (
           <button
             type="button"
+            disabled={!canRetry}
             onClick={() => (action === 'upload' ? inputRef.current?.click() : onRetry())}
-            className="rounded-full bg-emerald px-6 py-3 text-sm font-medium text-emerald-ink transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint"
+            className="rounded-full bg-emerald px-6 py-3 text-sm font-medium text-emerald-ink transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:brightness-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint"
           >
             {BUTTONS[action]}
           </button>
