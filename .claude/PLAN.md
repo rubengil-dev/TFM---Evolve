@@ -50,7 +50,7 @@ Lo que no encaje en esta descripción no va aquí. Las decisiones pendientes no 
   - [*] Aportación en años de cada grupo de variables frente a la persona típica de su edad y sexo: hecha y revisada; falta reentrenar con el código commiteado.
   - [x] Margen ± de la edad, medido al entrenar (`modeling/s7_margin.py`) y guardado en cada modelo, con el aviso gris si llega a 5 años.
   - [x] Línea "De 16 a 90 años" en la portada.
-  - [ ] Logs de la app en JSON, sin valores de salud: modelo, nivel, variables recibidas, latencia, estado y código de error.
+  - [x] Logs de la app en JSON, sin nada del usuario: petición, modo, nivel, resultado, código de error, cuántos valores faltan y tiempo.
   - [x] Librerías del stack en `pyproject.toml` y README al día; la del PDF entra con el parser.
   - [ ] Revisión completa de todos los textos de todas las pantallas, también las de error. Lo último, con la app acabada.
 - [ ] **Fase 5, despliegue:** web pública en un hosting gratuito *(se afina al llegar)*

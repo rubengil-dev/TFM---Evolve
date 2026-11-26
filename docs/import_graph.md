@@ -8,6 +8,7 @@ flowchart LR
   subgraph app
     app_api[api]
     app_calculate[calculate]
+    app_logs[logs]
     app_predict[predict]
     app_read_pdf[read_pdf]
     app_schemas[schemas]
@@ -42,6 +43,7 @@ flowchart LR
   end
   main[main]
   app_api --> app_calculate
+  app_api --> app_logs
   app_api --> app_predict
   app_api --> app_read_pdf
   app_api --> app_schemas

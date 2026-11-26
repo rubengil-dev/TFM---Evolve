@@ -116,6 +116,7 @@ TFM/
 │       │   ├── __init__.py
 │       │   ├── api.py                # Servidor web
 │       │   ├── calculate.py          # Cálculo del resultado
+│       │   ├── logs.py               # Logs sin datos
 │       │   ├── predict.py            # Predicción
 │       │   ├── read_pdf.py           # Lectura del PDF
 │       │   ├── schemas.py            # Contrato de la API
