@@ -48,7 +48,7 @@ Lo que no encaje en esta descripción no va aquí. Las decisiones pendientes no 
   - [x] Validación de lo que entra al modelo: columnas, tipos, categorías, edades, valores imposibles, IMC imposible y mínimo de datos (5 valores de Routine que faltan, u 8 con cuestionario), también al leer el PDF.
   - [ ] Cuestionario de hábitos.
   - [ ] Pantalla de resultado, presentada como edad equivalente según la referencia de NHANES: edad ± X, tabla de grupos y, con cuestionario, tabla de hábitos.
-  - [*] Aportación en años de cada grupo de variables frente a la persona típica de su edad y sexo: hecha y revisada; falta reentrenar con el código commiteado.
+  - [x] Aportación en años de cada grupo de variables frente a la persona típica de su edad y sexo.
   - [x] Margen ± de la edad, medido al entrenar (`modeling/s7_margin.py`) y guardado en cada modelo, con el error base como curva continua según el riesgo y el aviso gris si llega a 5 años.
   - [x] Línea "De 16 a 90 años" en la portada.
   - [x] Logs de la app en JSON, sin nada del usuario: petición, modo, nivel, resultado, código de error, cuántos valores faltan y tiempo.
