@@ -17,7 +17,7 @@ import pytest
 from pydantic import BaseModel
 
 from bioage.app.api import app
-from bioage.app.schemas import Habits, Mode, OddValue, Person, Reading, Result
+from bioage.app.schemas import Correction, Habits, Mode, OddValue, Person, Reading, Result
 from bioage.config.app import BLOOD_GROUPS, HABIT_GROUPS, MAX_AGE, MIN_AGE, ErrorCode
 from bioage.config.model_levels import LabVariable
 from bioage.config.paths import ROOT
@@ -51,7 +51,7 @@ def test_front_error_codes_match_the_config() -> None:
     assert set(re.findall(r"'(\w+)'", line[1])) == {*get_args(ErrorCode), "unavailable", "failed"}
 
 
-@pytest.mark.parametrize("schema", [Reading, OddValue, Person, Result])
+@pytest.mark.parametrize("schema", [Reading, OddValue, Correction, Person, Result])
 def test_front_types_have_the_fields_of_the_schemas(schema: type[BaseModel]) -> None:
     body = re.search(
         rf"^export type {schema.__name__} = \{{\n(.+?)^\}}", front_text("types.ts"), re.MULTILINE | re.DOTALL

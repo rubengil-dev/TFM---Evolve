@@ -4,7 +4,7 @@ Each person of train is predicted by the model of the block that did not see the
 
 - `fit_margins`    : Margin and data needed of every level.
 - `fit_blocks`     : One model per block of train, with its reference.
-- `base_margin`    : Calibration in years with the blocks pooled, in two bands of risk.
+- `base_margin`    : Calibration in years by tenth of risk, with the blocks pooled, never growing with risk.
 - `hidden_table`   : How far the age moves with each number of values hidden.
 - `most_missing`   : Most Routine values that can be missing.
 - `fewest_extras`  : Fewest Extras that make their model better.
@@ -12,7 +12,8 @@ Each person of train is predicted by the model of the block that did not see the
 - `hide_random`    : Which values are hidden for each person.
 - `same_age`       : C-index among people of the same age.
 
-NOTE: Margin ± = √(base² + Routine values missing² + Extras missing²). Each part is saved per level in its bundle.
+NOTE: Margin ± = √(base² + Routine values missing² + Extras missing²). Each part is saved per level in its bundle;
+the base is the same curve for every level, from BASE_LEVEL.
 """
 
 # Imports
@@ -21,10 +22,11 @@ import logging
 import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
+from sklearn.isotonic import IsotonicRegression
 
-from bioage.config.app import EXTRAS_LEVELS, MARGIN_REPEATS, MIN_GAIN, MOVE_SHARE, MOVE_YEARS
+from bioage.config.app import BASE_LEVEL, EXTRAS_LEVELS, MARGIN_REPEATS, MIN_GAIN, MOVE_SHARE, MOVE_YEARS
 from bioage.config.model_levels import EXTRAS, LEVEL_COLUMNS, ROUTINE_LAB
-from bioage.config.study import CALIBRATION_GROUPS, SPLIT_SEED
+from bioage.config.study import SPLIT_SEED
 from bioage.modeling.s1_split import split_data
 from bioage.modeling.s3_algorithms import build_pipeline, survival_target
 from bioage.modeling.s4_biological_age import biological_age, fit_reference, risk_at_horizon
@@ -32,8 +34,6 @@ from bioage.modeling.s5_evaluation import c_index_by_group, calibration_in_years
 from bioage.utils.features import age_groups
 
 logger = logging.getLogger(__name__)
-
-LOW_RISK_TENTHS = CALIBRATION_GROUPS // 2  # tenths of risk counted as low risk
 
 
 def fit_margins(gold: pd.DataFrame) -> dict[str, dict]:
@@ -43,11 +43,12 @@ def fit_margins(gold: pd.DataFrame) -> dict[str, dict]:
         gold: Gold table.
 
     Returns:
-        Level → low_risk_below, low_risk, rest, routine_missing and, with Extras, extras_known and min_extras.
+        Level → base (risk and years of its curve), routine_missing and, with Extras, extras_known and min_extras.
     """
     train, _, folds = split_data(gold)
     blocks = {level: fit_blocks(train, folds, columns) for level, columns in LEVEL_COLUMNS.items()}
-    margins = {level: base_margin(train, blocks[level]) for level in LEVEL_COLUMNS}
+    base = base_margin(train, blocks[BASE_LEVEL])
+    margins = {level: {"base": base} for level in LEVEL_COLUMNS}
     logger.info("Margin: blocks fitted, base error measured")
     for level, with_extras in EXTRAS_LEVELS.items():
         people = train.dropna(subset=LEVEL_COLUMNS[level])
@@ -86,25 +87,26 @@ def fit_blocks(train: pd.DataFrame, folds: list[tuple[np.ndarray, np.ndarray]], 
     return Parallel(n_jobs=-1)(delayed(fit_block)(*fold) for fold in folds)
 
 
-def base_margin(train: pd.DataFrame, blocks: list[tuple]) -> dict[str, float]:
-    """Calibration in years with the blocks pooled: the mean of its size in the low and in the high tenths of risk.
+def base_margin(train: pd.DataFrame, blocks: list[tuple]) -> dict[str, list[float]]:
+    """Calibration in years by tenth of risk, with the blocks pooled, made never to grow with risk.
+
+    - Size of the gap of each tenth, in years, at the mean risk of the tenth
+    - Isotonic: the fewest changes so that it never grows with risk, which tames the noise of the low tenths
+    - The app joins the points with straight lines, so the margin changes little when the risk does
 
     Args:
         train: Train part of Gold.
         blocks: Model of each block.
 
     Returns:
-        Risk below which it is low, and the years of the low tenths and of the rest.
+        Mean risk of each tenth and its years.
     """
     risk = predict_blocks(blocks, train)["risk"]
     reference = fit_reference(risk, train)
     age = biological_age(risk, train["sex"], reference)
-    years = calibration_in_years(risk, age, train, reference)["years"].abs()
-    return {
-        "low_risk_below": float(risk.quantile(LOW_RISK_TENTHS / CALIBRATION_GROUPS)),
-        "low_risk": float(years.iloc[:LOW_RISK_TENTHS].mean()),
-        "rest": float(years.iloc[LOW_RISK_TENTHS:].mean()),
-    }
+    table = calibration_in_years(risk, age, train, reference).dropna(subset=["years"])
+    years = IsotonicRegression(increasing=False).fit_transform(table["predicted"], table["years"].abs())
+    return {"risk": table["predicted"].tolist(), "years": [float(value) for value in years]}
 
 
 def hidden_table(

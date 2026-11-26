@@ -5,6 +5,7 @@ What the app runs:
 - `schemas.py`: What enters and leaves each endpoint, and its error.
 - `read_pdf.py`: Reads a blood test in PDF.
 - `calculate.py`: Picks the model and calculates the result.
+- `correct.py`: Values the user corrected, in model units, and those still impossible.
 - `validation.py`: Checks before calculating.
 - `predict.py`: Loads a saved model and computes the biological age.
 - `utils.py`: Functions shared within the app.

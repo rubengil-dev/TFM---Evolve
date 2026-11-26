@@ -1,18 +1,17 @@
 /** Puts together what the backend needs to calculate: what the PDF gave plus the answers. */
 
-import type { Corrections } from '../components/ImpossibleValue'
 import { BMI } from '../config/limits'
-import type { Answers, Mode, Person, Reading } from '../types'
+import type { Answers, Correction, Mode, Person, Reading } from '../types'
 
 export function missingFrom(reading: Reading): string[] {
   return (['sex', 'age'] as const).filter((field) => reading[field] === null)
 }
 
-/** Corrections are in the unit of the lab; the model uses its own. Corrected values are no longer odd. */
-export function withCorrections(reading: Reading, corrections: Corrections): Reading {
-  const lab_values = { ...reading.lab_values }
-  for (const odd of reading.odd) if (odd.variable in corrections) lab_values[odd.variable] = corrections[odd.variable] * odd.factor
-  return { ...reading, lab_values, odd: reading.odd.filter((odd) => !(odd.variable in corrections)) }
+/** What the backend corrected joins the values; what is still impossible stays odd, in its place, with what was typed. */
+export function withCorrection(reading: Reading, correction: Correction): Reading {
+  const stillOdd = new Map(correction.odd.map((odd) => [odd.variable, odd]))
+  const odd = reading.odd.filter((odd) => !(odd.variable in correction.lab_values)).map((odd) => stillOdd.get(odd.variable) ?? odd)
+  return { ...reading, lab_values: { ...reading.lab_values, ...correction.lab_values }, odd }
 }
 
 /** Kilos and centimetres that can go together; the backend checks it too. */

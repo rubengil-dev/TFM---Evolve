@@ -12,8 +12,8 @@ import Loading from './pages/Loading'
 import Questionnaire from './pages/Questionnaire'
 import Result from './pages/Result'
 import type { Answers, Mode, Reading, Result as ResultData } from './types'
-import { ApiError, calculate, isPdf, readPdf } from './utils/api'
-import { buildPerson, missingFrom, withCorrections } from './utils/person'
+import { ApiError, calculate, correct, isPdf, readPdf } from './utils/api'
+import { buildPerson, missingFrom, withCorrection } from './utils/person'
 
 export type Screen = 'landing' | 'reading' | 'odd_value' | 'questions' | 'calculating' | 'result' | ErrorKind
 
@@ -51,12 +51,22 @@ export default function App() {
     }
   }
 
-  // Values not corrected stay in the window
-  function correct(corrections: Corrections) {
+  // Values not corrected, or still impossible, stay in the window
+  async function correctValues(corrections: Corrections) {
     if (!reading) return
-    const corrected = withCorrections(reading, corrections)
-    setReading(corrected)
-    if (corrected.odd.length === 0) setScreen('questions')
+    const sent = reading.odd.filter((odd) => odd.variable in corrections).map((odd) => ({ ...odd, text: corrections[odd.variable] }))
+    if (sent.length === 0) return
+    retryRef.current = () => {
+      setScreen('odd_value')
+      correctValues(corrections)
+    }
+    try {
+      const corrected = withCorrection(reading, await correct(sent))
+      setReading(corrected)
+      if (corrected.odd.length === 0) setScreen('questions')
+    } catch (error) {
+      setScreen(errorScreen(error))
+    }
   }
 
   async function finish(given: Answers) {
@@ -80,7 +90,7 @@ export default function App() {
       {screen === 'landing' && <Landing onStart={start} />}
       {screen === 'reading' && <Loading title="Leyendo tu analítica" />}
       {screen === 'odd_value' && reading && (
-        <ImpossibleValue odds={reading.odd} onCorrected={correct} onConfirmed={() => setScreen('impossible')} />
+        <ImpossibleValue odds={reading.odd} onCorrected={correctValues} onConfirmed={() => setScreen('impossible')} />
       )}
       {screen === 'questions' && reading && (
         <Questionnaire mode={mode} missing={missingFrom(reading)} onDone={finish} onExit={home} />

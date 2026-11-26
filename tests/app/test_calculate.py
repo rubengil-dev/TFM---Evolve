@@ -8,8 +8,9 @@
 - Years: a value for every group, None only without data; they add up to the difference
 - Worse habits and values → more years in their group
 - Level: with Extras from the fewest their bundle says
-- Margin: √(base² + what is missing²), with the base of the risk band, all from the bundle
-- Saved models: every part of the margin, Routine missing up to the same count with and without Extras
+- Margin: √(base² + what is missing²), the base between the points of its curve, all from the bundle
+- Saved models: every part of the margin, the same base curve, Routine missing up to the same count
+  with and without Extras
 """
 
 # Imports
@@ -150,11 +151,12 @@ def test_extras_are_used_from_their_minimum(extras: int, habits: dict | None, le
     assert choose_level(Person(**{**PERSON, "lab_values": {**LAB, **values}}, habits=habits), fewest) == level
 
 
-MARGIN = {"low_risk_below": 0.05, "low_risk": 4, "rest": 0.5, "routine_missing": [0, 1, 2, 3, 4, 5]}
+MARGIN = {"base": {"risk": [0.01, 0.05], "years": [4, 0.5]}, "routine_missing": [0, 1, 2, 3, 4, 5]}
 
 
 @pytest.mark.parametrize(
-    ("risk", "dropped", "expected"), [(0.01, 0, 4), (0.05, 0, 0.5), (0.2, 0, 0.5), (0.2, 3, math.sqrt(0.5**2 + 3**2))]
+    ("risk", "dropped", "expected"),
+    [(0.001, 0, 4), (0.01, 0, 4), (0.03, 0, 2.25), (0.05, 0, 0.5), (0.2, 0, 0.5), (0.2, 3, math.sqrt(0.5**2 + 3**2))],
 )
 def test_margin_joins_base_and_what_is_missing(risk: float, dropped: int, expected: float) -> None:
     lab = dict(list(LAB.items())[dropped:])
@@ -174,7 +176,9 @@ def test_saved_models_have_their_margin() -> None:
         assert len(parts["routine_missing"]) == len(extras["routine_missing"])
         assert len(extras["extras_known"]) == len(EXTRAS) + 1 and extras["extras_known"][-1] == 0
         assert 0 < extras["min_extras"] <= len(EXTRAS)
-    assert all(0 < bundle["margin"]["low_risk_below"] < 1 for bundle in BUNDLES.values())
+    base = BUNDLES["routine"]["margin"]["base"]
+    assert all(bundle["margin"]["base"] == base for bundle in BUNDLES.values())
+    assert all(0 < risk < 1 for risk in base["risk"]) and sorted(base["years"], reverse=True) == base["years"]
 
 
 def test_result_has_a_margin() -> None:

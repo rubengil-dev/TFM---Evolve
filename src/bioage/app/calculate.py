@@ -68,7 +68,7 @@ def margin(person: Person, bundle: dict, risk: float) -> float:
         Years.
     """
     parts = bundle["margin"]
-    base = parts["low_risk"] if risk < parts["low_risk_below"] else parts["rest"]
+    base = np.interp(risk, parts["base"]["risk"], parts["base"]["years"])  # straight lines between tenths
     known = set(person.lab_values)
     missing = parts["routine_missing"][routine_missing(known)]
     extras = parts["extras_known"][extras_known(known)] if "extras_known" in parts else 0

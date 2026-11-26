@@ -8,6 +8,7 @@ flowchart LR
   subgraph app
     app_api[api]
     app_calculate[calculate]
+    app_correct[correct]
     app_logs[logs]
     app_predict[predict]
     app_read_pdf[read_pdf]
@@ -43,6 +44,7 @@ flowchart LR
   end
   main[main]
   app_api --> app_calculate
+  app_api --> app_correct
   app_api --> app_logs
   app_api --> app_predict
   app_api --> app_read_pdf
@@ -52,6 +54,8 @@ flowchart LR
   app_calculate --> app_schemas
   app_calculate --> app_utils
   app_calculate --> app_validation
+  app_correct --> app_schemas
+  app_correct --> app_validation
   app_predict --> modeling_s4_biological_age
   app_predict --> modeling_s6_group_years
   app_predict --> utils_provenance

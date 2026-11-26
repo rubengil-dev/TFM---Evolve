@@ -4,7 +4,7 @@
 - PDF: largest size and how to recognize it
 - Error codes
 - Groups of variables shown in the result: blood test and habits
-- Level of each mode, with and without Extras
+- Level of each mode, with and without Extras, and the one that gives the base error
 - Data needed and margin ±: criteria
 """
 
@@ -48,6 +48,8 @@ OTHER = "other"
 # Level of each mode, and the one it goes to with enough Extras
 MODE_LEVELS = {"quick": "routine", "full": "questionnaire"}
 EXTRAS_LEVELS = {"routine": "extras", "questionnaire": "full"}
+# Level whose calibration gives the base error of all four: the one with most deaths, so the least noisy
+BASE_LEVEL = "routine"
 
 # Data needed and margin ±: criteria; modeling/s7_margin.py measures them when training and saves them in each bundle
 MOVE_YEARS = 7        # most years the age can move for what is missing...

@@ -1,7 +1,7 @@
 /** Requests to the backend; every failure becomes the error screen to show. */
 
 import { ERRORS, type ErrorKind } from '../config/errors'
-import type { Mode, Person, Reading, Result } from '../types'
+import type { Correction, Mode, OddValue, Person, Reading, Result } from '../types'
 
 export class ApiError extends Error {
   kind: ErrorKind
@@ -15,6 +15,11 @@ export class ApiError extends Error {
 // The PDF travels as the raw body: a form could be written to disk in the server; the mode decides how many values can be missing
 export function readPdf(file: File, mode: Mode): Promise<Reading> {
   return post(`/api/read?mode=${mode}`, file, 'application/pdf')
+}
+
+// The backend converts what was typed and checks it is possible now
+export function correct(odds: OddValue[]): Promise<Correction> {
+  return post('/api/correct', JSON.stringify(odds), 'application/json')
 }
 
 export function calculate(person: Person): Promise<Result> {

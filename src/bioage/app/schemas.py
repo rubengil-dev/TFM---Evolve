@@ -49,9 +49,9 @@ class OddValue(RequestModel):
     """A value outside its plausible range, as the PDF shows it or as the user corrects it."""
 
     variable: LabVariable
-    text: str
+    text: str = Field(pattern=r"^\s*\d+([.,]\d+)?\s*$")  # as the lab writes it, e.g. "4,5"
     unit: str
-    factor: FiniteFloat  # TODO: remove with /api/correct
+    factor: FiniteFloat = Field(gt=0)  # lab unit → model unit; TODO: from the table of the parser
 
 
 class Correction(BaseModel):

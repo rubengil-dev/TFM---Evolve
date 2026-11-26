@@ -3,8 +3,9 @@
 - What is hidden: count values per person, the same with the same seed
 - Most Routine values missing: the largest count whose limit stays within MOVE_YEARS
 - Fewest Extras: from there on always better than the model without them, in C-index and in age
-- On a made-up Gold: every level gets its parts, nothing hidden moves nothing, the levels with Extras
-  measure as many Routine values missing as their mode allows, and low risk is the lower half
+- Base: by tenth of risk, with risk growing and years never growing
+- On a made-up Gold: every level gets its parts and the same base, nothing hidden moves nothing, and the levels
+  with Extras measure as many Routine values missing as their mode allows
 """
 
 # Imports
@@ -23,7 +24,6 @@ from bioage.modeling.s7_margin import (
     fit_margins,
     hide_random,
     most_missing,
-    predict_blocks,
 )
 
 
@@ -67,13 +67,12 @@ def test_fewest_extras_from_always_better(gains: list[float], medians: list[floa
     assert fewest_extras(extras_table(gains, medians)) == fewest
 
 
-def test_base_margin_splits_at_the_low_half_of_risk(gold: pd.DataFrame) -> None:
+def test_base_margin_never_grows_with_risk(gold: pd.DataFrame) -> None:
     train, _, folds = split_data(gold)
-    blocks = fit_blocks(train, folds, LEVEL_COLUMNS["routine"])
-    base = base_margin(train, blocks)
-    risk = predict_blocks(blocks, train)["risk"]
-    assert base["low_risk_below"] == pytest.approx(risk.median())
-    assert base["low_risk"] >= 0 and base["rest"] >= 0
+    base = base_margin(train, fit_blocks(train, folds, LEVEL_COLUMNS["routine"]))
+    assert len(base["risk"]) == len(base["years"]) > 1
+    assert np.all(np.diff(base["risk"]) > 0) and np.all(np.diff(base["years"]) <= 1e-12)
+    assert min(base["years"]) >= 0
 
 
 def test_margins_of_every_level(gold: pd.DataFrame, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -89,5 +88,5 @@ def test_margins_of_every_level(gold: pd.DataFrame, monkeypatch: pytest.MonkeyPa
         assert 0 <= margins[with_extras]["min_extras"] <= len(EXTRAS) + 1
         assert "extras_known" not in margins[level]
     for parts in margins.values():
-        assert parts["low_risk"] >= 0 and parts["rest"] >= 0 and parts["low_risk_below"] > 0
+        assert parts["base"] == margins["routine"]["base"]
         assert all(np.isfinite(parts["routine_missing"]))

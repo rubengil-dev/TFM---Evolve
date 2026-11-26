@@ -2,7 +2,7 @@
 
 - /api/read: needs the mode, which decides how many values can be missing; a PDF gives the fields the front expects
 - /api/read: not a PDF, an empty file or one too large → unreadable
-- /api/correct: only its contract, until it is built
+- /api/correct: possible now → in model units; still impossible → odd again, with what was written
 - /api/calculate: same age as the model called directly, with the level of each mode; the answers change it
 - One person does not affect the next; every level is loaded
 - Result: every group of the front, habits only in the full mode
@@ -81,11 +81,16 @@ def test_read_refuses_what_is_not_a_pdf(client: TestClient, body: bytes) -> None
     assert (answer.status_code, answer.json()) == (422, {"error": "unreadable"})
 
 
-def test_correct_is_not_built_yet(client: TestClient) -> None:
-    assert client.post("/api/correct", json=[ODD]).status_code == 501
+def test_correct_gives_what_is_possible_and_what_is_still_odd(client: TestClient) -> None:
+    sodium = {"variable": "sodium", "text": "1400", "unit": "mmol/L", "factor": 1}
+    answer = client.post("/api/correct", json=[ODD, sodium])
+    assert answer.status_code == 200
+    assert answer.json() == {"lab_values": {"potassium": 4.5}, "odd": [sodium]}
 
 
-@pytest.mark.parametrize("change", [{"variable": "glucosa"}, {"text": None}, {"unknown": 1}])
+@pytest.mark.parametrize(
+    "change", [{"variable": "glucosa"}, {"text": None}, {"text": "4,5,1"}, {"factor": 0}, {"unknown": 1}]
+)
 def test_correct_refuses_what_is_not_an_odd_value(client: TestClient, change: dict) -> None:
     answer = client.post("/api/correct", json=[{**ODD, **change}])
     assert answer.status_code == 422 and answer.json()["invalid"]

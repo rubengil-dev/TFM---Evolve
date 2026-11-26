@@ -38,7 +38,8 @@ Lo que no encaje en esta descripción no va aquí. Las decisiones pendientes no 
   - [x] Edad fuera de 18-79: la diferencia se calcula como si tuviera 18 o 79 y se suma a la edad real.
   - [ ] Entrega 04: `docs/entregas/04_diseno_frontal_ux.md` con capturas de la app.
   - [/] Parser del PDF, con la normalización de nombres y unidades, probado con mis PDFs.
-  - [ ] Corrección de un valor imposible en el backend (`POST /api/correct`, con el contrato ya escrito): pasa el valor a la unidad del modelo con su factor, comprueba que ya es posible y, si no, se vuelve a preguntar. Con el parser, porque usa su tabla de unidades; `factor` deja de viajar al front.
+  - [x] `POST /api/correct` mínimo, para la v1: el backend convierte lo corregido con el factor y comprueba que ya es posible; si no, se vuelve a preguntar en la misma ventana.
+  - [ ] Unidades de lo corregido desde la tabla del parser; `factor` deja de viajar al front.
   - [ ] Pantalla de revisión, solo para los valores que el parser marca como dudosos, y solo si las pruebas del parser muestran que hace falta.
   - [x] Preguntas de sexo y edad, solo si el PDF no las trae.
   - [x] Pantallas de error: PDF ilegible o que no es una analítica, faltan demasiados datos y valor imposible; aviso rojo de edad fuera de 18-79 en el resultado.
@@ -48,7 +49,7 @@ Lo que no encaje en esta descripción no va aquí. Las decisiones pendientes no 
   - [ ] Cuestionario de hábitos.
   - [ ] Pantalla de resultado, presentada como edad equivalente según la referencia de NHANES: edad ± X, tabla de grupos y, con cuestionario, tabla de hábitos.
   - [*] Aportación en años de cada grupo de variables frente a la persona típica de su edad y sexo: hecha y revisada; falta reentrenar con el código commiteado.
-  - [x] Margen ± de la edad, medido al entrenar (`modeling/s7_margin.py`) y guardado en cada modelo, con el aviso gris si llega a 5 años.
+  - [x] Margen ± de la edad, medido al entrenar (`modeling/s7_margin.py`) y guardado en cada modelo, con el error base como curva continua según el riesgo y el aviso gris si llega a 5 años.
   - [x] Línea "De 16 a 90 años" en la portada.
   - [x] Logs de la app en JSON, sin nada del usuario: petición, modo, nivel, resultado, código de error, cuántos valores faltan y tiempo.
   - [x] Librerías del stack en `pyproject.toml` y README al día; la del PDF entra con el parser.

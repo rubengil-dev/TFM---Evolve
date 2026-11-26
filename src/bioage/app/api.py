@@ -2,7 +2,7 @@
 
 Endpoints:
 - POST /api/read?mode=quick|full: PDF → Reading
-- POST /api/correct: list of OddValue → Correction (TODO)
+- POST /api/correct: list of OddValue → Correction
 - POST /api/calculate: Person → Result
 - GET /api/health: the server is running
 
@@ -20,12 +20,13 @@ import time
 from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, Request
 from fastapi.concurrency import run_in_threadpool
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, Response
 
 from bioage.app.calculate import calculate, choose_level
+from bioage.app.correct import correct_values
 from bioage.app.logs import crash_place, note, setup_logs, write_line
 from bioage.app.predict import load_bundle
 from bioage.app.read_pdf import read_pdf
@@ -101,20 +102,13 @@ async def post_read(request: Request, mode: Mode) -> Reading:
 def post_correct(odd: list[OddValue]) -> Correction:
     """Values corrected by the user → in model units, or odd again if still impossible.
 
-    TODO: With the parser, because it needs its table of units:
-    1. Lab unit → model unit, with its factor
-    2. Check the plausible range
-
     Args:
         odd: Odd values, with the text the user wrote.
 
     Returns:
         What was corrected and what is still odd.
-
-    Raises:
-        HTTPException: Always, until it is built.
     """
-    raise HTTPException(status_code=501)
+    return correct_values(odd)
 
 
 @app.post("/api/calculate")
