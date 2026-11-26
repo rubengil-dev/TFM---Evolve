@@ -5,7 +5,7 @@ NOTE: Until the parser exists, every PDF gives the same made-up person (EXAMPLE_
 
 # Imports
 from bioage.app.schemas import AppError, Reading
-from bioage.app.validation import check_age
+from bioage.app.validation import check_age, check_enough
 from bioage.config.app import PDF_MARK, PDF_MARK_WITHIN
 
 # Sex missing on purpose: the front has to ask for it
@@ -35,21 +35,23 @@ EXAMPLE_READING = Reading(
 # fmt: on
 
 
-def read_pdf(pdf: bytes) -> Reading:
+def read_pdf(pdf: bytes, max_missing: int) -> Reading:
     """PDF → values of the blood test, and age and sex if it has them.
 
     Args:
         pdf: Content of the file.
+        max_missing: Most Routine values that can be missing, in the mode the user chose.
 
     Returns:
         What was read.
 
     Raises:
-        AppError: If it is not a PDF, or the app does not calculate for that age.
+        AppError: If it is not a PDF, lacks too many values, or the app does not calculate for that age.
     """
     if PDF_MARK not in pdf[:PDF_MARK_WITHIN]:
         raise AppError("unreadable")
     reading = EXAMPLE_READING
     if reading.age is not None:
         check_age(reading.age)
+    check_enough(set(reading.lab_values) | {odd.variable for odd in reading.odd}, max_missing)
     return reading

@@ -1,7 +1,10 @@
 /** Questions asked after the PDF, in order: sex and age only if the PDF lacks them, body measures, habits in the full mode. */
 
 import type { Question } from '../types'
-import { HEIGHT, MAX_AGE, MIN_AGE, SEDENTARY_HOURS, SLEEP_HOURS, WEIGHT } from './limits'
+import { HEIGHT, SEDENTARY_HOURS, SLEEP_HOURS, WEIGHT } from './limits'
+
+// Ages the slider allows: wider than the ones calculated, so a 14-year-old finds their age and gets the error
+const ASKED_AGE = [10, 100]
 
 // Answer values match the categories the model was trained with (study.py)
 export const QUESTIONS: Question[] = [
@@ -22,8 +25,8 @@ export const QUESTIONS: Question[] = [
     title: '¿Qué edad tienes?',
     modes: ['quick', 'full'],
     onlyIfMissing: true,
-    min: MIN_AGE,
-    max: MAX_AGE,
+    min: ASKED_AGE[0],
+    max: ASKED_AGE[1],
     step: 1,
     start: 45,
     unit: 'años',

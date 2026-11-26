@@ -1,6 +1,6 @@
 /** Result screen: biological age with its margin, the gap to the real age, the tables of years and share / download. */
 
-import { IconAlertCircle } from '@tabler/icons-react'
+import { IconAlertCircle, IconInfoCircle } from '@tabler/icons-react'
 import { useRef } from 'react'
 import ShareButtons from '../components/ShareButtons'
 import YearsTable from '../components/YearsTable'
@@ -13,9 +13,14 @@ type Props = { result: ResultData }
 // Ages outside the training data: biological ones are shown as limits, real ones get a warning
 const LOWEST_AGE = 18
 const HIGHEST_AGE = 90
+// Margin from which the result gets a note asking for caution (years)
+const CAUTION_MARGIN = 5
 
 export default function Result({ result }: Props) {
   const { age, bio_age, margin } = result
+  // Whole years, .5 up; a margin of 0, or next to a limit ("<18", ">90"), is not shown
+  const roundMargin = margin === null ? 0 : Math.round(margin)
+  const shownMargin = isLimit(bio_age) ? 0 : roundMargin
   const cardRef = useRef<HTMLDivElement>(null)
 
   return (
@@ -23,7 +28,7 @@ export default function Result({ result }: Props) {
       <div ref={cardRef} className="rounded-3xl border border-line/70 bg-deep/80 px-5 py-8 sm:px-8">
         <div className="flex items-baseline justify-center gap-3">
           <span className="font-display text-[8rem] leading-none font-medium text-mist sm:text-[10rem]">{shownAge(bio_age)}</span>
-          {margin !== null && <span className="text-xl text-moss">± {Math.round(margin)}</span>}
+          {shownMargin > 0 && <span className="text-xl text-moss">± {shownMargin}</span>}
         </div>
         <p className="mt-4 text-center text-base">
           <Gap age={age} bio_age={bio_age} /> que tu edad real
@@ -32,6 +37,12 @@ export default function Result({ result }: Props) {
           <p className="mx-auto mt-3 flex w-fit max-w-sm items-center gap-2 rounded-2xl border border-rose/40 bg-rose/10 px-3 py-2 text-left text-xs text-rose">
             <IconAlertCircle aria-hidden="true" size={16} className="shrink-0" />
             Tienes {age} años, fuera de las edades de mis datos ({DATA_MIN_AGE}-{DATA_MAX_AGE}): el resultado puede ser menos preciso
+          </p>
+        )}
+        {roundMargin >= CAUTION_MARGIN && (
+          <p className="mx-auto mt-3 flex w-fit max-w-sm items-center gap-2 rounded-2xl border border-line bg-line/20 px-3 py-2 text-left text-xs text-moss">
+            <IconInfoCircle aria-hidden="true" size={16} className="shrink-0" />
+            Este resultado es menos preciso de lo normal: tómalo con más precaución
           </p>
         )}
         {age >= DATA_MIN_AGE && age <= DATA_MAX_AGE && bio_age > DATA_MAX_AGE && bio_age <= HIGHEST_AGE && (
@@ -53,6 +64,10 @@ function Gap({ age, bio_age }: { age: number; bio_age: number }) {
   const unit = Math.abs(years) === 1 ? 'año' : 'años'
   if (years < 0) return <span className="text-emerald">{`${-years} ${unit} menos`}</span>
   return <span className="text-rose">{`${years} ${unit} más`}</span>
+}
+
+function isLimit(bio_age: number): boolean {
+  return bio_age < LOWEST_AGE || bio_age > HIGHEST_AGE
 }
 
 function shownAge(bio_age: number): string {

@@ -46,6 +46,12 @@ export type OddValue = {
   factor: number
 }
 
+/** What the backend corrected, in model units, and what is still impossible. */
+export type Correction = {
+  lab_values: Record<string, number>
+  odd: OddValue[]
+}
+
 /** What the backend reads from a PDF (schemas.py); null = the PDF lacks it. */
 export type Reading = {
   lab_values: Record<string, number>

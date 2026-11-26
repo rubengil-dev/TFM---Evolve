@@ -5,11 +5,13 @@
 - Plausible ranges in order (low below high, normal inside the limits) and only for Gold variables
 - Log and squared terms only for model variables
 - One algorithm and one saved model per level
+- Result groups: every model variable but age and sex in one, habits = questionnaire
 """
 
 # Imports
+from bioage.config.app import BLOOD_GROUPS, HABIT_GROUPS, OTHER
 from bioage.config.gold_columns import DERIVED_FEATURES, ID_COLUMNS, OUTCOME_COLUMNS, SELECTED_PREDICTORS
-from bioage.config.model_levels import DISCARDED, LEVEL_COLUMNS, LEVEL_MODELS
+from bioage.config.model_levels import DISCARDED, LEVEL_COLUMNS, LEVEL_MODELS, QUESTIONNAIRE
 from bioage.config.paths import TRAINED_MODELS
 from bioage.config.plausible_ranges import PLAUSIBLE_RANGES
 from bioage.config.study import CATEGORICAL_LEVELS, LOG_VARIABLES, SQUARED_VARIABLES
@@ -58,3 +60,16 @@ def test_log_and_squared_only_for_model_variables() -> None:
 def test_every_level_has_algorithm_and_saved_model() -> None:
     assert set(LEVEL_COLUMNS) == set(LEVEL_MODELS)
     assert all((TRAINED_MODELS / f"{level}.joblib").exists() for level in LEVEL_COLUMNS)
+
+
+def test_every_variable_is_in_one_group() -> None:
+    grouped = [column for members in [*BLOOD_GROUPS.values(), *HABIT_GROUPS.values()] for column in members]
+    assert sorted(grouped) == sorted(set(LEVEL_COLUMNS["full"]) - {"age", "sex"})
+
+
+def test_habit_groups_are_the_questionnaire() -> None:
+    assert [column for members in HABIT_GROUPS.values() for column in members] == QUESTIONNAIRE
+
+
+def test_other_is_a_blood_group() -> None:
+    assert OTHER in BLOOD_GROUPS

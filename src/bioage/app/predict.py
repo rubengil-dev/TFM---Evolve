@@ -1,4 +1,4 @@
-"""Predicts 10-year risk with a saved model and turns it into biological age."""
+"""Predicts 10-year risk with a saved model and turns it into biological age and years of each group."""
 
 # Imports
 import joblib
@@ -7,6 +7,7 @@ import pandas as pd
 
 from bioage.config.paths import TRAINED_MODELS
 from bioage.modeling.s4_biological_age import biological_age, risk_at_horizon
+from bioage.modeling.s6_group_years import group_years
 from bioage.utils.provenance import library_versions
 
 
@@ -34,8 +35,33 @@ def predict_age(bundle: dict, data: pd.DataFrame) -> np.ndarray:
     Returns:
         Biological age of each person.
     """
-    risk = risk_at_horizon(bundle["pipeline"], data)
-    return biological_age(risk, data["sex"], bundle["reference"])
+    return biological_age(predict_risk(bundle, data), data["sex"], bundle["reference"])
+
+
+def predict_risk(bundle: dict, data: pd.DataFrame) -> np.ndarray:
+    """People → 10-year risk with the model of a level.
+
+    Args:
+        bundle: Bundle of the level.
+        data: People with the columns of the level.
+
+    Returns:
+        Risk of each person.
+    """
+    return risk_at_horizon(bundle["pipeline"], data)
+
+
+def predict_groups(bundle: dict, person: pd.DataFrame) -> dict[str, float | None]:
+    """One person → years each group adds or takes away, with the model of a level.
+
+    Args:
+        bundle: Bundle of the level.
+        person: One row with the columns of the level.
+
+    Returns:
+        Group → years; None = no data of that group.
+    """
+    return group_years(bundle["pipeline"], person, bundle["columns"], bundle["reference"], bundle["group_reference"])
 
 
 def check_versions(saved: dict[str, str]) -> None:

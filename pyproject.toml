@@ -45,6 +45,7 @@ build-backend = "uv_build"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+addopts = "--import-mode=importlib"  # same file name in two test folders
 
 [tool.ruff]
 line-length = 120

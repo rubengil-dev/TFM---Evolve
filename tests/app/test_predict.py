@@ -3,6 +3,7 @@
 - Same biological age as the reference for a few made-up people (REFERENCE_AGES), in the expected order
 - One person alone gets the same age as in a group (the app predicts one at a time)
 - Prediction without the training libraries
+- Years of each group: every saved model has the average of each of its groups, and they add up to the difference
 - Library versions: a model saved with other versions is refused, naming each library
 - After a deliberate retrain or preprocessing change: write_reference() and review the diff
 """
@@ -18,9 +19,10 @@ import pandas as pd
 import pytest
 
 from bioage.app import predict
-from bioage.app.predict import check_versions, load_bundle, predict_age
+from bioage.app.predict import check_versions, load_bundle, predict_age, predict_groups
 from bioage.config.model_levels import LEVEL_COLUMNS
 from bioage.config.paths import ROOT
+from bioage.modeling.s6_group_years import model_groups
 from bioage.utils.provenance import library_versions
 
 REFERENCE_AGES = Path(__file__).parent / "reference_ages.json"
@@ -112,6 +114,25 @@ def test_loading_checks_the_versions(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(predict.joblib, "load", lambda path: {"versions": {"numpy": "1.0.0"}})
     with pytest.raises(RuntimeError, match="numpy 1.0.0 saved"):
         load_bundle("routine")
+
+
+@pytest.mark.parametrize("level", LEVEL_COLUMNS)
+def test_saved_models_have_the_average_of_each_group(level: str) -> None:
+    reference = load_bundle(level)["group_reference"]
+    assert set(reference) == set(model_groups(LEVEL_COLUMNS[level]))
+    for curves in reference.values():
+        assert set(curves) == {"female", "male"}
+        assert all(len(curve) == 3 and np.isfinite(curve).all() for curve in curves.values())
+
+
+@pytest.mark.parametrize("level", LEVEL_COLUMNS)
+def test_saved_models_give_groups_that_add_up(level: str) -> None:
+    bundle = load_bundle(level)
+    for person in PEOPLE.index:
+        row = PEOPLE.loc[[person], bundle["columns"]]
+        years = predict_groups(bundle, row)
+        total = sum(value for value in years.values() if value is not None)
+        assert total == pytest.approx(predict_age(bundle, row)[0] - row["age"].iloc[0], abs=1e-6)
 
 
 def write_reference() -> None:

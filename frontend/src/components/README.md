@@ -3,7 +3,8 @@ Pieces shared by several screens:
 
 - `CellBackground.tsx`: Animated background of floating cells; a tap on the background bursts a cell or makes a new one.
 - `GroupIcon.tsx`: Icon of each result group.
-- `OrganIcons.tsx`: Heart, liver and kidney icons from Healthicons (CC0), plus a sugar pile and a kg label.
+- `OgreIcon.tsx`: Ogre of the impossible body measures.
+- `OrganIcons.tsx`: Liver and kidney icons from Healthicons (CC0), plus a sugar pile and a kg label.
 - `ImpossibleValue.tsx`: Window after reading the PDF with every impossible value: correct them or confirm them.
 - `ChoiceCards.tsx`: Answer options as large cards with an icon and a clarification.
 - `Logo.tsx`: Leaf inside a circle whose veins are an AI network.

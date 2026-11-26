@@ -5,8 +5,8 @@ import { useState } from 'react'
 import { VARIABLE_NAMES } from '../config/variables'
 import type { OddValue } from '../types'
 
-/** New value of each corrected variable, in the unit of the lab. */
-export type Corrections = Record<string, number>
+/** What was typed for each corrected variable, in the unit of the lab. */
+export type Corrections = Record<string, string>
 
 type Props = { odds: OddValue[]; onCorrected: (corrections: Corrections) => void; onConfirmed: () => void }
 
@@ -25,7 +25,7 @@ export default function ImpossibleValue({ odds, onCorrected, onConfirmed }: Prop
     if (!isValid) return
     const changed = editing.filter((odd) => toNumber(typed[odd.variable]) !== toNumber(odd.text))
     setTyped({})
-    onCorrected(Object.fromEntries(changed.map((odd) => [odd.variable, toNumber(typed[odd.variable])])))
+    onCorrected(Object.fromEntries(changed.map((odd) => [odd.variable, typed[odd.variable].trim()])))
   }
 
   return (

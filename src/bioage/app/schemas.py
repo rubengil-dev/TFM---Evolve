@@ -17,10 +17,13 @@ from typing import Annotated, Literal
 from pydantic import BaseModel, ConfigDict, Field, FiniteFloat
 from pydantic.fields import FieldInfo
 
-from bioage.config.app import ErrorCode
+from bioage.config.app import BLOOD_GROUPS, HABIT_GROUPS, MODE_LEVELS, ErrorCode
 from bioage.config.model_levels import LabVariable
 from bioage.config.plausible_ranges import PLAUSIBLE_RANGES
 from bioage.config.study import CATEGORICAL_LEVELS
+
+# quick = blood test only; full = blood test + habits
+Mode = Literal[*MODE_LEVELS]
 
 
 class RequestModel(BaseModel):
@@ -46,9 +49,9 @@ class OddValue(RequestModel):
     """A value outside its plausible range, as the PDF shows it or as the user corrects it."""
 
     variable: LabVariable
-    text: str
+    text: str = Field(pattern=r"^\s*\d+([.,]\d+)?\s*$")  # as the lab writes it, e.g. "4,5"
     unit: str
-    factor: FiniteFloat  # TODO: remove with /api/correct
+    factor: FiniteFloat = Field(gt=0)  # lab unit → model unit; TODO: from the table of the parser
 
 
 class Correction(BaseModel):
@@ -90,6 +93,11 @@ class Person(RequestModel):
     height: Annotated[float, answer_range("height")]
     habits: "Habits | None" = None
 
+    @property
+    def mode(self) -> Mode:
+        """Mode of the person: full if they answered the habits."""
+        return "quick" if self.habits is None else "full"
+
 
 class Habits(RequestModel):
     """Answers about habits, in the full mode."""
@@ -106,5 +114,5 @@ class Result(BaseModel):
     age: int
     bio_age: float
     margin: float | None = None
-    blood: dict[str, float | None]
-    habits: dict[str, float] | None = None
+    blood: dict[Literal[*BLOOD_GROUPS], float | None]
+    habits: dict[Literal[*HABIT_GROUPS], float] | None = None

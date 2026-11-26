@@ -17,6 +17,9 @@ Lo que no encaje en esta descripción no va aquí.
 
 ## Próxima versión
 - Triglicéridos sin ayuno: usarlos corrigiéndolos, además de los de ayunas.
+- Leer fotos y escaneos (OCR): la v1 solo lee PDFs digitales.
+- Resultado apto para daltónicos, sin depender del rojo y el verde.
+- Comparar dos analíticas en el tiempo.
 
 ## Más adelante
 - Si el modelo se queda corto: reintroducir variables descartadas (insulina, HOMA-IR, cocientes derivados), imputar los huecos con otras variables o usar curvas flexibles en vez de términos al cuadrado.
