@@ -1,5 +1,7 @@
 # Entrega 04: Diseño del frontal y experiencia de usuario
 
+> **Nota:** esta entrega y la app que describe están en la rama [`phase-4`](https://github.com/rubengil-dev/TFM---Evolve/tree/phase-4), no en `main`. `main` solo recibe cada fase cuando está terminada.
+
 ## 1. Utilidad y valor del producto
 
 ### Para quién y qué problema resuelve
