@@ -113,20 +113,21 @@ A 26 de noviembre de 2026, a las 23:30, esto es lo que ya funciona:
 - **Resultado completo:** edad biológica con su ±, años que suma o resta cada grupo de la analítica y de los hábitos, avisos rojo y gris, y descargar o compartir la imagen.
 - **Todas las comprobaciones:** edades, valores imposibles, IMC imposible y mínimo de datos para calcular.
 - **Logo, letra pequeña y logs** sin nada del usuario.
+- **Índice de pantallas** para abrir cualquiera directamente.
 
 ### Plan para el MVP completo y funcional
 - **Leer el PDF de verdad.** Es lo que más falta: ahora mismo cualquier PDF da los valores de una persona inventada. El parser normaliza los nombres (glucosa, gluc, GLU…) y las unidades de cada laboratorio, y se prueba con mis analíticas reales.
 - **Desplegar**, en un hosting gratuito, para que se entre con un enlace.
-- **Pequeñas mejoras:** corregir el IMC en la misma pantalla del ogro, dejar poner la edad de 10 a 100 y el índice de pantallas.
+- **Pequeñas mejoras:** corregir el IMC en la misma pantalla del ogro y dejar poner la edad de 10 a 100.
 - **Revisión final de todos los textos**, con el humor de los errores.
+- **MLOps completo:** ahora mismo hay cosas de MLOps implementadas (tests, CI y trazabilidad de los modelos), pero faltan MLflow y DVC.
 
 ### Versión 2
 Se plantea añadir:
-- **MLOps puro:** ahora mismo hay cosas de MLOps implementadas, pero faltarían MLflow y DVC porque solo he entrenado una vez con el mismo dataset.
 - **Resultado apto para daltónicos**, sin depender del rojo y el verde.
 - **Triglicéridos sin ayuno**, corrigiéndolos, además de los de ayunas.
 
-La idea es que la versión 2 también esté lista para la entrega final del TFM. Si no da tiempo, la versión 1 estará completa, eso al 100 %. Y si fuera posible, el OCR (aunque sea mediante API a un modelo de IA gratuito).
+La idea es que la versión 2 también esté lista para la entrega final del TFM. Si no da tiempo, la versión 1 estará completa, eso al 100 %. Y si fuera posible, también el OCR, en local, para que la analítica no salga del servidor.
 
 ### Futuras versiones
 - **Leer fotos y escaneos** (OCR), no solo PDFs digitales.

@@ -36,7 +36,7 @@ Lo que no encaje en esta descripción no va aquí. Las decisiones pendientes no 
   - [x] API: leer el PDF (de momento, una persona inventada) y calcular, conectada al front.
   - [x] Elección del modelo: Extras desde 3, o 4 con cuestionario, medido al entrenar.
   - [x] Edad fuera de 18-79: la diferencia se calcula como si tuviera 18 o 79 y se suma a la edad real.
-  - [*] Entrega 04: `docs/entregas/04_diseno_frontal_ux.md` con capturas de la app.
+  - [x] Entrega 04: `docs/entregas/04_diseno_frontal_ux.md` con capturas de la app.
   - [ ] IMC imposible: corregir peso y talla en la misma pantalla del ogro.
   - [ ] Pregunta de la edad de 10 a 100 años, con el error al contestarla si queda fuera de 16-90.
   - [x] Índice de pantallas: un `?demo=` por pantalla (también preguntas y cargas), listados en `frontend/README.md`.
