@@ -51,7 +51,7 @@ Lo que no encaje en esta descripción no va aquí. Las decisiones pendientes no 
   - [x] Margen ± de la edad, medido al entrenar (`modeling/s7_margin.py`) y guardado en cada modelo, con el aviso gris si llega a 5 años.
   - [x] Línea "De 16 a 90 años" en la portada.
   - [ ] Logs de la app en JSON, sin valores de salud: modelo, nivel, variables recibidas, latencia, estado y código de error.
-  - [ ] Añadir las librerías del stack a las dependencias del proyecto (`pyproject.toml`) y completar el README.
+  - [x] Librerías del stack en `pyproject.toml` y README al día; la del PDF entra con el parser.
   - [ ] Revisión completa de todos los textos de todas las pantallas, también las de error. Lo último, con la app acabada.
 - [ ] **Fase 5, despliegue:** web pública en un hosting gratuito *(se afina al llegar)*
 - [ ] **Fase 6, MLOps:** versionado de datos y de modelos; los tests, la CI y la trazabilidad ya están hechos en la fase 3. Va después de la Entrega 04, salvo que el profesor lo pida antes *(se afina al llegar)*
