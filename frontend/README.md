@@ -29,13 +29,13 @@ Every screen opens directly with `?demo=<name>`, with made-up data and without t
 | Loading: calculating | http://localhost:5173/?demo=calculating |
 | Impossible value window | http://localhost:5173/?demo=odd_value |
 | Result | http://localhost:5173/?demo=result |
-| Result with the red and grey warnings | http://localhost:5173/?demo=older |
+| Result with the grey warning and the "orientativo" note | http://localhost:5173/?demo=older |
 | Error: unreadable PDF | http://localhost:5173/?demo=unreadable |
 | Error: too few values | http://localhost:5173/?demo=too_few |
 | Error: impossible value confirmed | http://localhost:5173/?demo=impossible |
 | Error: impossible BMI | http://localhost:5173/?demo=impossible_bmi |
-| Error: under 16 | http://localhost:5173/?demo=too_young |
-| Error: over 90 | http://localhost:5173/?demo=too_old |
+| Error: under 18 | http://localhost:5173/?demo=too_young |
+| Error: over 79 | http://localhost:5173/?demo=too_old |
 | Error: no answer from the server | http://localhost:5173/?demo=unavailable |
 | Error: the server failed | http://localhost:5173/?demo=failed |
 

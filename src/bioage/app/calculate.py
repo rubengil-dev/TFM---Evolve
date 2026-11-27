@@ -11,7 +11,6 @@ from bioage.app.schemas import Person, Result
 from bioage.app.utils import bmi, extras_known, max_missing, routine_missing
 from bioage.app.validation import check_person
 from bioage.config.app import BLOOD_GROUPS, EXTRAS_LEVELS, HABIT_GROUPS, MODE_LEVELS
-from bioage.config.study import AGE_MAX, AGE_MIN
 
 
 def calculate(person: Person, bundles: dict[str, dict]) -> Result:
@@ -33,7 +32,7 @@ def calculate(person: Person, bundles: dict[str, dict]) -> Result:
     years = predict_groups(bundle, row)
     return Result(  # age and margin unrounded: the front rounds them once, to whole years
         age=person.age,
-        bio_age=float(predict_age(bundle, row)[0] + person.age - study_age(person.age)),
+        bio_age=float(predict_age(bundle, row)[0]),
         margin=float(margin(person, bundle, predict_risk(bundle, row)[0])),
         blood={group: one_decimal(years.get(group)) for group in BLOOD_GROUPS},
         habits=None if person.habits is None else {group: one_decimal(years[group]) for group in HABIT_GROUPS},
@@ -87,24 +86,12 @@ def model_row(person: Person, columns: list[str]) -> pd.DataFrame:
     """
     known = {
         **person.lab_values,
-        "age": study_age(person.age),
+        "age": person.age,
         "sex": person.sex,
         "bmi": bmi(person.weight, person.height),
         **({} if person.habits is None else person.habits.model_dump()),
     }
     return pd.DataFrame([{column: known.get(column, np.nan) for column in columns}])
-
-
-def study_age(age: int) -> int:
-    """Nearest age of the study; the difference found for it is added to the real age.
-
-    Args:
-        age: Real age.
-
-    Returns:
-        The age, or the closest limit of the study.
-    """
-    return min(max(age, AGE_MIN), AGE_MAX)
 
 
 def one_decimal(years: float | None) -> float | None:

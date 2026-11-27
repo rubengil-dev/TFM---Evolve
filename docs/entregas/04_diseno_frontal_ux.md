@@ -40,13 +40,12 @@ Hay dos flujos (prácticamente idénticos). Ir por uno u otro es la primera y ú
 Hasta el paso 3 el flujo es común a los dos modos. Las preguntas están pensadas para contestarlas sin escribir nada, solo tocando con el dedo o con el ratón, para que sea lo más sencillo posible. Es importante sobre todo en el modo con hábitos, que tiene más preguntas.
 
 ### Errores en el flujo
-- **Al subir el PDF.** Se rechaza si no es un PDF, si es un escaneo (leerlo exige OCR, que queda para una versión futura), si no es una analítica o si no trae suficientes valores para calcular la edad con una fiabilidad mínima. También si la edad que trae es menor de 16 o mayor de 90.
+- **Al subir el PDF.** Se rechaza si no es un PDF, si es un escaneo (leerlo exige OCR, que queda para una versión futura), si no es una analítica o si no trae suficientes valores para calcular la edad con una fiabilidad mínima. También si la edad que trae es menor de 18 o mayor de 79: el modelo nunca ha visto a nadie de esas edades, porque NHANES solo sigue la mortalidad de los adultos y a partir de 80 años no da la edad exacta. Al principio calculaba de 16 a 90 con un aviso rojo, pero lo más justo es calcular solo las edades que ha visto el modelo.
 - **Si algún valor de la analítica es imposible.** Lo más probable es que se haya leído mal. Justo después de leer el PDF, se le enseña el valor para que lo corrija en esa misma pantalla o confirme que es correcto. Si lo confirma, no calculo y le digo que vaya al médico.
 - **Si el peso y la talla dan un IMC imposible.** El flujo se para al contestar el segundo de los dos, y se le pide que los corrija en esa misma pantalla. Si son reales, no calculo: no puedo estimar con fiabilidad la edad de alguien con ese IMC.
 - **Si el servidor no responde.** Puede reintentarlo sin perder lo que ya ha contestado.
 
 ### Warnings
-- **Edad real fuera de 18-79 años:** el modelo no ha visto a nadie de esas edades, así que el resultado lleva un aviso en rojo.
 - **Margen ancho:** si el ± llega a 5 años, sale un aviso en gris que pide tomarlo con precaución. Pasa cuando faltan valores, y también en jóvenes con riesgo bajo, aunque la analítica esté completa.
 
 ## 3. Diseño del frontal
@@ -90,10 +89,9 @@ El 90-95 % de los errores del flujo no son fallos técnicos de la app, sino algo
 - **Todas las pantallas de error** tienen su propia pantalla, con su visual, sus iconos, el mismo fondo y un texto en tono de humor que dice qué ha fallado y qué tiene que hacer.
 
 ### Resultados inciertos
-Hay 3 implementaciones:
+Hay 2 implementaciones:
 - **El ± junto a la edad.** Es la más importante: no solo te doy la edad, sino la edad con un margen de error. Por ejemplo, 30 ± 2 años significa que estás en torno a los 28-32. Es más ancho en la gente joven: como muere poca, es muy difícil predecir con precisión. En la gente mayor el margen es más bajo.
-- **Aviso rojo si tu edad está fuera de 18-79 años.** El modelo nunca ha visto a nadie de esas edades: NHANES solo sigue la mortalidad de los adultos, y a partir de 80 años no da la edad exacta. Aun así, he ampliado los márgenes a 16, que es más o menos la edad del consentimiento sanitario, y a 90, porque la mayoría de la población muere antes, para que casi todo el mundo pueda tener su resultado. Fuera de 18-79 la desviación es mayor, y por eso sale el aviso de que, por tu edad, la precisión es más incierta.
-- **Aviso gris si el ± llega a 5 años.** Pasa dentro de 18-79 cuando eres muy joven, porque el modelo trae una imprecisión por el sesgo de los datos, o cuando faltaban bastantes datos, pero no tantos como para dar error. El umbral de 5 es arbitrario: un margen de ± 5 son 10 años, una década, y lo he considerado como una generación. El aviso dice que esa edad no es tan precisa como suele ser, porque falta algún dato o porque eres muy joven.
+- **Aviso gris si el ± llega a 5 años.** Pasa cuando eres muy joven, porque el modelo trae una imprecisión por el sesgo de los datos, o cuando faltaban bastantes datos, pero no tantos como para dar error. El umbral de 5 es arbitrario: un margen de ± 5 son 10 años, una década, y lo he considerado como una generación. El aviso dice que esa edad no es tan precisa como suele ser, porque falta algún dato o porque eres muy joven.
 
 ### Accesibilidad
 - Todo el recorrido usa un verde oscuro con letras blancas, así que se lee perfectamente.

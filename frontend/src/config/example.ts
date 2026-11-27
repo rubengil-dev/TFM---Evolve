@@ -42,7 +42,7 @@ const DEMOS: Record<string, Demo> = {
   older: {
     screen: 'result',
     result: {
-      age: 82,
+      age: 77,
       bio_age: 84.3,
       margin: 5.4,
       blood: { minerals: null, sugar: 0.4, red_cells: 0.6, defences: -0.2, liver: -0.4, kidney: 1.3, weight: -0.3, other: 1.1 },

@@ -1,6 +1,6 @@
 /** Result screen: biological age with its margin, the gap to the real age, the tables of years and share / download. */
 
-import { IconAlertCircle, IconInfoCircle } from '@tabler/icons-react'
+import { IconInfoCircle } from '@tabler/icons-react'
 import { useRef } from 'react'
 import ShareButtons from '../components/ShareButtons'
 import YearsTable from '../components/YearsTable'
@@ -10,8 +10,8 @@ import type { Result as ResultData } from '../types'
 
 type Props = { result: ResultData }
 
-// Ages outside the training data: biological ones are shown as limits, real ones get a warning
-const LOWEST_AGE = 18
+// Biological ages outside these are shown as limits
+const LOWEST_AGE = DATA_MIN_AGE
 const HIGHEST_AGE = 90
 // Margin from which the result gets a note asking for caution (years)
 const CAUTION_MARGIN = 5
@@ -33,19 +33,13 @@ export default function Result({ result }: Props) {
         <p className="mt-4 text-center text-base">
           <Gap age={age} bio_age={bio_age} /> que tu edad real
         </p>
-        {(age < DATA_MIN_AGE || age > DATA_MAX_AGE) && (
-          <p className="mx-auto mt-3 flex w-fit max-w-sm items-center gap-2 rounded-2xl border border-rose/40 bg-rose/10 px-3 py-2 text-left text-xs text-rose">
-            <IconAlertCircle aria-hidden="true" size={16} className="shrink-0" />
-            Tienes {age} años, fuera de las edades de mis datos ({DATA_MIN_AGE}-{DATA_MAX_AGE}): el resultado puede ser menos preciso
-          </p>
-        )}
         {roundMargin >= CAUTION_MARGIN && (
           <p className="mx-auto mt-3 flex w-fit max-w-sm items-center gap-2 rounded-2xl border border-line bg-line/20 px-3 py-2 text-left text-xs text-moss">
             <IconInfoCircle aria-hidden="true" size={16} className="shrink-0" />
             Este resultado es menos preciso de lo normal: tómalo con más precaución
           </p>
         )}
-        {age >= DATA_MIN_AGE && age <= DATA_MAX_AGE && bio_age > DATA_MAX_AGE && bio_age <= HIGHEST_AGE && (
+        {bio_age > DATA_MAX_AGE && bio_age <= HIGHEST_AGE && (
           <p className="mt-2 text-center text-xs text-moss">Orientativo: por encima de {DATA_MAX_AGE} años hay pocos datos</p>
         )}
 
