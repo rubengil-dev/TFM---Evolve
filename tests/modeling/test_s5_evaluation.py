@@ -7,6 +7,7 @@
 - Bootstrap: two equal risks differ by 0; a clearly better one differs above 0; same seed → same result;
   95% interval from the 2.5 and 97.5 percentiles
 - Cross-validation: each person's risk comes from the model of the fold that left them out
+- Weighted median: equal weights → the plain median; a heavy person pulls it; missing values skipped; per group
 """
 
 # Imports
@@ -108,3 +109,28 @@ def test_bootstrap_same_seed_same_result() -> None:
 def test_confidence_interval_percentiles() -> None:
     interval = evaluation.confidence_interval(pd.DataFrame({"x": np.arange(1001, dtype=float)})).loc["x"]
     assert interval.tolist() == pytest.approx([500, 25, 975])
+
+
+def test_weighted_median_equal_weights_is_the_median() -> None:
+    values = pd.Series([5.0, 1.0, 3.0, 9.0, 7.0])
+    assert evaluation.weighted_median(values, pd.Series(np.ones(5))) == 5
+
+
+def test_weighted_median_follows_the_heavy_person() -> None:
+    values = pd.Series([1.0, 2.0, 3.0, 10.0])
+    assert evaluation.weighted_median(values, pd.Series([1.0, 1.0, 1.0, 5.0])) == 10
+
+
+def test_weighted_median_skips_missing_values() -> None:
+    values = pd.Series([np.nan, 1.0, 2.0, 3.0])
+    assert evaluation.weighted_median(values, pd.Series([100.0, 1.0, 1.0, 1.0])) == 2
+
+
+def test_weighted_medians_per_group() -> None:
+    gaps = pd.DataFrame({"level": [1.0, 2.0, 3.0, 10.0, 20.0, 30.0]})
+    weights = pd.Series([1.0, 1.0, 5.0, 5.0, 1.0, 1.0])
+    groups = pd.Series(["a", "a", "a", "b", "b", "b"])
+    medians = evaluation.weighted_medians(gaps, weights, groups)
+    assert medians.loc["a", "level"] == 3
+    assert medians.loc["b", "level"] == 10
+    assert evaluation.weighted_medians(gaps, weights)["level"] == 3
