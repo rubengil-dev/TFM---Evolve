@@ -1,8 +1,8 @@
 /** Numbers repeated from the backend config - tests/test_frontend_config.py checks they match. */
 
 // Ages the app calculates for (app.py)
-export const MIN_AGE = 16
-export const MAX_AGE = 90
+export const MIN_AGE = 18
+export const MAX_AGE = 79
 
 // Ages of the data (study.py)
 export const DATA_MIN_AGE = 18

@@ -35,17 +35,17 @@ Lo que no encaje en esta descripción no va aquí. Las decisiones pendientes no 
   - [*] Front en React, completo: portada con la elección de modo, preguntas, revisión, carga, errores y resultado, con el diseño visual definitivo. Primero con datos de ejemplo y después conectado al backend.
   - [x] API: leer el PDF (de momento, una persona inventada) y calcular, conectada al front.
   - [x] Elección del modelo: Extras desde 3, o 4 con cuestionario, medido al entrenar.
-  - [x] Edad fuera de 18-79: la diferencia se calcula como si tuviera 18 o 79 y se suma a la edad real.
+  - [x] Edad fuera de 18-79: no se calcula, con el error de menor o mayor de edad.
   - [x] Entrega 04: `docs/entregas/04_diseno_frontal_ux.md` con capturas de la app.
   - [x] IMC imposible: corregir peso y talla en la misma pantalla del ogro.
-  - [x] Pregunta de la edad de 10 a 100 años, con el error al contestarla si queda fuera de 16-90.
+  - [x] Pregunta de la edad de 10 a 100 años, con el error al contestarla si queda fuera de 18-79.
   - [x] Índice de pantallas: un `?demo=` por pantalla (también preguntas y cargas), listados en `frontend/README.md`.
   - [/] Parser del PDF, con la normalización de nombres y unidades, probado con mis PDFs.
   - [x] `POST /api/correct` mínimo, para la v1: el backend convierte lo corregido con el factor y comprueba que ya es posible; si no, se vuelve a preguntar en la misma ventana.
   - [ ] Unidades de lo corregido desde la tabla del parser; `factor` deja de viajar al front.
   - [ ] Pantalla de revisión, solo para los valores que el parser marca como dudosos, y solo si las pruebas del parser muestran que hace falta.
   - [x] Preguntas de sexo y edad, solo si el PDF no las trae.
-  - [x] Pantallas de error: PDF ilegible o que no es una analítica, faltan demasiados datos y valor imposible; aviso rojo de edad fuera de 18-79 en el resultado.
+  - [x] Pantallas de error: PDF ilegible o que no es una analítica, faltan demasiados datos y valor imposible.
   - [x] Letra pequeña de la portada (privacidad y cómo se calcula).
   - [x] Logo: icono de la pestaña y marca de agua de la imagen compartida.
   - [x] Validación de lo que entra al modelo: columnas, tipos, categorías, edades, valores imposibles, IMC imposible y mínimo de datos (5 valores de Routine que faltan, u 8 con cuestionario), también al leer el PDF.
@@ -53,7 +53,7 @@ Lo que no encaje en esta descripción no va aquí. Las decisiones pendientes no 
   - [x] Pantalla de resultado, presentada como edad equivalente según la referencia de NHANES: edad ± X, tabla de grupos y, con cuestionario, tabla de hábitos.
   - [x] Aportación en años de cada grupo de variables frente a la persona típica de su edad y sexo.
   - [x] Margen ± de la edad, medido al entrenar (`modeling/s7_margin.py`) y guardado en cada modelo, con el error base como curva continua según el riesgo y el aviso gris si llega a 5 años.
-  - [x] Línea "De 16 a 90 años" en la portada.
+  - [x] Línea "De 18 a 79 años" en la portada.
   - [x] Logs de la app en JSON, sin nada del usuario: petición, modo, nivel, resultado, código de error, cuántos valores faltan y tiempo.
   - [x] Librerías del stack en `pyproject.toml` y README al día; la del PDF entra con el parser.
   - [ ] Revisión completa de todos los textos de todas las pantallas, también las de error. Lo último, con la app acabada.

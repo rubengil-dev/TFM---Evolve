@@ -124,7 +124,7 @@ def test_missing_values_still_give_an_age(client: TestClient) -> None:
 
 def test_one_person_does_not_affect_the_next(client: TestClient) -> None:
     before = bio_age(client)
-    bio_age(client, age=80, sex="female", lab_values={**EXAMPLE_READING.lab_values, "glucose": 250}, habits=HABITS)
+    bio_age(client, age=75, sex="female", lab_values={**EXAMPLE_READING.lab_values, "glucose": 250}, habits=HABITS)
     assert bio_age(client) == before
 
 

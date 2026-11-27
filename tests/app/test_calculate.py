@@ -4,7 +4,7 @@
 - Unknown values → gaps; values the model does not use → left out
 - Result: real age, biological age unrounded (the front rounds it once), years with one decimal
 - Impossible data are refused before calculating
-- Ages out of the study: the difference of the nearest age, added to the real one
+- Ages out of the study (18-79) are refused; inside, the model gets the real age
 - Years: a value for every group, None only without data; they add up to the difference
 - Worse habits and values → more years in their group
 - Level: with Extras from the fewest their bundle says
@@ -19,7 +19,7 @@ import math
 import pandas as pd
 import pytest
 
-from bioage.app.calculate import calculate, choose_level, margin, model_row, one_decimal, study_age
+from bioage.app.calculate import calculate, choose_level, margin, model_row, one_decimal
 from bioage.app.predict import load_bundle, predict_age
 from bioage.app.read_pdf import EXAMPLE_READING
 from bioage.app.schemas import AppError, Person
@@ -72,22 +72,15 @@ def test_impossible_data_are_refused_before_calculating() -> None:
         calculate(Person(**{**PERSON, "weight": 300, "height": 120}), only_margins)
 
 
-@pytest.mark.parametrize(("age", "nearest"), [(16, 18), (17, 18), (18, 18), (45, 45), (79, 79), (80, 79), (90, 79)])
-def test_study_age_is_the_nearest(age: int, nearest: int) -> None:
-    assert study_age(age) == nearest
+@pytest.mark.parametrize(("age", "code"), [(17, "too_young"), (80, "too_old")])
+def test_ages_out_of_the_study_are_refused(age: int, code: str) -> None:
+    with pytest.raises(AppError, match=code):
+        calculate(Person(**{**PERSON, "age": age}), BUNDLES)
 
 
-@pytest.mark.parametrize(("age", "nearest"), [(16, 18), (85, 79)])
-@pytest.mark.parametrize("habits", [None, HABITS])
-def test_difference_of_the_nearest_age_is_added_to_the_real_one(age: int, nearest: int, habits: dict | None) -> None:
-    out = calculate(Person(**{**PERSON, "age": age}, habits=habits), BUNDLES)
-    limit = calculate(Person(**{**PERSON, "age": nearest}, habits=habits), BUNDLES)
-    assert out.bio_age - age == pytest.approx(limit.bio_age - nearest, abs=0.01)
-    assert (out.age, out.blood, out.habits) == (age, limit.blood, limit.habits)
-
-
-def test_row_has_the_nearest_age() -> None:
-    assert model_row(Person(**{**PERSON, "age": 85}), ["age"])["age"][0] == 79
+@pytest.mark.parametrize("age", [18, 79])
+def test_row_has_the_real_age(age: int) -> None:
+    assert model_row(Person(**{**PERSON, "age": age}), ["age"])["age"][0] == age
 
 
 def test_every_group_is_in_the_result() -> None:

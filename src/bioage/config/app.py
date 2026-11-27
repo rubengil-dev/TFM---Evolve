@@ -11,9 +11,11 @@
 # Imports
 from typing import Literal
 
-# Ages the app calculates for
-MIN_AGE = 16
-MAX_AGE = 90
+from bioage.config.study import AGE_MAX, AGE_MIN
+
+# Ages the app calculates for: only those the model has seen
+MIN_AGE = AGE_MIN
+MAX_AGE = AGE_MAX
 
 # PDF
 MAX_PDF_MB = 10
