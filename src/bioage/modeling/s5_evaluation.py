@@ -5,6 +5,7 @@ Evaluation:
     - evaluate_level, cross_validate, metrics_row, c_index, c_index_by_group & same_age_c_index
 2. Is the model accurate?
     - calibration_table, observed_risk, calibration_in_years & years_to_observed
+    - weighted_medians & weighted_median: is the typical person at their own age?
 3. Is every level actually better than a lower one?
     - compare_risks, bootstrap_c_indexes & confidence_interval
 
@@ -332,6 +333,43 @@ def years_to_observed(ages: np.ndarray, sex: pd.Series, observed: float, referen
     if gap(-YEARS_SEARCHED) * gap(YEARS_SEARCHED) > 0:
         return np.nan
     return brentq(gap, -YEARS_SEARCHED, YEARS_SEARCHED)
+
+
+def weighted_medians(
+    gaps: pd.DataFrame, weights: pd.Series, groups: list[pd.Series] | pd.Series | None = None
+) -> pd.DataFrame | pd.Series:
+    """Median of each column with the survey weights, as the reference curve is fitted, per group if given.
+
+    Args:
+        gaps: One column per level, one row per person.
+        weights: Survey weight of the same people.
+        groups: Groups to split the people into, as in `groupby`.
+
+    Returns:
+        The median of each column, one row per group if given.
+    """
+    if groups is None:
+        return gaps.apply(lambda column: weighted_median(column, weights))
+    return gaps.groupby(groups, observed=True).apply(
+        lambda part: part.apply(lambda column: weighted_median(column, weights.loc[part.index]))
+    )
+
+
+def weighted_median(values: pd.Series, weights: pd.Series) -> float:
+    """Value that leaves half of the weight below it, skipping missing values.
+
+    Args:
+        values: Values of each person.
+        weights: Weight of the same people.
+
+    Returns:
+        The weighted median.
+    """
+    known = values.notna().to_numpy()
+    values, weights = values.to_numpy(dtype=float)[known], weights.to_numpy(dtype=float)[known]
+    order = np.argsort(values)
+    cumulative = np.cumsum(weights[order])
+    return float(values[order][np.searchsorted(cumulative, cumulative[-1] / 2)])
 
 
 def tune_model(
